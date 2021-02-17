@@ -19,7 +19,24 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
 <body>
-    <div class='container'>
+
+    <div id="navbar">
+
+        <div id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
+        </div>
+    
+        <div id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
+        </div>
+        
+    
+    
+    
+    </div>
+
+
+    
         <h1 class='logo'>IfcOpenShell viewer</h1>
         Conversion in progress...
 
@@ -48,6 +65,9 @@
                     <td>s</td> 
                     <td>s</td>
                     <td>s</td>
+                    <td>s</td> 
+                    <td>s</td>
+                    <td>s</td>
                     <td>
 
                         <div class='progress'>
@@ -56,6 +76,8 @@
                         </div>
 
                     </td>
+                    <td>s</td>
+                    <td>s</td>
                 </tr>
             {% endfor %} 
         </table>
