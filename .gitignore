@@ -8,3 +8,9 @@ application/nix
 application/win
 application/ifc-pipeline.db
 *.ifc
+application/ifc-python-parser
+application/ifc-parser
+application/bimsurfer_temp/
+application/static/icons/
+application/static/navbar/
+application/static/test.jpg

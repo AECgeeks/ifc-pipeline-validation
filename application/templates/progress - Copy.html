@@ -12,8 +12,6 @@
             document.write('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
             document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
         }
-
-        
     </script>
     
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
@@ -22,73 +20,44 @@
     <div class='container'>
         <h1 class='logo'>IfcOpenShell viewer</h1>
         Conversion in progress...
+        <div class='progress'>
+            <div id = "percentage1" class='percentage'></div>
+            <div id = "bar1" class='bar'></div>
+        </div>
 
-
-        <!-- {% for record in range(0, n_files) %}
-            {% set percentageid = "percentage" + record|string   %}
-            {% set barid = "bar" + record|string   %}
-            <div class='progress'>
-                <div id = {{percentageid}} class='percentage'></div>
-                <div id = {{barid}} class='bar'></div>
-            </div>                
-        {% endfor %}  -->
-
-        <table>
-            <tr>
-                <th>Schema</th>
-                <th>MVD</th>
-                <th>bSDD</th>
-                <th>File format</th>
-                   
-            </tr>
-            {% for i in range(0, n_files) %}
-            {% set percentageid = "percentage" + i|string   %}
-            {% set barid = "bar" + i|string   %}
-                <tr>
-                    <td>s</td> 
-                    <td>s</td>
-                    <td>s</td>
-                    <td>
-
-                        <div class='progress'>
-                            <div id = {{percentageid}} class='percentage'></div>
-                            <div id = {{barid}} class='bar'></div>
-                        </div>
-
-                    </td>
-                </tr>
-            {% endfor %} 
-        </table>
-
-
-
-
-
-
+        <div class='progress'>
+            <div id = "percentage2" class='percentage'></div>
+            <div id = "bar2" class='bar'></div>
+        </div>
+    </div>
 
 
 
     <script>
 
 
+var number_ids = {{n_files}}
+console.log("number ids", number_ids);
 
-var n = {{n_files}} ;
+var bar = document.getElementById("bar1")
+var percentage = document.getElementById("percentage1")
+
+var bar2 = document.getElementById("bar2")
+var percentage2 = document.getElementById("percentage2")
+
+
 
         function poll() {
             fetch("/pp/{{ id }}").then(function(r) { return r.json(); }).then(function(r) {
 
-                for(var i = 0; i<n;i++){
-                    console.log(i)
-                    var bar = document.getElementById("bar" + i.toString())
-                    var percentage = document.getElementById("percentage"+ i.toString())
-
-
-                    if (r.progress[i] === 100) {
+                // console.log("RESULT",r)
+                
+                if (r.progress[0] === 100) {
                     //window.location = "/v/{{ id }}";
                     bar.style.width = 100 * 5 + 'px';
                     percentage.innerHTML = "100%"
                 } else {
-                    var p = r.progress[i];
+                    var p = r.progress[0];
                     if (p < 0) {
                         percentage.innerHTML = "<i>in queue</i>";
                         p = 0
@@ -98,25 +67,22 @@ var n = {{n_files}} ;
                     bar.style.width = p * 5 + 'px';
                     setTimeout(poll, 1000);
                 }
-
+            
+                if (r.progress[1] === 100) {
+                    //window.location = "/v/{{ id }}";
+                    bar2.style.width = 100 * 5 + 'px';
+                    percentage2.innerHTML = "100%"
+                } else {
+                    var p = r.progress[1];
+                    if (p < 0) {
+                        percentage2.innerHTML = "<i>in queue</i>";
+                        p = 0
+                    } else {
+                        percentage2.innerHTML = p + "%";
+                    }
+                    bar2.style.width = p * 5 + 'px';
+                    setTimeout(poll, 1000);
                 }
-
-
-                // if (r.progress[1] === 100) {
-                //     //window.location = "/v/{{ id }}";
-                //     bar2.style.width = 100 * 5 + 'px';
-                //     percentage2.innerHTML = "100%"
-                // } else {
-                //     var p = r.progress[1];
-                //     if (p < 0) {
-                //         percentage2.innerHTML = "<i>in queue</i>";
-                //         p = 0
-                //     } else {
-                //         percentage2.innerHTML = p + "%";
-                //     }
-                //     bar2.style.width = p * 5 + 'px';
-                //     setTimeout(poll, 1000);
-                // }
 
 
 

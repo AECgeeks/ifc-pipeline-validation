@@ -26,13 +26,37 @@ h1.logo {
     border-radius: 2px;
 }
 
-.progress .percentage {
+table, th, td {
+    border: 1px solid rgba(161, 161, 161, 0.24);
+    border-collapse: collapse;
+    font-family:'Calibri';
+
+    border-left: none;
+    border-right: none;
+
+   
+  }
+
+
+
+  td{
+    padding: 25px;
+   
+  }
+
+#percentage2, .progress .percentage {
     position: absolute;
     width: 500px;
     text-align: center;
 }
 
-.progress .bar {
+#percentage2{
+    position: absolute;
+    width: 500px;
+    text-align: center;
+}
+
+#bar2, .progress .bar {
     height: 24px;
     border-right: solid 1px #aaa;
     background: #eee;

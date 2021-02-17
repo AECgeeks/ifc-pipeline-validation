@@ -34,6 +34,7 @@ import tempfile
 import operator
 import shutil
 
+import threading
 import requests
 
 on_windows = platform.system() == 'Windows'
@@ -177,10 +178,10 @@ def do_process(id):
     tasks = [
         
         xml_generation_task,
-        geometry_generation_task,
-        svg_generation_task,
-        glb_optimize_task,
-        gzip_task
+        geometry_generation_task
+        # svg_generation_task,
+        # glb_optimize_task,
+        # gzip_task
     ]
     
     tasks_on_aggregate = []
@@ -253,13 +254,15 @@ def do_process(id):
     set_progress(id, elapsed)
 
 
-def process(id, callback_url):
-    try:
-        do_process(id)
-        status = "success"
-    except Exception as e:
-        traceback.print_exc(file=sys.stdout)
-        status = "failure"        
+def process(ids, callback_url):
+    for id in ids:
+        try:
+            t = threading.Thread(target=lambda: do_process(id))
+            t.start()
+            status = "success"
+        except Exception as e:
+            traceback.print_exc(file=sys.stdout)
+            status = "failure"        
 
-    if callback_url is not None:       
-        r = requests.post(callback_url, data={"status": status, "id": id})
+        if callback_url is not None:       
+            r = requests.post(callback_url, data={"status": status, "id": id})

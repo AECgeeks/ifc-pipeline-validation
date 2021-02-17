@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='validation.css') }}">
+
+</head>
+
+
+<body>
+    
+
+
+<div id="navbar">
+
+    <div id="logo">
+        <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
+    </div>
+
+    <div id="logo">
+        <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
+    </div>
+    
+
+
+
+</div>
+
+<div id="main">
+
+
+<table>
+    <tr>
+        <th style="vertical-align:bottom;transform: rotate(-90deg);padding: 17px;">Schema</th>
+        <!-- <th style="vertical-align:bottom;text-align:left;transform: rotate(-90deg);padding-right: 17px;">Schema</th> -->
+        <th style="vertical-align:bottom;text-align:left;transform: rotate(-90deg);padding: 17px;">MVD</th>
+        <th style="vertical-align:middle;transform: rotate(-90deg);padding: 17px;">bSDD</th>
+        <th style="vertical-align:middle;transform: rotate(-90deg);padding: 17px; height:100%;">File format</th>
+        <!-- <th style="text-align: left;">MVD</td>
+        <th style="text-align: left;">bSDD</td>
+        <th style="text-align: left;">File format</td> -->
+        <!-- <img src="{{url_for('static', filename='icons/valid.png')}}" /> -->
+        <!-- <td  style="transform: rotate(-90deg);"></td> -->
+        <!-- <td>File format</td>
+        <td>File format</td
+        <td>Report</td>
+        <td>Date</td>
+        <td>Action 1</td>
+        <td>Action 2</td> -->
+
+    </tr>
+{% for record in my_list %}
+<tr> 
+    {% for i in record %}
+        {% if i == 'valid' or i=='invalid' or i=='warning' %}
+            <td style="text-align: center; "><img src="/static/icons/{{i}}.png" /> </td>
+        {% else %}
+            <td style="text-align: center;">{{i}}</td>
+        {% endif %}
+    {% endfor %}                          
+</tr> 
+
+{% endfor %} 
+</table>
+
+</div>
+
+</body>
+</html>

@@ -114,53 +114,34 @@ def process_upload(filewriter, callback_url=None):
 
 
 def process_upload_multiple(files, callback_url=None):
-    id = utils.generate_id()
-    d = utils.storage_dir_for_id(id)
-    os.makedirs(d)
-   
-    file_id = 0
-    session = database.Session()
-    m = database.model(id, '')   
-    session.add(m)
-  
+    ids = []
     for file in files:
         fn = file.filename
         filewriter = lambda fn: file.save(fn)
-        filewriter(os.path.join(d, id+"_"+str(file_id)+".ifc"))
-        file_id += 1
-        m.files.append(database.file(id, ''))
+        id = utils.generate_id()
+        ids.append(id)
+        d = utils.storage_dir_for_id(id)
+        os.makedirs(d)
     
-    session.commit()
-    session.close()
+        filewriter(os.path.join(d, id+".ifc"))
+    
+        session = database.Session()
+        session.add(database.model(id, ''))
+        session.commit()
+        session.close()
     
     if DEVELOPMENT:
-        t = threading.Thread(target=lambda: worker.process(id, callback_url))
-        t.start()        
-    else:
-        q.enqueue(worker.process, id, callback_url)
-
-    return id
+        t = threading.Thread(target=lambda: worker.process(ids, callback_url))
+        t.start()
+    
+    return ids
 
 
 
+  
 @application.route('/', methods=['POST'])
 def put_main():
-    """
-    Upload model
-    ---
-    requestBody:
-      content:
-        multipart/form-data:
-          schema:
-            type: object
-            properties:
-              ifc:
-                type: string
-                format: binary
-    responses:
-      '200':
-        description: redirect
-    """
+ 
     ids = []
    
     files = []
@@ -170,7 +151,16 @@ def put_main():
             files.append(file)    
 
        
-    id = process_upload_multiple(files)
+    ids = process_upload_multiple(files)
+    # print("IDdddddddddddddddddddddddddddddddddddddddddddd" , ids)
+
+    # id = '|'.join(ids)
+
+    # id = str(ids[0]) + str(ids[1])
+    id = ""
+    for i in ids:
+        id += i
+
     url = url_for('check_viewer', id=id) 
 
     if request.accept_mimetypes.accept_json:
@@ -181,19 +171,59 @@ def put_main():
 
 @application.route('/p/<id>', methods=['GET'])
 def check_viewer(id):
-    if not utils.validate_id(id):
-        abort(404)
-    return render_template('progress.html', id=id)    
+    # if not utils.validate_id(id):
+    #     abort(404)
+    # print("IDDDDEEEEEEEEEEEEEEEEEEEEEEEEE", id)
+    # id = id[0]
+    # print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx", id)
+
+    n_files = int(len(id)/32)
+
+    return render_template('progress.html', id=id, n_files=n_files)    
     
     
 @application.route('/pp/<id>', methods=['GET'])
 def get_progress(id):
     if not utils.validate_id(id):
         abort(404)
-    session = database.Session()
-    model = session.query(database.model).filter(database.model.code == id).all()[0]
-    session.close()
-    return jsonify({"progress": model.progress})
+    
+    n_ids = int(len(id)/32)
+    print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+    print("LEN", len(id))
+    print("NID", n_ids)
+    count = 0
+    all_ids = []
+    b = 0
+    i = 1
+    a = 32
+    for d in range(n_ids):
+        token = id[b:a]
+        all_ids.append(token)
+        # count += 1
+        b = a
+        i+=1
+        a = 32*i
+        
+
+    print()
+
+    ids = [id[0:32], id[32::]]
+    # ids = all_ids
+
+    print("NEW ID", all_ids)
+    print("OLD ID", ids)
+    ids = all_ids
+    model_progresses = []
+
+    for i in ids:
+        # print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww", i)
+        session = database.Session()
+        model = session.query(database.model).filter(database.model.code == i).all()[0]
+        model_progresses.append(model.progress)
+        session.close()
+
+
+    return jsonify({"progress": model_progresses})
 
 
 @application.route('/log/<id>.<ext>', methods=['GET'])
