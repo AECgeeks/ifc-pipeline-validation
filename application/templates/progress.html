@@ -39,7 +39,7 @@
                 <th>MVD</th>
                 <th>bSDD</th>
                 <th>File format</th>
-                <th>File name</th>
+                <!-- <th></th> -->
 
             </tr>
             {% for i in range(0, n_files) %}
@@ -115,17 +115,21 @@
             rows[i+1].cells[6].style.fontWeight = "bold";
             rows[i+1].cells[6].style.color ="#d9d9d9";
 
+           
 
             var oImg = document.createElement("img");
-            oImg.src = "/static/icons/valid.png";
+            oImg.src = "/static/icons/warning.png";
             rows[i+1].cells[0].appendChild(oImg);
+
+        
+
 
             var oImg = document.createElement("img");
             oImg.src = "/static/icons/valid.png";
             rows[i+1].cells[1].appendChild(oImg);
 
             var oImg = document.createElement("img");
-            oImg.src = "/static/icons/valid.png";
+            oImg.src = "/static/icons/invalid.png";
             rows[i+1].cells[2].appendChild(oImg);
 
         }
@@ -157,19 +161,21 @@
 
                         registered.add(i);
 
-                            
-
+                        
                         //window.location = "/v/{{ id }}";
                         bar.style.width = 100 * 2 + 'px';
                         percentage.innerHTML = "100%"
                         var results = 0;
 
 
-                        completeTable(i, results);
-
-
                         fetch("/essai").then(function (r) { return r.json(); }).then(function (r) {
-                            console.log("ye", r)})
+                            // results = r;
+                            console.log("ye", r)});
+
+                        completeTable(i, r);
+
+
+                       
 
                         }
                    

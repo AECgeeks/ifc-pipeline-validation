@@ -70,9 +70,9 @@ table, th, td {
 .progress {
   width: 200px;
   height: 12px;
-  border: solid 1px rgba(128, 128, 128, 0.781);
-  border-radius: 2px;
-  background-color: rgba(194, 194, 194, 0.041);
+  /* border: solid 1px rgba(128, 128, 128, 0.781); */
+  border-radius: 25px;
+  background-color: rgba(194, 194, 194, 0.5);
 }
 
 
@@ -80,6 +80,7 @@ table, th, td {
     position: absolute;
     width: 200px;
     text-align: center;
+    border-radius
    
 }
 
@@ -87,15 +88,17 @@ table, th, td {
 
   color:rgb(105, 125, 239);
   font-weight: bold;
+  border-radius: 25px;
 }
 
 
 
 .progress .bar {
     height: 12px;
-    border-right: solid 1px #aaa;
+    /* border-right: solid 1px #aaa; */
     background: rgb(105, 125, 239);
     width: 0px;
+    border-radius: 25px;
 }
 
 
