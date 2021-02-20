@@ -5,17 +5,15 @@
     <title>IfcOpenShell viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    
+
     <script type="text/javascript">
         var isIE = !!window.MSInputMethodContext;
         if (isIE) {
             document.write('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
             document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
         }
-
-        
     </script>
-    
+
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
 <body>
@@ -25,30 +23,15 @@
         <div id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
         </div>
-    
+
         <div id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
         </div>
-        
-    
-    
-    
+
     </div>
 
 
-    
-        <h1 class='logo'>IfcOpenShell viewer</h1>
-        Conversion in progress...
-
-
-        <!-- {% for record in range(0, n_files) %}
-            {% set percentageid = "percentage" + record|string   %}
-            {% set barid = "bar" + record|string   %}
-            <div class='progress'>
-                <div id = {{percentageid}} class='percentage'></div>
-                <div id = {{barid}} class='bar'></div>
-            </div>                
-        {% endfor %}  -->
+    <div id="main">
 
         <table>
             <tr>
@@ -56,89 +39,155 @@
                 <th>MVD</th>
                 <th>bSDD</th>
                 <th>File format</th>
-                   
+                <th>File name</th>
+
             </tr>
             {% for i in range(0, n_files) %}
-            {% set percentageid = "percentage" + i|string   %}
-            {% set barid = "bar" + i|string   %}
-                <tr>
-                    <td>s</td> 
-                    <td>s</td>
-                    <td>s</td>
-                    <td>s</td> 
-                    <td>s</td>
-                    <td>s</td>
-                    <td>
+            {% set percentageid = "percentage" + i|string %}
+            {% set barid = "bar" + i|string %}
+            {% set fn = filenames[i]|string %}
+            {% set format = filenames[i][-3::]|string %}
+            
+            <tr>
+                
+                <td></td>
+                <td></td>
+                <td></td>
+                <!-- <td>{{format}}</td> -->
+                <td><img src="/static/icons/ifc.png" /></td>
+               
+                <td style="color:royalblue;font-weight: bold;">{{fn}}</td>
+                <td></td>
+                <td>
 
-                        <div class='progress'>
-                            <div id = {{percentageid}} class='percentage'></div>
-                            <div id = {{barid}} class='bar'></div>
-                        </div>
+                    <div class='progress'>
+                        <!-- <div id={{percentageid}} class='percentage'></div> -->
+                        <div id={{barid}} class='bar'></div>
+                    </div>
 
-                    </td>
-                    <td>s</td>
-                    <td>s</td>
-                </tr>
-            {% endfor %} 
+                </td>
+                <td><div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div></td>
+                <td style="color:rgb(224, 101, 101);">Stop</td>
+            </tr>
+            {% endfor %}
         </table>
 
 
-
-
-
+    </div>
 
 
 
 
     <script>
 
+        const processed_files = new Set();
+
+        function addInfo(){
+            console.log("adding");
+            var rows = document.getElementsByTagName("table")[0].rows;
+
+        }
+
+        function completeTable(i, results){
+            
+            console.log("complete");
+            var rows = document.getElementsByTagName("table")[0].rows;
+            // rows[i+1].style.backgroundColor = "red";
+            
+            // rows[i+1].cells[5].style.backgroundColor = "green";
+            rows[i+1].cells[5].innerHTML = "View report";
+            rows[i+1].cells[5].style.color = "#0070C0";
+            rows[i+1].cells[5].style.fontWeight = "bold";
 
 
-var n = {{n_files}} ;
+            rows[i+1].cells[7].innerHTML = "Download";
+            rows[i+1].cells[8].innerHTML = "Delete";
+               
+            rows[i+1].cells[7].style.fontWeight = "bold";
+            rows[i+1].cells[8].style.fontWeight = "bold";
+            rows[i+1].cells[7].style.color = "rgb(105, 125, 239)";
+            rows[i+1].cells[8].style.color ="rgb(224, 101, 101)";
+
+
+
+            var date = new Date().toLocaleString();
+            rows[i+1].cells[6].innerHTML = date;
+            rows[i+1].cells[6].style.fontWeight = "bold";
+            rows[i+1].cells[6].style.color ="#d9d9d9";
+
+
+            var oImg = document.createElement("img");
+            oImg.src = "/static/icons/valid.png";
+            rows[i+1].cells[0].appendChild(oImg);
+
+            var oImg = document.createElement("img");
+            oImg.src = "/static/icons/valid.png";
+            rows[i+1].cells[1].appendChild(oImg);
+
+            var oImg = document.createElement("img");
+            oImg.src = "/static/icons/valid.png";
+            rows[i+1].cells[2].appendChild(oImg);
+
+        }
+
+
+        var n = {{ n_files }};
+        
+
+        
+        const registered = new Set();
+
 
         function poll() {
-            fetch("/pp/{{ id }}").then(function(r) { return r.json(); }).then(function(r) {
+            fetch("/pp/{{ id }}").then(function (r) { return r.json(); }).then(function (r) {
 
-                for(var i = 0; i<n;i++){
+
+
+                for (var i = 0; i < n; i++) {
                     console.log(i)
                     var bar = document.getElementById("bar" + i.toString())
-                    var percentage = document.getElementById("percentage"+ i.toString())
+                    var percentage = document.getElementById("percentage" + i.toString())
 
+
+                    var fn = r.filename;
 
                     if (r.progress[i] === 100) {
-                    //window.location = "/v/{{ id }}";
-                    bar.style.width = 100 * 5 + 'px';
-                    percentage.innerHTML = "100%"
-                } else {
-                    var p = r.progress[i];
-                    if (p < 0) {
-                        percentage.innerHTML = "<i>in queue</i>";
-                        p = 0
+
+                        if(!registered.has(i)){
+
+                        registered.add(i);
+
+                            
+
+                        //window.location = "/v/{{ id }}";
+                        bar.style.width = 100 * 2 + 'px';
+                        percentage.innerHTML = "100%"
+                        var results = 0;
+
+
+                        completeTable(i, results);
+
+
+                        fetch("/essai").then(function (r) { return r.json(); }).then(function (r) {
+                            console.log("ye", r)})
+
+                        }
+                   
+
+
                     } else {
-                        percentage.innerHTML = p + "%";
+                        var p = r.progress[i];
+                        if (p < 0) {
+                            percentage.innerHTML = "<i>in queue</i>";
+                            p = 0
+                        } else {
+                            percentage.innerHTML = p + "%";
+                        }
+                        bar.style.width = p * 2 + 'px';
+                        setTimeout(poll, 1000);
                     }
-                    bar.style.width = p * 5 + 'px';
-                    setTimeout(poll, 1000);
-                }
 
                 }
-
-
-                // if (r.progress[1] === 100) {
-                //     //window.location = "/v/{{ id }}";
-                //     bar2.style.width = 100 * 5 + 'px';
-                //     percentage2.innerHTML = "100%"
-                // } else {
-                //     var p = r.progress[1];
-                //     if (p < 0) {
-                //         percentage2.innerHTML = "<i>in queue</i>";
-                //         p = 0
-                //     } else {
-                //         percentage2.innerHTML = p + "%";
-                //     }
-                //     bar2.style.width = p * 5 + 'px';
-                //     setTimeout(poll, 1000);
-                // }
 
 
 
@@ -148,46 +197,8 @@ var n = {{n_files}} ;
         }
 
         poll();
-        
-        // var bar = document.querySelector(".bar")
-        // console.log("BAR ", bar)
-        // var percentage = document.querySelector(".percentage")
-        // // var str = "{{id}}";
-        // // console.log("STR", str);
-        // // var idd = str.split("|")[0]
-
-        // //var new_url = str.split("|")[0] + str.split("|")[1]
-        
-
-        // var u = "/pp/" + "{{id}}"
-        // // console.log("NEW", new_url)
-
-        // // "/pp/{{ id }}"
-
-        // function poll() {
-            
-        //     fetch(u).then(function(r) { return r.json(); }).then(function(r) {
-        //         console.log("RR", r)
-        //         if (r.progress === 100) {
-        //             // window.location = viewerUrl;
-        //             console.log('1 complete')
-        //         } else {
-        //             var p = r.progress;
-        //             if (p < 0) {
-        //                 percentage.innerHTML = "<i>in queue</i>";
-        //                 p = 0
-        //             } else {
-        //                 percentage.innerHTML = p + "%";
-        //             }
-        //             bar.style.width = p * 5 + 'px';
-        //             setTimeout(poll, 1000);
-        //         }
-        //     });
 
 
-        // }
-
-        // poll();
     </script>
 
 </body>

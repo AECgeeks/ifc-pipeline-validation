@@ -97,7 +97,7 @@ def process_upload(filewriter, callback_url=None):
     filewriter(os.path.join(d, id+".ifc"))
     
     session = database.Session()
-    session.add(database.model(id, ''))
+    session.add(database.model(id, 'test'))
     session.commit()
     session.close()
     
@@ -126,7 +126,7 @@ def process_upload_multiple(files, callback_url=None):
         filewriter(os.path.join(d, id+".ifc"))
     
         session = database.Session()
-        session.add(database.model(id, ''))
+        session.add(database.model(id, fn))
         session.commit()
         session.close()
     
@@ -152,11 +152,7 @@ def put_main():
 
        
     ids = process_upload_multiple(files)
-    # print("IDdddddddddddddddddddddddddddddddddddddddddddd" , ids)
 
-    # id = '|'.join(ids)
-
-    # id = str(ids[0]) + str(ids[1])
     id = ""
     for i in ids:
         id += i
@@ -173,13 +169,39 @@ def put_main():
 def check_viewer(id):
     # if not utils.validate_id(id):
     #     abort(404)
-    # print("IDDDDEEEEEEEEEEEEEEEEEEEEEEEEE", id)
-    # id = id[0]
-    # print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx", id)
 
     n_files = int(len(id)/32)
 
-    return render_template('progress.html', id=id, n_files=n_files)    
+    filenames = []
+
+    all_ids = []
+    b = 0
+    i = 1
+    a = 32
+    for d in range(n_files):
+        token = id[b:a]
+        all_ids.append(token)
+        # count += 1
+        b = a
+        i+=1
+        a = 32*i
+        
+
+    print()
+
+ 
+    ids = all_ids
+    filenames = []
+
+    for i in ids:
+        session = database.Session()
+        model = session.query(database.model).filter(database.model.code == i).all()[0]
+        print(model)
+        filenames.append(model.filename)
+        print("verif other ..................................", model.filename)
+        session.close()
+
+    return render_template('progress.html', id=id, n_files=n_files, filenames=filenames)    
     
     
 @application.route('/pp/<id>', methods=['GET'])
@@ -188,9 +210,7 @@ def get_progress(id):
         abort(404)
     
     n_ids = int(len(id)/32)
-    print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-    print("LEN", len(id))
-    print("NID", n_ids)
+
     count = 0
     all_ids = []
     b = 0
@@ -207,23 +227,74 @@ def get_progress(id):
 
     print()
 
-    ids = [id[0:32], id[32::]]
-    # ids = all_ids
-
-    print("NEW ID", all_ids)
-    print("OLD ID", ids)
+ 
     ids = all_ids
     model_progresses = []
 
     for i in ids:
-        # print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww", i)
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
+        print(model)
         model_progresses.append(model.progress)
+        print("verif other ..................................", model.filename)
         session.close()
 
+    return jsonify({"progress": model_progresses,"filename":model.filename})
 
-    return jsonify({"progress": model_progresses})
+# @application.route('/info/<id>', methods=['GET'])
+# def get_info(id):
+#     # if not utils.validate_id(id):
+#     #     abort(404)
+    
+#     n_ids = int(len(id)/32)
+
+#     count = 0
+#     all_ids = []
+#     b = 0
+#     i = 1
+#     a = 32
+#     for d in range(n_ids):
+#         token = id[b:a]
+#         all_ids.append(token)
+#         # count += 1
+#         b = a
+#         i+=1
+#         a = 32*i
+        
+
+#     print()
+
+ 
+#     ids = all_ids
+#     model_progresses = []
+
+#     for i in ids:
+#         session = database.Session()
+#         model = session.query(database.model).filter(database.model.code == i).all()[0]
+#         print(model)
+#         model_progresses.append(model.progress)
+#         print("verif other ..................................", model.filename)
+#         session.close()
+
+#     return jsonify({"filename":model.filename})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @application.route('/log/<id>.<ext>', methods=['GET'])
@@ -278,6 +349,11 @@ def get_viewer(id):
         n_files=n_files,
         postfix=PIPELINE_POSTFIX
     )
+
+
+@application.route('/essai')
+def essai():
+    return jsonify({"Schema": "v", "MVD":"w", "BSdd":"v"})
 
 
 @application.route('/m/<fn>', methods=['GET'])

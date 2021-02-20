@@ -1,29 +1,22 @@
-html, body, canvas {
-    display: block;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-}
-
-form.upload {
-    padding: 32px;
-}
-
-.container {
-    padding: 10px;
-}
-
-h1.logo {
-    margin: 0;
-    font-weight: normal;
-}
-
-.progress {
-    width: 500px;
-    height: 24px;
-    border: solid 1px gray;
-    border-radius: 2px;
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
 }
 
 
@@ -35,14 +28,22 @@ h1.logo {
     align-items:center;
     justify-content: space-between;
 
-    height: 10vh;
+    height: 100px;
     width:100%;
     /* background-color:green */
   }
 
 
 
-
+  #main{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    /* background-color: rgb(182, 241, 133); */
+    /* height:600px; */
+    /* height:800px; */
+    
+  }
 
 table, th, td {
     border: 1px solid rgba(161, 161, 161, 0.24);
@@ -58,134 +59,45 @@ table, th, td {
 
 
   td{
-    padding: 25px;
+   
+        text-align: left; 
+        vertical-align: middle;
+        padding:25px;
    
   }
 
-#percentage2, .progress .percentage {
-    position: absolute;
-    width: 500px;
-    text-align: center;
+  
+.progress {
+  width: 200px;
+  height: 12px;
+  border: solid 1px rgba(128, 128, 128, 0.781);
+  border-radius: 2px;
+  background-color: rgba(194, 194, 194, 0.041);
 }
 
-#percentage2{
+
+  .progress .percentage {
     position: absolute;
-    width: 500px;
+    width: 200px;
     text-align: center;
+   
 }
 
-#bar2, .progress .bar {
-    height: 24px;
+.percentage{
+
+  color:rgb(105, 125, 239);
+  font-weight: bold;
+}
+
+
+
+.progress .bar {
+    height: 12px;
     border-right: solid 1px #aaa;
-    background: #eee;
+    background: rgb(105, 125, 239);
     width: 0px;
 }
 
-.bimsurfer-static-tree, .bimsurfer-metadata {
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-.bimsurfer-static-tree, .bimsurfer-static-tree * {
-    user-select: none;
-    -ms-user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    z-index: 1;
-}
-
-.bimsurfer-static-tree div.item {
-    border-top: solid 1px #eee;
-    line-height: 12pt;
-}
-
-.bimsurfer-static-tree > div > div.item {
-    border: none;
-}
-
-.bimsurfer-static-tree div.bimsurfer-tree-label {
-    margin-left: -100px;
-    padding-left: 100px;
-    width: 1000px;
-    cursor: pointer;
-}
-
-.bimsurfer-static-tree .bimsurfer-tree-children-with-indent {
-    padding-left: 10px;
-}
-
-.bimsurfer-static-tree div.selected {
-    background: #6ae;
-    color: white;
-}
-
-.bimsurfer-static-tree div.bimsurfer-tree-label:before {
-  content: "\21b3  ";
-}
-
-.bimsurfer-static-tree div.bimsurfer-tree-eye:before {
-    content: "\1f441";
-}
-  
-.bimsurfer-tree-column {
-    display: inline-block;
-    overflow: hidden;
-}
-
-div.bimsurfer-tree-eye-off {
-    opacity: 0.5;
-}
-
-.bimsurfer-metadata h3 {
-    font-weight: bold;
-    margin: 0;
-    padding: 10px 0 0 0;
-    width: 1000px;
-}
-
-.bimsurfer-metadata table {
-    width: 100%;
-}
-
-.bimsurfer-metadata h3:before {
-    content: "\25b8  ";
-}
-
-.bimsurfer-metadata th,
-.bimsurfer-metadata td {
-    width: 50%;
-    border-bottom: solid 1px #eee;
-    text-align: left;
-}
-
-.bimsurfer-metadata td:nth-child(1),
-.bimsurfer-metadata th:nth-child(1) {
-    width: 30%;
-}
-
-.bimsurfer-metadata td:nth-child(2),
-.bimsurfer-metadata th:nth-child(2) {
-    width: 70%;
-}
-
-.bimsurfer-metadata,
-.bimsurfer-metadata h3,
-.bimsurfer-static-tree {
-    font-size: 10pt;
-}
-
-.spinner {
-  position: fixed;
-  top: calc(50% - 64px);
-  left: calc(50% - 64px);
-  width: 128px;
-  height: 128px;
-  border: solid 4px gray;
-  border-bottom-color: white;
-  border-radius: 50%;
-  animation: spin 2s linear infinite;
-  z-index: 9999;
-}
 
 @keyframes spin {
   to {
