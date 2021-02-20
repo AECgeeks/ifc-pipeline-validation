@@ -187,7 +187,7 @@ def check_viewer(id):
         a = 32*i
         
 
-    print()
+    # print()
 
  
     ids = all_ids
@@ -196,9 +196,9 @@ def check_viewer(id):
     for i in ids:
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
-        print(model)
+        # print(model)
         filenames.append(model.filename)
-        print("verif other ..................................", model.filename)
+        # print("verif other ..................................", model.filename)
         session.close()
 
     return render_template('progress.html', id=id, n_files=n_files, filenames=filenames)    
@@ -225,7 +225,7 @@ def get_progress(id):
         a = 32*i
         
 
-    print()
+    # print()
 
  
     ids = all_ids
@@ -234,9 +234,9 @@ def get_progress(id):
     for i in ids:
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
-        print(model)
+        # print(model)
         model_progresses.append(model.progress)
-        print("verif other ..................................", model.filename)
+        # print("verif other ..................................", model.filename)
         session.close()
 
     return jsonify({"progress": model_progresses,"filename":model.filename})
