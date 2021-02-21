@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>IfcOpenShell viewer</title>
+    <title>buildingSMART IFC Validation Service</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     
@@ -15,7 +15,7 @@
 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
     {{ dropzone.load_css() }}
-    {{ dropzone.style('border: 2px dashed #0087F7; margin: 20px 10%; min-height: 400px;') }}
+    {{ dropzone.style('border: 2px dashed #0087F7; min-height: 400px;') }}
     
     <style>
         .dropzone .dz-preview .dz-image {
@@ -49,7 +49,24 @@
     </style>
 <body style="text-align: center">
 
-    <h3>IfcOpenShell viewer</h3>
+
+    <div id="navbar">
+
+        <div style="padding-left: 5px;" id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
+        </div>
+
+        <div id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" />
+        </div>
+
+    </div>
+
+    <div id="main2">
+
+
+    <div id="submitzone">
+    <!-- <h3>IfcOpenShell viewer</h3> -->
 
     {{ dropzone.create('put_main') }}
     {{ dropzone.load_js() }}
@@ -81,7 +98,11 @@
         };
     </script>
     
-    <button id="submit" style="padding: 10px 20px; border-radius:5px">Submit</button>
+    <button id="submit">Submit</button>
+</div>
+
+
+</div>
     
 </body>
 </html>

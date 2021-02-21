@@ -28,7 +28,7 @@ time, mark, audio, video {
     align-items:center;
     justify-content: space-between;
 
-    height: 100px;
+    height: 10vh;
     width:100%;
     /* background-color:green */
   }
@@ -44,6 +44,53 @@ time, mark, audio, video {
     /* height:800px; */
     
   }
+
+
+
+  #main2{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    background-image: url('./icons/background.jpg');
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 90vh;
+    background-size: cover;
+    background-color: rgb(182, 241, 133); 
+    /* height:600px; */
+    /* height:800px; */
+    
+  }
+
+#submitzone{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  padding:10px;
+  justify-content: space-evenly;
+  gap: 15px;
+  /* max-width:40%; */
+
+}
+
+
+#submit{
+
+  padding: 10px 20px; 
+  border-radius:5px; 
+  width:auto;
+}
+
+
+
+
+
+
+
+
 
 table, th, td {
     border: 1px solid rgba(161, 161, 161, 0.24);
