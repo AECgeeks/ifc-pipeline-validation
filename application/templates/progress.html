@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-    <title>buildingSMART IFC Validation Service</title>
+    <title>IfcOpenShell viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-
+    
     <script type="text/javascript">
         var isIE = !!window.MSInputMethodContext;
         if (isIE) {
@@ -13,203 +13,40 @@
             document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
         }
     </script>
-
+    
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
 <body>
-
-    <div id="navbar">
-
-        <div style="padding-left: 5px;" id="logo">
-            <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
+    <div class='container'>
+        <h1 class='logo'>IfcOpenShell viewer</h1>
+        Conversion in progress...
+        <div class='progress'>
+            <div class='percentage'></div>
+            <div class='bar'></div>
         </div>
-
-        <div id="logo">
-            <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
-        </div>
-
     </div>
-
-
-    <div id="main">
-
-        <table>
-            <tr>
-                <th>Schema</th>
-                <th>MVD</th>
-                <th>bSDD</th>
-                <th>File format</th>
-                <!-- <th></th> -->
-
-            </tr>
-            {% for i in range(0, n_files) %}
-            {% set percentageid = "percentage" + i|string %}
-            {% set barid = "bar" + i|string %}
-            {% set fn = filenames[i]|string %}
-            {% set format = filenames[i][-3::]|string %}
-            
-            <tr>
-                
-                <td></td>
-                <td></td>
-                <td></td>
-                <!-- <td>{{format}}</td> -->
-                <td><img src="/static/icons/ifc.png" /></td>
-               
-                <td style="color:royalblue;font-weight: bold;">{{fn}}</td>
-                <td></td>
-                <td>
-
-                    <div class='progress'>
-                        <!-- <div id={{percentageid}} class='percentage'></div> -->
-                        <div id={{barid}} class='bar'></div>
-                    </div>
-
-                </td>
-                <td><div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div></td>
-                <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
-            </tr>
-            {% endfor %}
-        </table>
-
-
-    </div>
-
-
-
-
     <script>
-
-        const processed_files = new Set();
-
-        
-
-
-        function addInfo(){
-            console.log("adding");
-            var rows = document.getElementsByTagName("table")[0].rows;
-
-        }
-
-
-     
-
-        function completeTable(i, results){
-
-            var rows = document.getElementsByTagName("table")[0].rows;
-            var schemaImg = document.createElement("img");
-            schemaImg.src = "/static/icons/warning.png";
-            var MVDImg = document.createElement("img");
-            MVDImg.src = "/static/icons/valid.png";
-            var bsddImg = document.createElement("img");
-            bsddImg.src = "/static/icons/invalid.png";
-            rows[i+1].cells[0].appendChild(schemaImg);
-            rows[i+1].cells[1].appendChild(MVDImg);
-            rows[i+1].cells[2].appendChild(bsddImg);
-
-
-
-            
-            console.log("complete");
-           
-            // rows[i+1].style.backgroundColor = "red";
-            
-            // rows[i+1].cells[5].style.backgroundColor = "green";
-            rows[i+1].cells[5].innerHTML = "View report";
-            rows[i+1].cells[5].style.color = "#0070C0";
-            rows[i+1].cells[5].style.fontWeight = "bold";
-
-
-            rows[i+1].cells[7].innerHTML = "Download";
-            rows[i+1].cells[8].innerHTML = "Delete";
-               
-            rows[i+1].cells[7].style.fontWeight = "bold";
-            rows[i+1].cells[8].style.fontWeight = "bold";
-            rows[i+1].cells[7].style.color = "rgb(105, 125, 239)";
-            rows[i+1].cells[8].style.color ="rgb(224, 101, 101)";
-
-
-
-            var date = new Date().toLocaleString();
-            rows[i+1].cells[6].innerHTML = date;
-            rows[i+1].cells[6].style.fontWeight = "bold";
-            rows[i+1].cells[6].style.color ="#d9d9d9";
-
-          
-            
-        }
-
-
-        var n = {{ n_files }};
-        
-
-        
-        const registered = new Set();
-
-
+        var bar = document.querySelector(".bar")
+        var percentage = document.querySelector(".percentage")
         function poll() {
-            fetch("/pp/{{ id }}").then(function (r) { return r.json(); }).then(function (r) {
-
-
-
-                for (var i = 0; i < n; i++) {
-                    console.log(i)
-                    var bar = document.getElementById("bar" + i.toString())
-                    var percentage = document.getElementById("percentage" + i.toString())
-
-
-                    var fn = r.filename;
-
-                    if (r.progress[i] === 100) {
-
-                        if(!registered.has(i)){
-
-                        registered.add(i);
-
-                        
-                        //window.location = "/v/{{ id }}";
-                        bar.style.width = 100 * 2 + 'px';
-                        percentage.innerHTML = "100%"
-                        var results = 0;
-
-
-                        fetch("/essai").then(function (r) { return r.json(); }).then(function (r) {
-                            // results = r;
-                            console.log("ye", r)});
-
-                        completeTable(i, r);
-
-
-                       
-
-                        }
-                   
-
-
+            fetch("/pp/{{ id }}").then(function(r) { return r.json(); }).then(function(r) {
+                if (r.progress === 100) {
+                    window.location = "/v/{{ id }}";
+                } else {
+                    var p = r.progress;
+                    if (p < 0) {
+                        percentage.innerHTML = "<i>in queue</i>";
+                        p = 0
                     } else {
-                        var p = r.progress[i];
-                        if (p < 0) {
-                            percentage.innerHTML = "<i>in queue</i>";
-                            p = 0
-                        } else {
-                            percentage.innerHTML = p + "%";
-                        }
-                        bar.style.width = p * 2 + 'px';
-                        setTimeout(poll, 1000);
+                        percentage.innerHTML = p + "%";
                     }
-
+                    bar.style.width = p * 5 + 'px';
+                    setTimeout(poll, 1000);
                 }
-
-
-
-
-
             });
         }
 
         poll();
-
-
     </script>
 
 </body>

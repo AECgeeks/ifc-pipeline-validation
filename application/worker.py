@@ -176,12 +176,11 @@ def do_process(id):
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
     tasks = [
-        
         xml_generation_task,
-        geometry_generation_task
-        # svg_generation_task,
-        # glb_optimize_task,
-        # gzip_task
+        geometry_generation_task,
+        svg_generation_task,
+        glb_optimize_task,
+        gzip_task
     ]
     
     tasks_on_aggregate = []
@@ -254,15 +253,26 @@ def do_process(id):
     set_progress(id, elapsed)
 
 
-def process(ids, callback_url):
-    for id in ids:
+def process(ids, callback_url, val=0):
+
+    if val:
+        for id in ids:
+            try:
+                t = threading.Thread(target=lambda: do_process(id))
+                t.start()
+                status = "success"
+            except Exception as e:
+                traceback.print_exc(file=sys.stdout)
+                status = "failure"        
+
+            if callback_url is not None:       
+                r = requests.post(callback_url, data={"status": status, "id": id})
+    else:
         try:
-            t = threading.Thread(target=lambda: do_process(id))
-            t.start()
+            do_process(ids)
             status = "success"
         except Exception as e:
             traceback.print_exc(file=sys.stdout)
             status = "failure"        
-
         if callback_url is not None:       
-            r = requests.post(callback_url, data={"status": status, "id": id})
+            r = requests.post(callback_url, data={"status": status, "id": ids})

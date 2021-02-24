@@ -49,6 +49,8 @@ dropzone = Dropzone(application)
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
+VALIDATION = 1
+VIEWER = 0
 
 if not DEVELOPMENT and os.path.exists("/version"):
     PIPELINE_POSTFIX = "." + open("/version").read().strip()
@@ -88,7 +90,6 @@ def get_main():
     return render_template('index.html')
 
 
-
 def process_upload(filewriter, callback_url=None):
     id = utils.generate_id()
     d = utils.storage_dir_for_id(id)
@@ -104,16 +105,43 @@ def process_upload(filewriter, callback_url=None):
     if DEVELOPMENT:
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
         t.start()
-
-        
+  
     else:
         q.enqueue(worker.process, id, callback_url)
 
     return id
     
 
-
 def process_upload_multiple(files, callback_url=None):
+    id = utils.generate_id()
+    d = utils.storage_dir_for_id(id)
+    os.makedirs(d)
+   
+    file_id = 0
+    session = database.Session()
+    m = database.model(id, '')   
+    session.add(m)
+  
+    for file in files:
+        fn = file.filename
+        filewriter = lambda fn: file.save(fn)
+        filewriter(os.path.join(d, id+"_"+str(file_id)+".ifc"))
+        file_id += 1
+        m.files.append(database.file(id, ''))
+    
+    session.commit()
+    session.close()
+    
+    if DEVELOPMENT:
+        t = threading.Thread(target=lambda: worker.process(id, callback_url))
+        t.start()        
+    else:
+        q.enqueue(worker.process, id, callback_url)
+
+    return id
+
+
+def process_upload_validation(files, callback_url=None):
     ids = []
     for file in files:
         fn = file.filename
@@ -131,14 +159,12 @@ def process_upload_multiple(files, callback_url=None):
         session.close()
     
     if DEVELOPMENT:
-        t = threading.Thread(target=lambda: worker.process(ids, callback_url))
+        t = threading.Thread(target=lambda: worker.process(ids, callback_url, val=1))
         t.start()
     
     return ids
 
 
-
-  
 @application.route('/', methods=['POST'])
 def put_main():
  
@@ -150,14 +176,20 @@ def put_main():
             file = f
             files.append(file)    
 
-       
-    ids = process_upload_multiple(files)
+    if VALIDATION:
+        ids = process_upload_validation(files)
+    elif VIEWER:
+        ids = process_upload_multiple(files)
 
-    id = ""
+    idstr = ""
     for i in ids:
-        id += i
+        idstr += i
 
-    url = url_for('check_viewer', id=id) 
+    if VALIDATION:
+        url = url_for('validate_files', id=idstr) 
+    
+    elif VIEWER:
+        url = url_for('check_viewer', id=idstr) 
 
     if request.accept_mimetypes.accept_json:
         return jsonify({"url":url})
@@ -165,15 +197,21 @@ def put_main():
         return redirect(url)
 
 
+
 @application.route('/p/<id>', methods=['GET'])
 def check_viewer(id):
+    if not utils.validate_id(id):
+        abort(404)
+    return render_template('progress.html', id=id)    
+    
+
+
+
+@application.route('/val/<id>', methods=['GET'])
+def validate_files(id):
     # if not utils.validate_id(id):
     #     abort(404)
-
     n_files = int(len(id)/32)
-
-    filenames = []
-
     all_ids = []
     b = 0
     i = 1
@@ -181,31 +219,23 @@ def check_viewer(id):
     for d in range(n_files):
         token = id[b:a]
         all_ids.append(token)
-        # count += 1
         b = a
-        i+=1
+        i+= 1
         a = 32*i
         
-
-    # print()
-
- 
-    ids = all_ids
     filenames = []
 
-    for i in ids:
+    for i in all_ids:
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
-        # print(model)
         filenames.append(model.filename)
-        # print("verif other ..................................", model.filename)
         session.close()
 
-    return render_template('progress.html', id=id, n_files=n_files, filenames=filenames)    
+    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames)    
     
     
-@application.route('/pp/<id>', methods=['GET'])
-def get_progress(id):
+@application.route('/valprog/<id>', methods=['GET'])
+def get_validation_progress(id):
     if not utils.validate_id(id):
         abort(404)
     
@@ -224,77 +254,25 @@ def get_progress(id):
         i+=1
         a = 32*i
         
-
-    # print()
-
- 
-    ids = all_ids
     model_progresses = []
 
-    for i in ids:
+    for i in all_ids:
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
-        # print(model)
         model_progresses.append(model.progress)
-        # print("verif other ..................................", model.filename)
         session.close()
 
     return jsonify({"progress": model_progresses,"filename":model.filename})
 
-# @application.route('/info/<id>', methods=['GET'])
-# def get_info(id):
-#     # if not utils.validate_id(id):
-#     #     abort(404)
-    
-#     n_ids = int(len(id)/32)
 
-#     count = 0
-#     all_ids = []
-#     b = 0
-#     i = 1
-#     a = 32
-#     for d in range(n_ids):
-#         token = id[b:a]
-#         all_ids.append(token)
-#         # count += 1
-#         b = a
-#         i+=1
-#         a = 32*i
-        
-
-#     print()
-
- 
-#     ids = all_ids
-#     model_progresses = []
-
-#     for i in ids:
-#         session = database.Session()
-#         model = session.query(database.model).filter(database.model.code == i).all()[0]
-#         print(model)
-#         model_progresses.append(model.progress)
-#         print("verif other ..................................", model.filename)
-#         session.close()
-
-#     return jsonify({"filename":model.filename})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@application.route('/pp/<id>', methods=['GET'])
+def get_progress(id):
+    if not utils.validate_id(id):
+        abort(404)
+    session = database.Session()
+    model = session.query(database.model).filter(database.model.code == id).all()[0]
+    session.close()
+    return jsonify({"progress": model.progress})
 
 
 @application.route('/log/<id>.<ext>', methods=['GET'])
@@ -351,8 +329,8 @@ def get_viewer(id):
     )
 
 
-@application.route('/essai')
-def essai():
+@application.route('/reslogs')
+def log_results():
     return jsonify({"Schema": "v", "MVD":"w", "BSdd":"v"})
 
 
