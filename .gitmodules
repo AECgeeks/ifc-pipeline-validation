@@ -1,3 +1,6 @@
 [submodule "application/bimsurfer"]
 	path = application/bimsurfer
 	url = https://github.com/AECgeeks/BIMsurfer2
+[submodule "application/checks/ifc-python-parser"]
+	path = application/checks/ifc-python-parser
+	url = https://github.com/johltn/ifc-python-parser
