@@ -93,17 +93,17 @@
             rows[i + 1].cells[1].appendChild(MVDImg);
             rows[i + 1].cells[2].appendChild(bsddImg);
 
-
             // rows[i+1].style.backgroundColor = "red"; 
             // rows[i+1].cells[5].style.backgroundColor = "green";
 
-            rows[i + 1].cells[5].innerHTML = "View report";
+            rows[i + 1].cells[5].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">View report</a>'
+            rows[i + 1].cells[5].idL = "report";
             rows[i + 1].cells[5].style.color = "#0070C0";
             rows[i + 1].cells[5].style.fontWeight = "bold";
+            rows[i + 1].cells[5].id = "report"
 
-
-            rows[i + 1].cells[7].innerHTML = "Download";
-            rows[i + 1].cells[8].innerHTML = "Delete";
+            rows[i + 1].cells[7].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Download</a>';
+            rows[i + 1].cells[8].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Delete</a>';
 
             rows[i + 1].cells[7].style.fontWeight = "bold";
             rows[i + 1].cells[8].style.fontWeight = "bold";
@@ -141,6 +141,7 @@
 
                             fetch("/reslogs").then(function (r) { return r.json(); }).then(function (r) {
                                 console.log("log received", r)
+                        
                             });
 
                             completeTable(i, r);

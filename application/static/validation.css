@@ -85,10 +85,10 @@ time, mark, audio, video {
 }
 
 
-
-
-
-
+a:visited{
+  color:inherit;
+  text-decoration: none;
+}
 
 
 
