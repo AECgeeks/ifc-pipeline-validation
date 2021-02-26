@@ -59,15 +59,6 @@ mytree = create_tree(rule_tree) # Create the tree (call the function)
 print(RenderTree(mytree).by_attr('id'))
 
 
-
-# def pack_bSDD_prop(prop):
-#     return (prop['propertySet'], prop['name']), prop['dataType'])
-
-
-# def pack_MVD_props(extraction):
-
-
-
 types = get_ifc_types(ifc_file)
 
 built_request = 'https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v2?namespaceUri=http%3A%2F%2Fidentifier.buildingsmart.org%2Furi%2Fbuildingsmart%2Fifc-4.3%2Fclass%2F'
