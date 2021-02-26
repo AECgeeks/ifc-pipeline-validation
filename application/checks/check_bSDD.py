@@ -3,7 +3,7 @@ import json
 import pprint
 import ifcopenshell
 from ifcopenshell.mvd import mvd
-
+import itertools
 
 from anytree import Node, RenderTree
 
@@ -21,7 +21,6 @@ def get_xset_rule(mvd_fn, ifc_type, pset_or_qset):
         if concept_root.entity == ifc_type :
             for c in concept_root.concepts():
                 print('concept name ', c.name)
-  
                 if c.name == pset_or_qset:
                     print("ct name", c.template().name)
                     print("ct dir", dir(c.template()))
@@ -57,8 +56,16 @@ def pack_mvd(mvd_output):
     # print('packing MVD output')
     return list(mvd_output.values())[0], list(mvd_output.values())[1], list(mvd_output.values())[3]
 
-
-
+simple_type_python_mapping = {
+    # @todo should include unicode for Python2
+    "string": str,
+    "integer": int,
+    "real": float,
+    "number": float,
+    "boolean": bool,
+    "logical": bool,  # still not implemented in IfcOpenShell
+    "binary": str,  # maps to a str of "0" and "1"
+}
 
 
 pset = 'Property Sets for Objects'
@@ -78,39 +85,38 @@ ifc_bsdd = {}
 for t in types:
     if t == 'IfcWallStandardCase':
         t = "IfcWall"
-        
         r = requests.get(built_request+ t.lower())
         # ifc_bsdd[t] = json.loads(r.text)
         classification_result = json.loads(r.text)
 
         rule_tree = get_xset_rule(mvd_fn, t, pset)
         print(rule_tree)
-        # for result in mvd.extract_data(rule_tree, ifc_file.by_type(t)[0]):
-        # # print(result)
-        #     for k,v in result.items():
-        #         print(k, v)
-        #     print()
         
         if len(classification_result['classificationProperties']):
-            # for prop in classification_result['classificationProperties']:
-            #     print(prop['propertySet'])
-            #     print(prop['name'])
-            #     print(prop['dataType'])
-
             packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, ifc_file.by_type(t)[0])]
             for pp in packed_output:
-                print(pp)
+                print(pp[2])
+                print(dir(pp[2]))
+                print(pp[2].wrappedValue)
+                print(type(pp[2].wrappedValue))
+                
 
             packed_properties = [pack_classification(p) for p in classification_result['classificationProperties']]
-            for pc in packed_properties:
-                print(pc)
+            # for pc in packed_properties:
+            #     print(pc)
 
-            #packed_output = pack_mvd(mvd.extract_data(rule_tree, ifc_file.by_type(t)[0]))
-            # packed_properties = pack_classification(classification_result['classificationProperties'])
-           
-           
-               
-      
+            to_compare = [packed_output, packed_properties]
+
+            for element in itertools.product(*to_compare):
+                # print(element,"\n")
+                match = element[0][0] == element[1][0] and element[0][1] == element[1][1]
+                if match:
+                    print(element)
+                    print('match ^')
+                    print(type(element[0][2].wrappedValue))
+                    print(simple_type_python_mapping[element[1][2]])
+                    if isinstance(element[0][2].wrappedValue,simple_type_python_mapping[element[1][2]]):
+                        print('property validated')
 
 
 
