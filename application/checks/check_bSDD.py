@@ -4,13 +4,13 @@ import pprint
 import ifcopenshell
 from ifcopenshell.mvd import mvd
 
-import ast
 
 from anytree import Node, RenderTree
 
 ifc_fn = "./ifc-python-parser/files/AC20-Institute-Var-2.ifc"
 #ifc_fn = "./ifc-python-parser/files/test_file.ifc"
 
+ifc_fn = "./ifc-python-parser/files/Duplex_A_20110505.ifc"
 ifc_file = ifcopenshell.open(ifc_fn)
 
 mvd_fn = "./ifcopenshell/mvd/mvd_examples/officials/ReferenceView_V1-2.mvdxml"
@@ -49,12 +49,23 @@ def create_tree(rulepoint, parent_node=None):
         create_tree(node, racine)
     return racine
 
+def pack_classification(classification_props):
+    # print('packing props')
+    return classification_props['propertySet'], classification_props['name'], classification_props['dataType'] 
+
+def pack_mvd(mvd_output):
+    # print('packing MVD output')
+    return list(mvd_output.values())[0], list(mvd_output.values())[1], list(mvd_output.values())[3]
+
+
+
+
 
 pset = 'Property Sets for Objects'
 qset = 'Quantity Sets'
 
 
-rule_tree = get_xset_rule(mvd_fn, 'IfcWall', qset)
+rule_tree = get_xset_rule(mvd_fn, 'IfcWall', pset)
 mytree = create_tree(rule_tree) # Create the tree (call the function)
 print(RenderTree(mytree).by_attr('id'))
 
@@ -72,21 +83,32 @@ for t in types:
         # ifc_bsdd[t] = json.loads(r.text)
         classification_result = json.loads(r.text)
 
-
-        rule_tree = get_xset_rule(mvd_fn, t, qset)
+        rule_tree = get_xset_rule(mvd_fn, t, pset)
         print(rule_tree)
-        for result in mvd.extract_data(rule_tree, ifc_file.by_type(t)[0]):
-        # print(result)
-            for k,v in result.items():
-                print(k, v)
-            print()
-            
+        # for result in mvd.extract_data(rule_tree, ifc_file.by_type(t)[0]):
+        # # print(result)
+        #     for k,v in result.items():
+        #         print(k, v)
+        #     print()
         
         if len(classification_result['classificationProperties']):
-            for prop in classification_result['classificationProperties']:
-                print(prop['propertySet'])
-                print(prop['name'])
-                print(prop['dataType'])
+            # for prop in classification_result['classificationProperties']:
+            #     print(prop['propertySet'])
+            #     print(prop['name'])
+            #     print(prop['dataType'])
+
+            packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, ifc_file.by_type(t)[0])]
+            for pp in packed_output:
+                print(pp)
+
+            packed_properties = [pack_classification(p) for p in classification_result['classificationProperties']]
+            for pc in packed_properties:
+                print(pc)
+
+            #packed_output = pack_mvd(mvd.extract_data(rule_tree, ifc_file.by_type(t)[0]))
+            # packed_properties = pack_classification(classification_result['classificationProperties'])
+           
+           
                
       
 
