@@ -178,9 +178,9 @@ def do_process(id):
     tasks = [
         xml_generation_task,
         geometry_generation_task,
-        svg_generation_task,
-        glb_optimize_task,
-        gzip_task
+        # svg_generation_task,
+        # glb_optimize_task,
+        # gzip_task
     ]
     
     tasks_on_aggregate = []

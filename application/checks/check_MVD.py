@@ -8,20 +8,18 @@ mvd_fn = "./ifcopenshell/mvd/mvd_examples/officials/ReferenceView_V1-2.mvdxml"
 mvd_concept_roots = ifcopenshell.mvd.concept_root.parse(mvd_fn)
 
 for concept_root in mvd_concept_roots:
-    if concept_root.entity == "IfcWall":
-        for c in concept_root.concepts():
-            # print(c.name)
-            # print(c.concept_node)
-            # print(c.rules())
-            # print(c.template().rules)
-            if len(c.template().rules) > 1:
-                attribute_rules = []
-                for rule in c.template().rules:
-                    attribute_rules.append(rule)
-                rules_root = ifcopenshell.mvd.rule("EntityRule",concept_root.entity, attribute_rules)
-            else:
-                rules_root = c.template().rules[0]
+    print(" ",concept_root)
+    entity_type = concept_root.entity
+    if len(ifc_file.by_type(entity_type)):
+        entity_instances = ifc_file.by_type(entity_type)
 
-            d = mvd.extract_data( rules_root, ifc_file.by_type("IfcWall")[0])
+        for concept in concept_root.concepts():
+            print("   ", concept.template())
+            for rule in concept.template().rules:
+                print("     ", rule)
+                for e in entity_instances:
+                    extraction = mvd.extract_data(rule,e)
+                    print(extraction)
+
 
            

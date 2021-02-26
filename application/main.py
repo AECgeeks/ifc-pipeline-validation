@@ -329,8 +329,12 @@ def get_viewer(id):
     )
 
 
-@application.route('/reslogs')
-def log_results():
+@application.route('/reslogs/<i>/<ids>')
+def log_results(i, ids):
+    # d = utils.storage_dir_for_id(id)
+    # input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
+    print("i", i)
+    print("ids", ids)
     return jsonify({"Schema": "v", "MVD":"w", "BSdd":"v"})
 
 
