@@ -111,12 +111,9 @@ for t in types:
                     print("          ", ck, cv)
                     log_to_construct[t][instance.GlobalId].append((ck, cv,))
             
-
-
-
 print(log_to_construct)      
 
-with open('ogs/bsddlog.json', 'w', encoding='utf-8') as f:
+with open('./logs/bsddlog.json', 'w', encoding='utf-8') as f:
     json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
 
 
