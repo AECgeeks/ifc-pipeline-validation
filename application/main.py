@@ -393,11 +393,8 @@ def view_report(id,ids):
     with open(f) as json_file:
         data = json.load(json_file)
 
-
-    print(data)  
-
     
-    return render_template('report.html',f = json.dumps(data))
+    return render_template('report.html',f = data)
 
 
 @application.route('/m/<fn>', methods=['GET'])
