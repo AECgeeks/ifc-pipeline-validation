@@ -371,9 +371,33 @@ def log_results(i, ids):
     return jsonify(result_logs)
 
 
-@application.route('/report')
-def view_report():
-     return render_template('report.html')
+@application.route('/report/<id>/<ids>/')
+def view_report(id,ids):
+    n_ids = int(len(ids)/32)
+
+    all_ids = []
+    b = 0
+    j = 1
+    a = 32
+    for d in range(n_ids):
+        token = ids[b:a]
+        all_ids.append(token)
+        # count += 1
+        b = a
+        j+=1
+        a = 32*j
+    
+
+
+    f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
+    with open(f) as json_file:
+        data = json.load(json_file)
+
+
+    print(data)  
+
+    
+    return render_template('report.html',f = json.dumps(data))
 
 
 @application.route('/m/<fn>', methods=['GET'])

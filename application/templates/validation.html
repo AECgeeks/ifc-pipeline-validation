@@ -100,8 +100,12 @@
             // rows[i+1].style.backgroundColor = "red"; 
             // rows[i+1].cells[5].style.backgroundColor = "green";
 
-            rows[i + 1].cells[5].innerHTML = '<a href="{{ url_for("view_report") }}" style ="text-decoration:none;">View report</a>'
-            rows[i + 1].cells[5].idL = "report";
+            rows[i + 1].cells[5].innerHTML = '<a id="rep" style ="text-decoration:none;">View reportt</a>'
+            var rep = document.getElementById("rep");
+            console.log("rep", rep)
+            console.log( rep.href)
+            rep.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids
+
             rows[i + 1].cells[5].style.color = "#0070C0";
             rows[i + 1].cells[5].style.fontWeight = "bold";
             rows[i + 1].cells[5].id = "report"
@@ -136,6 +140,8 @@
                     var fn = r.filename;
 
                     if (r.progress[i] === 100) {
+                        console.log("Page location is " + window.location.href)
+                        // window.location="http://127.0.0.1:5000/report/5";
 
                         if (!registered.has(i)) {
 
