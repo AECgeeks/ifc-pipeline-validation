@@ -38,7 +38,7 @@ time, mark, audio, video {
   #main{
     display:flex;
     align-items:center;
-    justify-content:center;
+    /* justify-content:center; */
     flex-direction:column;
     /* background-color: rgb(182, 241, 133); */
     /* height:600px; */

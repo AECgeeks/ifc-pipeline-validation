@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>buildingSMART IFC Validation Service</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script type="text/javascript">
+        var isIE = !!window.MSInputMethodContext;
+        if (isIE) {
+            document.write('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
+            document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
+        }
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.css') }}">
+
+<body>
+
+    <div id="navbar">
+
+        <div style="padding-left: 5px;" id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
+        </div>
+
+        <div id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
+        </div>
+
+    </div>
+
+
+    <div id="main">
+
+        <div id="syntax">Syntax</div>
+        <div id="schema">Schema</div>
+        <div id="mvd">MVD</div>
+        <div id="bsdd">bSDD</div>
+
+
+    </div>
+        
+</body>
+
+</html>

@@ -76,26 +76,31 @@
     <script>
 
         const processed_files = new Set();
-
+        icons = {'v':'valid', 'w':'warning', 'i':'invalid'}
 
         function completeTable(i, results, ids, rows) {
 
             fetch("/reslogs/" + i + "/" + ids).then(function (r) { return r.json(); }).then(function (r) {
                 console.log("log received", r)
+                
                 var schemaImg = document.createElement("img");
-                schemaImg.src = "/static/icons/warning.png";
+                schemaImg.src = "/static/icons/"+ icons[r['schemalog']]+".png";
+
                 var MVDImg = document.createElement("img");
-                MVDImg.src = "/static/icons/valid.png";
+                MVDImg.src = "/static/icons/"+ icons[r['mvdlog']]+".png";
+
                 var bsddImg = document.createElement("img");
-                bsddImg.src = "/static/icons/invalid.png";
+                bsddImg.src = "/static/icons/"+ icons[r['bsddlog']]+".png";
+
                 rows[i + 1].cells[0].appendChild(schemaImg);
                 rows[i + 1].cells[1].appendChild(MVDImg);
                 rows[i + 1].cells[2].appendChild(bsddImg);
             });
+
             // rows[i+1].style.backgroundColor = "red"; 
             // rows[i+1].cells[5].style.backgroundColor = "green";
 
-            rows[i + 1].cells[5].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">View report</a>'
+            rows[i + 1].cells[5].innerHTML = '<a href="{{ url_for("view_report") }}" style ="text-decoration:none;">View report</a>'
             rows[i + 1].cells[5].idL = "report";
             rows[i + 1].cells[5].style.color = "#0070C0";
             rows[i + 1].cells[5].style.fontWeight = "bold";
@@ -142,8 +147,6 @@
                             var rows = document.getElementsByTagName("table")[0].rows;
                             completeTable(i, r, ids, rows);
 
-
-
                         }
 
                     } else {
@@ -155,10 +158,12 @@
                             percentage.innerHTML = p + "%";
                         }
                         bar.style.width = p * 2 + 'px';
-                        setTimeout(poll, 3000);
+                        
                     }
 
                 }
+
+                setTimeout(poll, 1000);
 
             });
         }

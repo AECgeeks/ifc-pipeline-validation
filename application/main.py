@@ -88,6 +88,7 @@ if not DEVELOPMENT:
 @application.route('/', methods=['GET'])
 def get_main():
     return render_template('index.html')
+    #return send_file("bsddlog.json", mimetype='text/plain')
 
 
 def process_upload(filewriter, callback_url=None):
@@ -142,6 +143,7 @@ def process_upload_multiple(files, callback_url=None):
 
 
 def process_upload_validation(files, callback_url=None):
+    
     ids = []
     for file in files:
         fn = file.filename
@@ -161,6 +163,9 @@ def process_upload_validation(files, callback_url=None):
     if DEVELOPMENT:
         t = threading.Thread(target=lambda: worker.process(ids, callback_url, val=1))
         t.start()
+    else:
+        q.enqueue(worker.process, ids, callback_url)
+
     
     return ids
 
@@ -335,7 +340,40 @@ def log_results(i, ids):
     # input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
     print("i", i)
     print("ids", ids)
-    return jsonify({"Schema": "v", "MVD":"w", "BSdd":"v"})
+    n_ids = int(len(ids)/32)
+
+    all_ids = []
+    b = 0
+    j = 1
+    a = 32
+    for d in range(n_ids):
+        token = ids[b:a]
+        all_ids.append(token)
+        # count += 1
+        b = a
+        j+=1
+        a = 32*j
+
+    result_logs = {  
+        'syntaxlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_syntax.json"),
+        'schemalog': os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_schema.json"),
+        'mvdlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_mvd.json"),
+        'bsddlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_bsdd.json")
+
+    }
+
+    for k, v in result_logs.items():
+        with open(v) as json_file:
+            data = json.load(json_file)
+            result_logs[k] = list(data.values())[0]
+    
+    # return jsonify({"Schema": "v", "MVD":"w", "BSdd":"v"})
+    return jsonify(result_logs)
+
+
+@application.route('/report')
+def view_report():
+     return render_template('report.html')
 
 
 @application.route('/m/<fn>', methods=['GET'])

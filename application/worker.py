@@ -75,13 +75,42 @@ class task(object):
         self.sub_progress(100)
 
 
+class syntax_validation_task(task):
+    est_time = 1
+
+    def execute(self, directory, id):
+        f = open(os.path.join(directory, "dresult_syntax.json"), "w")
+        check_program = os.path.join(os.getcwd() + "\checks\\ifc-python-parser\\", "parse_file.py")
+        subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
+
+
 class ifc_validation_task(task):
     est_time = 1
 
     def execute(self, directory, id):
-        with open(os.path.join(directory, "log.json"), "w") as f:
-            subprocess.call([sys.executable, "-m", "ifcopenshell.validate", id + ".ifc", "--json"], cwd=directory, stdout=f)
+        f = open(os.path.join(directory, "dresult_schema.json"), "w")
+        check_program = os.path.join(os.getcwd() + "\checks\\", "validate.py")
+        subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
 
+class mvd_validation_task(task):
+    est_time =1
+
+    def execute(self, directory, id):
+        check_program = os.path.join(os.getcwd() + "\checks\\", "check_MVD.py")
+        outname = id +"_mvd.txt"
+      
+        with open(os.path.join(directory, outname), "w") as f:
+            subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
+
+class bsdd_validation_task(task):
+    est_time =1
+
+    def execute(self, directory, id):
+        check_program = os.path.join(os.getcwd() + "\checks\\", "check_bSDD.py")
+        outname = id +"_bsdd.txt"
+        with open(os.path.join(directory, outname), "w") as f:
+            subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
+ 
 
 class xml_generation_task(task):
     est_time = 1
@@ -176,8 +205,12 @@ def do_process(id):
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
     tasks = [
-        xml_generation_task,
-        geometry_generation_task,
+        syntax_validation_task,
+        ifc_validation_task,
+        bsdd_validation_task,
+        mvd_validation_task,
+        # xml_generation_task,
+        # geometry_generation_task,
         # svg_generation_task,
         # glb_optimize_task,
         # gzip_task

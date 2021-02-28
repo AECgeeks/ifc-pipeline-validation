@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+
 import sys
 import json
 import functools
@@ -23,6 +24,8 @@ class ValidationError(Exception):
 
 
 log_entry_type = namedtuple("log_entry_type", ("level", "message", "instance"))
+
+passed = 1
 
 
 class json_logger:
@@ -140,13 +143,16 @@ def validate(f, logger):
             e = "Entity %s is abstract" % entity.name()
             if hasattr(logger, "set_instance"):
                 logger.error(e)
+                passed = 0
             else:
                 logger.error("In %s\n%s", inst, e)
+                passed = 0
 
         for attr, val, is_derived in zip(entity.all_attributes(), inst, entity.derived()):
 
             if val is None and not (is_derived or attr.optional()):
                 logger.error("Attribute %s.%s not optional", entity, attr)
+                passed = 0
 
             if val is not None:
                 attr_type = attr.type_of_attribute()
@@ -155,8 +161,10 @@ def validate(f, logger):
                 except ValidationError as e:
                     if hasattr(logger, "set_instance"):
                         logger.error(str(e))
+                        passed = 0
                     else:
                         logger.error("In %s\n%s", inst, e)
+                        passed = 0
 
         for attr in entity.all_inverse_attributes():
             val = getattr(inst, attr.name())
@@ -165,13 +173,17 @@ def validate(f, logger):
             except ValidationError as e:
                 if hasattr(logger, "set_instance"):
                     logger.error(str(e))
+                    passed = 0
                 else:
                     logger.error("In %s\n%s", inst, e)
+                    passed = 0
 
 
 if __name__ == "__main__":
     import sys
     import logging
+    import os
+    import json
 
     filenames = [x for x in sys.argv[1:] if not x.startswith("--")]
     flags = set(x for x in sys.argv[1:] if x.startswith("--"))
@@ -187,6 +199,20 @@ if __name__ == "__main__":
 
         print("Validating", fn, file=sys.stderr)
         validate(f, logger)
+
+
+                
+        jsonresultout = os.path.join(os.getcwd(), "result_schema.json")
+
+        if passed == 1:
+            mvd_result = {'schema':'v'}
+        elif passed == 0:
+            mvd_result = {'schema':'i'}
+
+
+        with open(jsonresultout, 'w', encoding='utf-8') as f:
+            json.dump(mvd_result, f, ensure_ascii=False, indent=4)
+
 
         if "--json" in flags:
             print("\n".join(json.dumps(x, default=str) for x in logger.statements))
