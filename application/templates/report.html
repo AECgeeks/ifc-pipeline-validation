@@ -16,6 +16,13 @@
         var scores = {{f|tojson}}
         console.log(scores);
 
+        var result_log = {{result_logs|tojson}}
+        console.log(result_log)
+
+
+
+        
+
     </script>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.css') }}">
@@ -42,31 +49,64 @@
 
         <div id="syntax" class="result">
 
-            <h2 class="box-title">Syntax</h2>
-            <h3 class="box-status"> Status: Failed</h3>
+            <div class="box-title">
+                <h2>Syntax</h2>
+                <h2> - </h2>
+                <h2 style="font-style: italic;">STEP</h2>
+            </div>
+           
+            <div id="checking-box">
+               
+            <p>Status:</p>
+            <p id="syntax-status"></p> 
+            </div>
            
 
         </div>
 
         <div id="schema" class="result">
-            <h2 class="box-title">Schema</h2>
-            <h3 class="box-specific">IFC4</h3>
-            <h3 class="box-status">Status</h3>
+            <div class="box-title">
+                <h2>Schema</h2>
+                <h2> - </h2>
+                <h2 style="font-style: italic;">IFC4</h2>
+            </div>
+            <div id="checking-box">
+               
+            <p> Status:</p>
+            <p id="schema-status"></p> 
+            </div>
+           
+
         </div>
-
-
         <div id="mvd" class="result">
-            <h2 class="box-title">MVD</h2>
-            <h3 class="box-specific">ReferenceView.mvdXML</h3>
-            <h3 class="box-status"> Status</h3>
+            <div class="box-title">
+                <h2>MVD</h2>
+                <h2> - </h2>
+                <h2 style="font-style: italic;">ReferenceView</h2>
+            </div>
+            <div id="checking-box">
+               
+            <p> Status:</p>
+            <p id="mvd-status"></p> 
+            </div>
+           
 
         </div>
+    
+     
 
         <div id="bsdd" class="result">
-            <h2 class="box-title">bSDD</h2>
-            <h3 class="box-specific">IFC 4-3</h3>
-            <h3 class="box-status"> Status</h3>
-
+            <div class="box-title">
+                <h2>bSDD</h2>
+                <h2> - </h2>
+                <h2 style="font-style: italic;">IFC4</h2>
+            </div>
+            <div id="checking-box">
+               
+            <p>Status:</p>
+            <p id="bsdd-status"></p> 
+            </div>
+           
             <table>
                 <th>Classification</th>
                 <th>Passed</th>
@@ -77,7 +117,7 @@
                     {% if sum > 0 %}
                         {% set passed = 100*value['v']/sum %}
                         {% set passed = passed|round|int %}
-                        <td>{{key}}</td>
+                        <td id="ifctype">{{key}}</td>
                         <td>{{passed}}%</td>
                         
                     {% endif %}
@@ -102,5 +142,41 @@
     </div>
         
 </body>
+
+<script>
+
+
+var toValidate = ['syntax', 'schema', 'mvd', 'bsdd']
+
+for(var i=0;i<toValidate.length;i++){
+    var prefix = toValidate[i];
+
+    var syntax = result_log[prefix + 'log']
+
+    var statusbox = document.getElementById(prefix + "-status");
+    if(syntax == 'i'){
+        console.log(statusbox)
+        statusbox.innerHTML = "Failed";
+        statusbox.style.color = "red";
+        statusbox.style.fontWeight = "bold";
+
+        var bsddbox = document.getElementById(prefix)
+        bsddbox.style.backgroundColor = 'rgb(255, 184, 184)';
+        
+    } else{
+        statusbox.innerHTML = "Passed"
+        statusbox.style.color = "green";
+        statusbox.style.fontWeight = "bold";
+        
+        var bsddbox = document.getElementById(prefix)
+        bsddbox.style.backgroundColor = 'rgb(211, 237, 198)';
+
+
+    }
+
+}
+    
+
+</script>
 
 </html>

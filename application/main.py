@@ -412,7 +412,23 @@ def view_report(id,ids):
                     intermediate_scores[k]['v'] += 1
 
     
-    return render_template('report.html',f = intermediate_scores)
+
+    result_logs = {  
+        'syntaxlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_syntax.json"),
+        'schemalog': os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_schema.json"),
+        'mvdlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_mvd.json"),
+        'bsddlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_bsdd.json")
+
+    }
+
+    for k, v in result_logs.items():
+        with open(v) as json_file:
+            data = json.load(json_file)
+            result_logs[k] = list(data.values())[0]
+
+
+    
+    return render_template('report.html',f = intermediate_scores, result_logs=result_logs)
 
 
 @application.route('/m/<fn>', methods=['GET'])

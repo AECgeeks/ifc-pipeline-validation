@@ -51,8 +51,10 @@ time, mark, audio, video {
   .result{
     font-family: calibri;
     /* min-height: 200px; */
-    width:80%;
+    width:50%;
     background-color:khaki; 
+    border-radius: 5px;
+    padding:10px;
   }
 
 
@@ -64,9 +66,11 @@ time, mark, audio, video {
 }
 
 .box-title{
+  display:flex;
   font-family: calibri;
   font-size:27px;
-  margin-left: 5px;
+  gap: 2px;
+  /* margin-left: 5px; */
   /* text-align: center; */
 }
 
@@ -87,22 +91,19 @@ time, mark, audio, video {
 
 }
 
-  #main2{
-    display:flex;
-    align-items:center;
-    justify-content:center;
 
 
-    background-image: url('./icons/background.jpg');
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 90vh;
-    background-size: cover;
-   
-    /* height:600px; */
-    /* height:800px; */
-    
-  }
+#checking-box{
+  display: flex;
+  gap: 5px;
+
+}
+
+
+
+#ifctype{
+  text-align: left;
+}
 
 #submitzone{
   display:flex;
@@ -131,6 +132,9 @@ a:visited{
 }
 
 
+table{
+  width:50%;
+}
 
 table, th, td {
     border: 1px solid rgba(161, 161, 161, 0.24);
@@ -140,16 +144,28 @@ table, th, td {
     border-left: none;
     border-right: none;
 
+    align-self: center;
+
    
   }
 
+th{
+  font-weight:bold;
+}
 
+
+#bsdd{
+  display: flex;
+
+  flex-direction: column;
+}
 
   td{
    
-        text-align: left; 
+        /* text-align: left;  */
+        text-align:center;
         vertical-align: middle;
-        padding:25px;
+        /* padding:25px; */
    
   }
 
@@ -163,30 +179,12 @@ table, th, td {
 }
 
 
-  .progress .percentage {
-    position: absolute;
-    width: 200px;
-    text-align: center;
-    border-radius
-   
-}
-
-.percentage{
-
-  color:rgb(105, 125, 239);
-  font-weight: bold;
-  border-radius: 25px;
-}
+ 
 
 
 
-.progress .bar {
-    height: 12px;
-    /* border-right: solid 1px #aaa; */
-    background: rgb(105, 125, 239);
-    width: 0px;
-    border-radius: 25px;
-}
+
+
 
 
 @keyframes spin {
