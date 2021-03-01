@@ -13,7 +13,7 @@
             document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
         }
 
-        var scores = "{{f}}"
+        var scores = {{f|tojson}}
         console.log(scores);
 
     </script>
@@ -38,10 +38,65 @@
 
     <div id="main">
 
-        <div id="syntax">Syntax</div>
-        <div id="schema">Schema</div>
-        <div id="mvd">MVD</div>
-        <div id="bsdd">bSDD</div>
+        <div id="title">Report</div>
+
+        <div id="syntax" class="result">
+
+            <h2 class="box-title">Syntax</h2>
+            <h3 class="box-status"> Status: Failed</h3>
+           
+
+        </div>
+
+        <div id="schema" class="result">
+            <h2 class="box-title">Schema</h2>
+            <h3 class="box-specific">IFC4</h3>
+            <h3 class="box-status">Status</h3>
+        </div>
+
+
+        <div id="mvd" class="result">
+            <h2 class="box-title">MVD</h2>
+            <h3 class="box-specific">ReferenceView.mvdXML</h3>
+            <h3 class="box-status"> Status</h3>
+
+        </div>
+
+        <div id="bsdd" class="result">
+            <h2 class="box-title">bSDD</h2>
+            <h3 class="box-specific">IFC 4-3</h3>
+            <h3 class="box-status"> Status</h3>
+
+            <table>
+                <th>Classification</th>
+                <th>Passed</th>
+                {% for key, value in f.items() %}
+                <tr>
+
+                    {% set sum = value['i'] + value['t'] + value['v'] %}
+                    {% if sum > 0 %}
+                        {% set passed = 100*value['v']/sum %}
+                        {% set passed = passed|round|int %}
+                        <td>{{key}}</td>
+                        <td>{{passed}}%</td>
+                        
+                    {% endif %}
+                {% endfor %}
+        
+    
+
+                </tr>
+
+               
+            </table>
+
+         
+
+            
+
+
+        </div>
+
 
 
     </div>

@@ -37,16 +37,55 @@ time, mark, audio, video {
 
   #main{
     display:flex;
-    align-items:center;
-    /* justify-content:center; */
+    align-items:center; 
+    justify-content:center; 
     flex-direction:column;
     /* background-color: rgb(182, 241, 133); */
     /* height:600px; */
     /* height:800px; */
+    gap: 5px;
     
   }
 
 
+  .result{
+    font-family: calibri;
+    /* min-height: 200px; */
+    width:80%;
+    background-color:khaki; 
+  }
+
+
+
+#title{
+  text-align: center;
+  font-family: calibri;
+  font-size: 40px;
+}
+
+.box-title{
+  font-family: calibri;
+  font-size:27px;
+  margin-left: 5px;
+  /* text-align: center; */
+}
+
+
+.box-specific{
+  font-family: calibri;
+  font-size:20px;
+  margin-left: 5px;
+  text-indent:20px;
+
+}
+
+.box-status{
+  font-family: calibri;
+  font-size:20px;
+  margin-left: 5px;
+  text-indent:25px;
+
+}
 
   #main2{
     display:flex;

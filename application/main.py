@@ -390,11 +390,29 @@ def view_report(id,ids):
 
 
     f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
+
     with open(f) as json_file:
         data = json.load(json_file)
 
+    intermediate_scores =  {}
+
+
+    for k,v in data.items():
+        d = {'v':0, 'i':0,'t':0}
+        intermediate_scores[k] = d
+
+        for m in v.values():
+            for p in m:
+                if p[1] == "Not present":
+                    intermediate_scores[k]['i'] += 1
+                elif p[1] == "wrong type":
+                    intermediate_scores[k]['t'] += 1
+
+                else:
+                    intermediate_scores[k]['v'] += 1
+
     
-    return render_template('report.html',f = data)
+    return render_template('report.html',f = intermediate_scores)
 
 
 @application.route('/m/<fn>', methods=['GET'])
