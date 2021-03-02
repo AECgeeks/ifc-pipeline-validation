@@ -39,37 +39,36 @@
                 <th>MVD</th>
                 <th>bSDD</th>
                 <th>File format</th>
-                <!-- <th></th> -->
-
+ 
             </tr>
             {% for i in range(0, n_files) %}
-            {% set percentageid = "percentage" + i|string %}
-            {% set barid = "bar" + i|string %}
-            {% set fn = filenames[i]|string %}
-            
-            {% set format = filenames[i][-3::]|string %}
+                {% set percentageid = "percentage" + i|string %}
+                {% set barid = "bar" + i|string %}
+                {% set fn = filenames[i]|string %}
+                
+                {% set format = filenames[i][-3::]|string %}
 
-            <tr>
+                <tr>
 
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><img src="/static/icons/ifc.png" /></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><img src="/static/icons/ifc.png" /></td>
 
-                <td style="color:royalblue;font-weight: bold;">{{fn}}</td>
-                <td></td>
-                <td>
+                    <td style="color:royalblue;font-weight: bold;">{{fn}}</td>
+                    <td></td>
+                    <td>
 
-                    <div class='progress'>
-                        <div id={{barid}} class='bar'></div>
-                    </div>
+                        <div class='progress'>
+                            <div id={{barid}} class='bar'></div>
+                        </div>
 
-                </td>
-                <td>
-                    <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
-                </td>
-                <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
-            </tr>
+                    </td>
+                    <td>
+                        <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
+                    </td>
+                    <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
+                </tr>
             {% endfor %}
         </table>
     </div>
@@ -98,15 +97,11 @@
                 rows[i + 1].cells[2].appendChild(bsddImg);
             });
 
-            // rows[i+1].style.backgroundColor = "red"; 
-            // rows[i+1].cells[5].style.backgroundColor = "green";
-
-            //rows[i + 1].cells[5].innerHTML = '<a id="rep" style ="text-decoration:none;">View report</a>'
 
             var repText = document.createElement("a");
+            repText.id ="report"
             repText.style.textDecoration = "none";
-            repText.style.target = "_blank";
-            repText.innerHTML = "View"
+            repText.innerHTML = "View report"
             var fn = rows[i + 1].cells[4].innerHTML;
             var st = window.location.href;
             console.log(st.split('/')[2]);
@@ -114,8 +109,6 @@
             
             console.log("baseURL", baseUrl)
             var url = "/report/"+ i+"/"+ids + "/" + fn;
-
-            //repText.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn;
             
             repText.href = url;
 
@@ -125,18 +118,6 @@
 
             console.log(repText);
 
-            // var rep = document.getElementById("rep");
-            // console.log("rep", rep)
-            // console.log( rep.href)
-           
-            
-            
-            // console.log("FN", fn);
-
-            // // rep.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn;
-            // //rows[i + 1].cells[5].innerHTML.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn;
-            // rows[i + 1].cells[5].innerHTML.setAttribute('href', "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn);
-            // console.log( "lala", rows[i + 1].cells[5].innerHTML);
 
             rows[i + 1].cells[5].style.color = "#0070C0";
             rows[i + 1].cells[5].style.fontWeight = "bold";
@@ -165,7 +146,7 @@
             fetch("/valprog/{{ id }}").then(function (r) { return r.json(); }).then(function (r) {
                 var ids = '{{id}}';
 
-                // console.log("progress ", r.progress);
+  
 
                 for (var i = 0; i < n; i++) {
                     var bar = document.getElementById("bar" + i.toString())
@@ -174,10 +155,6 @@
                     var fn = r.filename;
 
                     if (r.progress[i] === 100) {
-                        console.log("Page location is " + window.location.href)
-                        var st = window.location.href;
-                        console.log(st.split('/')[2]);
-                        // window.location="http://127.0.0.1:5000/report/5";
 
                         if (!registered.has(i)) {
 

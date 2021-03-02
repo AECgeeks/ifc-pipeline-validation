@@ -7,8 +7,6 @@ import itertools
 import sys
 import os 
 
-from anytree import Node, RenderTree
-
 
 ifc_fn = sys.argv[1]
 ifc_file = ifcopenshell.open(ifc_fn)
@@ -18,7 +16,7 @@ mvd_fn= os.path.join(os.path.dirname(__file__), "ifcopenshell/mvd/mvd_examples/o
 def get_xset_rule(mvd_fn, ifc_type, pset_or_qset):
     mvd_concept_roots = ifcopenshell.mvd.concept_root.parse(mvd_fn)
     for concept_root in mvd_concept_roots:
-        if concept_root.entity == ifc_type:
+        if concept_root.entity == "IfcWall": #Modify mvdxml parsing to rather loop through CT
             for c in concept_root.concepts():
                 if c.name == pset_or_qset:
                     for r in c.template().rules:
@@ -29,17 +27,7 @@ def get_xset_rule(mvd_fn, ifc_type, pset_or_qset):
 def get_ifc_types(file):
     return {e.is_a() for e in file.by_type("IfcBuildingElement")}
 
-def create_tree(rulepoint, parent_node=None):
-    #Function to create a tree of the Rules of the ConceptTemplates
-    if parent_node:
-        racine = Node(rulepoint,id=rulepoint.attribute, parent=parent_node)
-    else:
-        racine = Node(rulepoint, id=rulepoint.attribute)
 
-    for node in rulepoint.nodes:
-
-        create_tree(node, racine)
-    return racine
 
 def pack_classification(classification_props):
     return classification_props['propertySet'], classification_props['name'], classification_props['dataType'] 
@@ -66,8 +54,6 @@ pset = 'Property Sets for Objects'
 qset = 'Quantity Sets'
 
 rule_tree = get_xset_rule(mvd_fn, 'IfcWall', pset)
-mytree = create_tree(rule_tree) # Create the tree (call the function)
-# print(RenderTree(mytree).by_attr('id'))
 
 types = get_ifc_types(ifc_file)
 
@@ -77,19 +63,18 @@ ifc_bsdd = {}
 log_to_construct = {}
 
 for t in types:
-    print(t)
-    log_to_construct[t] = {}
-    # t = "IfcDoor"
-    r = requests.get(built_request+ t.lower())
-    # ifc_bsdd[t] = json.loads(r.text)
-    classification_result = json.loads(r.text) #r.json
+    if t == "IfcWallStandardCase":
+        t = "IfcWall"
 
+    log_to_construct[t] = {}
+    r = requests.get(built_request+ t.lower())
+    classification_result = json.loads(r.text) 
     rule_tree = get_xset_rule(mvd_fn, t, pset)
-    # print(rule_tree)
     
     if 'classificationProperties' in classification_result.keys():
         packed_properties = [pack_classification(p) for p in classification_result['classificationProperties'] if not p['propertySet'].startswith("Qto")]
         checking = {el:"Not present" for el in packed_properties}
+
         for instance in ifc_file.by_type(t):
             print("    ", instance.GlobalId)
             log_to_construct[t][instance.GlobalId] = []
@@ -111,12 +96,13 @@ for t in types:
                     print("          ", ck, cv)
                     log_to_construct[t][instance.GlobalId].append((ck, cv,))
                 
-                else:
-                    passed = 0
-            
-   
+          
+            else:
+                passed = 0
 
-jsonout = os.path.join(os.path.dirname(__file__), "logs/ltest.txt")
+
+
+
 jsonout = os.path.join(os.getcwd(), "dresult_bsdd.json")
 
 with open(jsonout, 'w', encoding='utf-8') as f:

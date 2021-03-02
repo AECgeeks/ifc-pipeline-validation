@@ -1,120 +1,85 @@
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
 }
 
-
-
-
-#navbar{
-    display: flex;
-
-    align-items:center;
-    justify-content: space-between;
-
-    height: 10vh;
-    width:100%;
-    /* background-color:green */
-  }
-
-
-
-  #main{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    /* background-color: rgb(182, 241, 133); */
-    /* height:600px; */
-    /* height:800px; */
-    
-  }
-
-
-
-  #main2{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-
-    background-image: url('./icons/background.jpg');
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 90vh;
-    background-size: cover;
-   
-    /* height:600px; */
-    /* height:800px; */
-    
-  }
-
-#submitzone{
-  display:flex;
-  flex-direction: column;
+#navbar {
+  display: flex;
   align-items: center;
-  background-color: rgb(255, 255, 255);
-  padding:10px;
-  justify-content: space-evenly;
-  gap: 15px;
-  /* max-width:40%; */
-
+  justify-content: space-between;
+  height: 10vh;
+  width: 100%;
+  /* background-color:green */
 }
 
-
-#submit{
-
-  padding: 10px 20px; 
-  border-radius:5px; 
-  width:auto;
+#main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* background-color: rgb(182, 241, 133); */
+  /* height:600px; */
+  /* height:800px; */
 }
 
-
-a:visited{
-  color:inherit;
+#report {
+  color: inherit;
   text-decoration: none;
 }
 
+#main2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('./icons/background.jpg');
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 90vh;
+  background-size: cover;
+  /* height:600px; */
+  /* height:800px; */
+}
 
+#submitzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  justify-content: space-evenly;
+  gap: 15px;
+  /* max-width:40%; */
+}
+
+#submit {
+  padding: 10px 20px;
+  border-radius: 5px;
+  width: auto;
+}
+
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
 
 table, th, td {
-    border: 1px solid rgba(161, 161, 161, 0.24);
-    border-collapse: collapse;
-    font-family:'Calibri';
+  border: 1px solid rgba(161, 161, 161, 0.24);
+  border-collapse: collapse;
+  font-family: 'Calibri';
+  border-left: none;
+  border-right: none;
+}
 
-    border-left: none;
-    border-right: none;
+td {
+  text-align: left;
+  vertical-align: middle;
+  padding: 25px;
+}
 
-   
-  }
-
-
-
-  td{
-   
-        text-align: left; 
-        vertical-align: middle;
-        padding:25px;
-   
-  }
-
-  
 .progress {
   width: 200px;
   height: 12px;
@@ -123,32 +88,26 @@ table, th, td {
   background-color: rgba(194, 194, 194, 0.5);
 }
 
-
-  .progress .percentage {
-    position: absolute;
-    width: 200px;
-    text-align: center;
-    border-radius
-   
+.progress .percentage {
+  position: absolute;
+  width: 200px;
+  text-align: center;
+  border-radius
 }
 
-.percentage{
-
-  color:rgb(105, 125, 239);
+.percentage {
+  color: rgb(105, 125, 239);
   font-weight: bold;
   border-radius: 25px;
 }
 
-
-
 .progress .bar {
-    height: 12px;
-    /* border-right: solid 1px #aaa; */
-    background: rgb(105, 125, 239);
-    width: 0px;
-    border-radius: 25px;
+  height: 12px;
+  /* border-right: solid 1px #aaa; */
+  background: rgb(105, 125, 239);
+  width: 0px;
+  border-radius: 25px;
 }
-
 
 @keyframes spin {
   to {
@@ -157,28 +116,34 @@ table, th, td {
 }
 
 .log table {
-    border-collapse: collapse;
-    border-radius: 16px;
-    overflow: hidden;
-    width: 100%;
-    border: 0;
+  border-collapse: collapse;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  border: 0;
 }
+
 .log td {
-    padding-left: 10px;
+  padding-left: 10px;
 }
+
 .log tr {
-    background: #f5f5f5;
+  background: #f5f5f5;
 }
+
 .log table thead tr {
   height: 60px;
   background: #ccc;
 }
+
 .log table tbody tr {
   height: 50px;
 }
+
 .log th, .log td {
   border: none;
 }
+
 .log tr:nth-child(2n) {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }

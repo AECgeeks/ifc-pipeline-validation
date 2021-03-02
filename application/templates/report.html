@@ -125,6 +125,12 @@
                         {% set passed = passed|round|int %}
                         <td id="ifctype">{{key}}</td>
                         <td>{{passed}}%</td>
+                    
+                    {% else %}
+                        <td id="ifctype">{{key}}</td>
+                        {% set passed = 100*value['v'] %}
+                        <td>{{passed}}%</td>
+                    
                         
                     {% endif %}
                 {% endfor %}
