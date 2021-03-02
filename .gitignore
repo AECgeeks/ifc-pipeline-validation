@@ -16,4 +16,5 @@ application/static/navbar/
 application/static/test.jpg
 application/checks/ifcopenshell/
 application/checks/logs/
+application/checks/examples/
 

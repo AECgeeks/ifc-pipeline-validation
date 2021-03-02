@@ -52,10 +52,9 @@
 
     <div id="navbar">
 
-        <div style="padding-left: 5px;" id="logo">
+        <a href="/" style="padding-left: 5px;" id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
-        </div>
-
+        </a>
         <div id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" />
         </div>
@@ -66,7 +65,7 @@
 
 
     <div id="submitzone">
-    <!-- <h3>IfcOpenShell viewer</h3> -->
+ 
 
     {{ dropzone.create('put_main') }}
     {{ dropzone.load_js() }}
@@ -95,6 +94,9 @@
                     window.location = response.url;
                 });
             }
+
+
+            
         };
     </script>
     

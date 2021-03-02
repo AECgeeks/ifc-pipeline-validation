@@ -20,9 +20,9 @@
 
     <div id="navbar">
 
-        <div style="padding-left: 5px;" id="logo">
+        <a href="/" style="padding-left: 5px;" id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
-        </div>
+        </a>
 
         <div id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
@@ -46,6 +46,7 @@
             {% set percentageid = "percentage" + i|string %}
             {% set barid = "bar" + i|string %}
             {% set fn = filenames[i]|string %}
+            
             {% set format = filenames[i][-3::]|string %}
 
             <tr>
@@ -100,11 +101,42 @@
             // rows[i+1].style.backgroundColor = "red"; 
             // rows[i+1].cells[5].style.backgroundColor = "green";
 
-            rows[i + 1].cells[5].innerHTML = '<a id="rep" style ="text-decoration:none;">View report</a>'
-            var rep = document.getElementById("rep");
-            console.log("rep", rep)
-            console.log( rep.href)
-            rep.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids
+            //rows[i + 1].cells[5].innerHTML = '<a id="rep" style ="text-decoration:none;">View report</a>'
+
+            var repText = document.createElement("a");
+            repText.style.textDecoration = "none";
+            repText.style.target = "_blank";
+            repText.innerHTML = "View"
+            var fn = rows[i + 1].cells[4].innerHTML;
+            var st = window.location.href;
+            console.log(st.split('/')[2]);
+            var baseUrl = st.split('/')[2];
+            
+            console.log("baseURL", baseUrl)
+            var url = "/report/"+ i+"/"+ids + "/" + fn;
+
+            //repText.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn;
+            
+            repText.href = url;
+
+
+
+            rows[i + 1].cells[5].appendChild(repText)
+
+            console.log(repText);
+
+            // var rep = document.getElementById("rep");
+            // console.log("rep", rep)
+            // console.log( rep.href)
+           
+            
+            
+            // console.log("FN", fn);
+
+            // // rep.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn;
+            // //rows[i + 1].cells[5].innerHTML.href = "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn;
+            // rows[i + 1].cells[5].innerHTML.setAttribute('href', "http://127.0.0.1:5000/report/"+ i+"/"+ids + "/" + fn);
+            // console.log( "lala", rows[i + 1].cells[5].innerHTML);
 
             rows[i + 1].cells[5].style.color = "#0070C0";
             rows[i + 1].cells[5].style.fontWeight = "bold";
@@ -133,6 +165,8 @@
             fetch("/valprog/{{ id }}").then(function (r) { return r.json(); }).then(function (r) {
                 var ids = '{{id}}';
 
+                // console.log("progress ", r.progress);
+
                 for (var i = 0; i < n; i++) {
                     var bar = document.getElementById("bar" + i.toString())
                     var percentage = document.getElementById("percentage" + i.toString())
@@ -141,6 +175,8 @@
 
                     if (r.progress[i] === 100) {
                         console.log("Page location is " + window.location.href)
+                        var st = window.location.href;
+                        console.log(st.split('/')[2]);
                         // window.location="http://127.0.0.1:5000/report/5";
 
                         if (!registered.has(i)) {

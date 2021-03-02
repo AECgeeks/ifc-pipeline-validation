@@ -161,8 +161,9 @@ def process_upload_validation(files, callback_url=None):
         session.close()
     
     if DEVELOPMENT:
-        t = threading.Thread(target=lambda: worker.process(ids, callback_url, val=1))
-        t.start()
+        for id in ids:
+            t = threading.Thread(target=lambda: worker.process(id, callback_url))
+            t.start()
     else:
         q.enqueue(worker.process, ids, callback_url)
 
@@ -371,8 +372,8 @@ def log_results(i, ids):
     return jsonify(result_logs)
 
 
-@application.route('/report/<id>/<ids>/')
-def view_report(id,ids):
+@application.route('/report/<id>/<ids>/<fn>')
+def view_report(id,ids,fn):
     n_ids = int(len(ids)/32)
 
     all_ids = []
@@ -428,7 +429,7 @@ def view_report(id,ids):
 
 
     
-    return render_template('report.html',f = intermediate_scores, result_logs=result_logs)
+    return render_template('report.html',f = intermediate_scores, result_logs=result_logs, fn=fn)
 
 
 @application.route('/m/<fn>', methods=['GET'])

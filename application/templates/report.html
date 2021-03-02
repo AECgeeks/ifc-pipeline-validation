@@ -32,9 +32,9 @@
  
     <div id="navbar">
 
-        <div style="padding-left: 5px;" id="logo">
+        <a href="/" style="padding-left: 5px;" id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
-        </div>
+        </a>
 
         <div id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
@@ -45,7 +45,13 @@
 
     <div id="main">
 
-        <div id="title">Report</div>
+        <div id="title">
+
+            <div id="big">Report</div>
+            <div>-</div>
+            <div id="fn">{{fn}}</div>
+            
+        </div>
 
         <div id="syntax" class="result">
 

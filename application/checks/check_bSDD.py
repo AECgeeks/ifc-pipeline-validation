@@ -90,26 +90,22 @@ for t in types:
     if 'classificationProperties' in classification_result.keys():
         packed_properties = [pack_classification(p) for p in classification_result['classificationProperties'] if not p['propertySet'].startswith("Qto")]
         checking = {el:"Not present" for el in packed_properties}
-        # if not len(mvd.extract_data(rule_tree, ifc_file.by_type(t)[0])) == 1 and val =='empty data structure':
         for instance in ifc_file.by_type(t):
             print("    ", instance.GlobalId)
             log_to_construct[t][instance.GlobalId] = []
             if len(mvd.extract_data(rule_tree, ifc_file.by_type(t)[0])) > 1:
                 packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, ifc_file.by_type(t)[0])]
                 to_compare = [packed_output, packed_properties]
-
-                for element in itertools.product(*to_compare):
-                    match = element[0][0] == element[1][0] and element[0][1] == element[1][1]
+                
+                for mvd_data, bsdd_data in itertools.product(*to_compare):
+                    match = mvd_data[0] == bsdd_data[0] and mvd_data[1] == bsdd_data[1]
                     if match:
-                        if isinstance(element[0][2],simple_type_python_mapping[element[1][2]]):
-                            # print(element[1], 'Property validated')
-                            checking[element[1]] = element[0]
+                        if isinstance(mvd_data[2],simple_type_python_mapping[bsdd_data[2]]):
+                            checking[bsdd_data] = mvd_data
                         else:
-                            
-                            checking[element[1]] = 'wrong type'
+                            checking[bsdd_data] = 'wrong type'
                     else:
                         passed = 0
-                        
 
                 for ck,cv in checking.items():
                     print("          ", ck, cv)

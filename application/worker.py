@@ -76,7 +76,7 @@ class task(object):
 
 
 class syntax_validation_task(task):
-    est_time = 1
+    est_time = 5
 
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_syntax.json"), "w")
@@ -85,7 +85,7 @@ class syntax_validation_task(task):
 
 
 class ifc_validation_task(task):
-    est_time = 1
+    est_time = 10
 
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_schema.json"), "w")
@@ -93,9 +93,11 @@ class ifc_validation_task(task):
         subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
 
 class mvd_validation_task(task):
-    est_time =1
+    est_time =10
 
+    
     def execute(self, directory, id):
+        print(directory)
         check_program = os.path.join(os.getcwd() + "\checks\\", "check_MVD.py")
         outname = id +"_mvd.txt"
       
@@ -103,7 +105,7 @@ class mvd_validation_task(task):
             subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
 
 class bsdd_validation_task(task):
-    est_time =1
+    est_time =5
 
     def execute(self, directory, id):
         check_program = os.path.join(os.getcwd() + "\checks\\", "check_bSDD.py")
@@ -208,7 +210,7 @@ def do_process(id):
         syntax_validation_task,
         ifc_validation_task,
         bsdd_validation_task,
-        mvd_validation_task,
+        mvd_validation_task
         # xml_generation_task,
         # geometry_generation_task,
         # svg_generation_task,
