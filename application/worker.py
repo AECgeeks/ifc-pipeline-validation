@@ -76,7 +76,7 @@ class task(object):
 
 
 class syntax_validation_task(task):
-    est_time = 5
+    est_time = 10
 
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_syntax.json"), "w")
@@ -289,25 +289,11 @@ def do_process(id):
 
 
 def process(ids, callback_url, val=0):
-
-    if val:
-        for id in ids:
-            try:
-                t = threading.Thread(target=lambda: do_process(id))
-                t.start()
-                status = "success"
-            except Exception as e:
-                traceback.print_exc(file=sys.stdout)
-                status = "failure"        
-
-            if callback_url is not None:       
-                r = requests.post(callback_url, data={"status": status, "id": id})
-    else:
-        try:
-            do_process(ids)
-            status = "success"
-        except Exception as e:
-            traceback.print_exc(file=sys.stdout)
-            status = "failure"        
-        if callback_url is not None:       
-            r = requests.post(callback_url, data={"status": status, "id": ids})
+    try:
+        do_process(ids)
+        status = "success"
+    except Exception as e:
+        traceback.print_exc(file=sys.stdout)
+        status = "failure"        
+    if callback_url is not None:       
+        r = requests.post(callback_url, data={"status": status, "id": ids})

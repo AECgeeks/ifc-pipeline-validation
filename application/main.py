@@ -165,7 +165,8 @@ def process_upload_validation(files, callback_url=None):
             t = threading.Thread(target=lambda: worker.process(id, callback_url))
             t.start()
     else:
-        q.enqueue(worker.process, ids, callback_url)
+        for id in ids:
+            q.enqueue(worker.process, id, callback_url)
 
     
     return ids
