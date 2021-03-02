@@ -23,7 +23,7 @@ COPY application/*.py /www/
 COPY application/templates /www/templates
 
 COPY application/checks /www/checks
-RUN unzip -d  /www/application/checks /tmp/ifcopenshell_python.zip
+RUN unzip -d  /www/checks ./tmp/ifcopenshell_python.zip
 
 
 COPY .git/HEAD /tmp/.git/HEAD
