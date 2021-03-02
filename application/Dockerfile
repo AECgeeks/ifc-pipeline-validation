@@ -25,6 +25,9 @@ COPY application/templates /www/templates
 COPY application/checks /www/checks
 RUN unzip -d  /www/checks /tmp/ifcopenshell_python.zip
 
+RUN git clone https://github.com/opensourceBIM/python-mvdxml
+RUN mv python-mvdxml www/checks/ifcopenshell/mvd
+
 
 COPY .git/HEAD /tmp/.git/HEAD
 COPY .git/refs/ /tmp/.git/refs/
