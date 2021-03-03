@@ -26,6 +26,7 @@ COPY application/checks /www/checks
 RUN unzip -d  /www/checks /tmp/ifcopenshell_python.zip
 
 RUN git clone https://github.com/opensourceBIM/python-mvdxml
+RUN mkdir -p www/checks/ifcopenshell/mvd
 RUN mv python-mvdxml www/checks/ifcopenshell/mvd
 
 COPY .git/HEAD /tmp/.git/HEAD
