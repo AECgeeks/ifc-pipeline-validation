@@ -20,3 +20,4 @@ application/checks/examples/
 
 application/checks/dresult_bsdd.json
 application/checks/result_bsdd.json
+application/checks/parse_results.py

@@ -28,6 +28,25 @@ def get_xset_rule(mvd_fn, ifc_type, pset_or_qset):
                         if r.attribute == "IsDefinedBy":
                             return r
 
+
+
+simple_type_python_mapping = {
+    # @todo should include unicode for Python2
+    "string": str,
+    "integer": int,
+    "real": float,
+    "number": float,
+    "boolean": bool,
+    "logical": bool,  # still not implemented in IfcOpenShell
+    "binary": str,  # maps to a str of "0" and "1"
+}
+
+
+
+
+
+
+
 pset = 'Property Sets for Objects'
 qset = 'Quantity Sets'
 
@@ -59,10 +78,7 @@ for rel in relclassref:
         domain_name = "nlsfb"
 
 
-    # print(domain_name, classification_code)
-
     url = "http://identifier.buildingsmart.org/uri/"+ domain_name + "/" + "nlsfb2005-2.2/class/"+classification_code
-
 
     r = requests.get(url)
     bsdd_response = json.loads(r.text) 
@@ -73,47 +89,82 @@ for rel in relclassref:
     else:
         print('no related entities')
 
-
     if 'classificationProperties' in bsdd_response.keys():
         classification_properties = bsdd_response['classificationProperties']
         # print(len(classification_properties))
-
         packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
         # print(packed_properties)
 
         for e in rel.RelatedObjects:
             print("     ", e.GlobalId)
+            print("     ", e)
             log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId] = []
-           
             packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, e)]
+            # print(len(packed_output))
             to_compare = [packed_output, packed_properties]
+            match = 0
             for mvd_data, bsdd_data in itertools.product(*to_compare):
-                
                 match = mvd_data[0] == bsdd_data[0] and mvd_data[1] == bsdd_data[1]
+
                 if match:
-                    compval = bsdd_data[3]
-                    # print(bsdd_data)
-                    # print(mvd_data)
+                    if isinstance(mvd_data[2],simple_type_python_mapping[bsdd_data[2]]):
+                        compval = bsdd_data[3]
 
-                    if bsdd_data[3] == 'TRUE':
-                        compval = True
-                    elif bsdd_data[3] == 'FALSE':
-                        compval = False
-                    
-                    if mvd_data[2] == compval:
-                        print("        ",mvd_data, bsdd_data, 'PASSED')
-                        log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId]
+                        if bsdd_data[3] == 'TRUE':
+                            compval = True
 
+                        elif bsdd_data[3] == 'FALSE':
+                            compval = False
+                        
+                        if mvd_data[2] == compval:
+                            print("        ",mvd_data, bsdd_data, 'PASSED')
+                            log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
+
+                        elif isinstance(compval,str):
+                            if not len(compval):
+                                print("        ",mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD')
+                                log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
+
+                        else:
+                            print("        ",mvd_data, bsdd_data,  'FAILED')
+                            log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
                     else:
-                        print("        ",mvd_data, bsdd_data,  'FAILED')
-                        log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
+                        print("        ",mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED')
+                        log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
+
+            if len(log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId]) == 0 :
+                print("        ","NO WATCH WITH" ,  packed_properties)
+                log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId] = [packed_properties,"NO WATCH WITH"]
 
 
+            # if match == 0:
+            #     print("        ",  'NO MATCH with' ,packed_properties)
+            #     log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((packed_properties,  'FAILED - NO MATCH WITH',)) 
+
+                       
 
 jsonout = os.path.join(os.getcwd(), "dresult_bsdd.json")
 
 with open(jsonout, 'w', encoding='utf-8') as f:
     json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
+
+
+
+jsonresultout = os.path.join(os.getcwd(), "result_bsdd.json")
+
+passed = 1
+
+if passed == 1:
+    bsdd_result = {'bsdd':'v'}
+elif passed == 0:
+    bsdd_result = {'bsdd':'i'}
+
+
+with open(jsonresultout, 'w', encoding='utf-8') as f:
+    json.dump(bsdd_result, f, ensure_ascii=False, indent=4)
+
+
+
 
 
 
