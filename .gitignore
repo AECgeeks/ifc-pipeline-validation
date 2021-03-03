@@ -18,6 +18,5 @@ application/checks/ifcopenshell/
 application/checks/logs/
 application/checks/examples/
 
-application/checks/bsdd.py
 application/checks/dresult_bsdd.json
 application/checks/result_bsdd.json
