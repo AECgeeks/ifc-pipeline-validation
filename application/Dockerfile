@@ -1,7 +1,7 @@
 FROM debian:buster-slim
 
 WORKDIR /
-RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev npm python3-setuptools python3-dev python3-wheel supervisor
+RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev npm python3-setuptools python3-dev python3-wheel supervisor
 RUN python3 -m pip install flask flask-cors numpy Pillow gunicorn rq redis sqlalchemy psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests flask-dropzone lark-parser --upgrade
 RUN npm install -g jsdoc gltf-pipeline requirejs npx uglify-js
 
@@ -27,7 +27,6 @@ RUN unzip -d  /www/checks /tmp/ifcopenshell_python.zip
 
 RUN git clone https://github.com/opensourceBIM/python-mvdxml
 RUN mv python-mvdxml www/checks/ifcopenshell/mvd
-
 
 COPY .git/HEAD /tmp/.git/HEAD
 COPY .git/refs/ /tmp/.git/refs/
