@@ -76,7 +76,7 @@
 
             <button id="submit">Submit</button>
 
-            <div style="text-align: left; height: 100px;width:200px; background-color:rgb(191, 191, 207);">
+            <!-- <div style="text-align: left; height: 100px;width:200px; background-color:rgb(191, 191, 207);">
                 <div>
                     <input type="checkbox" id="syntax" name="scales" checked>
                     <label for="Syntax">Syntax</label>
@@ -98,7 +98,7 @@
                 </div>
 
 
-            </div>
+            </div> -->
 
 
         </div>
@@ -122,15 +122,15 @@
                 var submitButton = document.querySelector("#submit")
                 myDropzone = this;
 
-                var checkbox = document.createElement('input');
-                checkbox.content = "test"
-                checkbox.type = "checkbox";
-                checkbox.name = "name";
-                checkbox.value = "value";
-                checkbox.id = "id";
+                // var checkbox = document.createElement('input');
+                // checkbox.content = "test"
+                // checkbox.type = "checkbox";
+                // checkbox.name = "name";
+                // checkbox.value = "value";
+                // checkbox.id = "id";
 
-                checkbox.style.visibility = "hidden"; 
-                myDropzone.element.appendChild(checkbox);
+                // checkbox.style.visibility = "hidden"; 
+                // myDropzone.element.appendChild(checkbox);
 
             
                 submitButton.addEventListener("click", function () {
@@ -142,13 +142,13 @@
                     validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
                     var suffix = "";
 
-                    for (var i = 0; i < validationTypes.length; i++) {
-                        var s = document.getElementById(validationTypes[i]).checked ? 1 : 0;
-                        suffix = suffix + s.toString();
+                    // for (var i = 0; i < validationTypes.length; i++) {
+                    //     var s = document.getElementById(validationTypes[i]).checked ? 1 : 0;
+                    //     suffix = suffix + s.toString();
 
-                    }
+                    // }
 
-                    window.location = response.url + '/' + suffix;
+                    window.location = response.url;
 
 
                 });

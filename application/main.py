@@ -195,7 +195,7 @@ def put_main():
         idstr += i
 
     if VALIDATION:
-        url = url_for('validate_files', id=idstr, config='') 
+        url = url_for('validate_files', id=idstr) 
     
     elif VIEWER:
         url = url_for('check_viewer', id=idstr) 
@@ -216,8 +216,8 @@ def check_viewer(id):
 
 
 
-@application.route('/val/<id>/<config>', methods=['GET'])
-def validate_files(id, config):
+@application.route('/val/<id>', methods=['GET'])
+def validate_files(id):
     # if not utils.validate_id(id):
     #     abort(404)
     n_files = int(len(id)/32)
@@ -240,7 +240,7 @@ def validate_files(id, config):
         filenames.append(model.filename)
         session.close()
 
-    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, config=config)    
+    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames)     
     
     
 @application.route('/valprog/<id>', methods=['GET'])
