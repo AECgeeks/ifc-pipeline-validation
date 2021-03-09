@@ -65,7 +65,6 @@ for rel in relclassref:
     # print(len(rel.RelatedObjects))
     domain = rel.RelatingClassification.ReferencedSource
 
-
     # import pdb; pdb.set_trace()
     #print(relclassref[0].RelatingClassification)
     domain_name = domain.Name

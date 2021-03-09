@@ -207,10 +207,10 @@ def do_process(id):
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
     tasks = [
-        syntax_validation_task,
-        ifc_validation_task,
+        # syntax_validation_task,
+        # ifc_validation_task,
         bsdd_validation_task,
-        mvd_validation_task
+        mvd_validation_task,
         # xml_generation_task,
         # geometry_generation_task,
         # svg_generation_task,
