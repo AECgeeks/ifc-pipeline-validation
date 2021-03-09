@@ -176,9 +176,7 @@ def process_upload_validation(files, callback_url=None):
 def put_main():
  
     ids = []
-   
     files = []
-
 
     # import pdb;pdb.set_trace()
 

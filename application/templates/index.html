@@ -122,6 +122,17 @@
                 var submitButton = document.querySelector("#submit")
                 myDropzone = this;
 
+                var checkbox = document.createElement('input');
+                checkbox.content = "test"
+                checkbox.type = "checkbox";
+                checkbox.name = "name";
+                checkbox.value = "value";
+                checkbox.id = "id";
+
+                checkbox.style.visibility = "hidden"; 
+                myDropzone.element.appendChild(checkbox);
+
+            
                 submitButton.addEventListener("click", function () {
                     myDropzone.removeEventListeners();
                     myDropzone.processQueue();
