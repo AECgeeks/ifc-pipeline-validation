@@ -215,7 +215,6 @@ def check_viewer(id):
     
 
 
-
 @application.route('/val/<id>', methods=['GET'])
 def validate_files(id):
     # if not utils.validate_id(id):
