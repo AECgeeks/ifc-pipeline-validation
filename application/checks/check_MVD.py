@@ -18,26 +18,20 @@ mvd_concept_roots = ifcopenshell.mvd.concept_root.parse(mvd_fn)
 passed = 1
 
 for concept_root in mvd_concept_roots:
-    try: #todo: check mvdXML file schema
-        print(" ",concept_root.entity)    
+    try: #todo: check mvdXML file schema   
         entity_type = concept_root.entity
         if len(ifc_file.by_type(entity_type)):
             entity_instances = ifc_file.by_type(entity_type)
             for concept in concept_root.concepts():
-                print(dir(concept))
-                print(concept.rules())
-                print("   ", concept.template().name)
                 for rule in concept.template().rules:
-                    print("     ", rule)
                     for e in entity_instances:
-                        print("         ", e.GlobalId)
                         extraction = mvd.extract_data(rule,e)                  
                         for ex in extraction:
                             for k, v in ex.items():
 
                                 if v == "Nonexistent value":
                                     passed = 0
-                                print( "         ",k," ",k.bind," ",v)
+                                
                            
     except:
         pass

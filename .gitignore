@@ -1,13 +1,13 @@
 __pycache__/
 *.py[cod]
 *.ifc
+*.json
 *.cover
 docker-volumes
 application/static/bimsurfer
 application/nix
 application/win
 application/ifc-pipeline.db
-*.ifc
 application/ifc-python-parser
 application/ifc-parser
 application/bimsurfer_temp/

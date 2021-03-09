@@ -8,7 +8,6 @@ import sys
 import os 
 
 
-
 def pack_classification(classification_props):
     return classification_props['propertySet'], classification_props['name'], classification_props['dataType'], classification_props['predefinedValue']
 
@@ -62,15 +61,12 @@ relclassref = ifc_file.by_type("IfcRelAssociatesClassification")
 log_to_construct = {}
 
 for rel in relclassref:
-    # print(len(rel.RelatedObjects))
     domain = rel.RelatingClassification.ReferencedSource
 
-    # import pdb; pdb.set_trace()
-    #print(relclassref[0].RelatingClassification)
     domain_name = domain.Name
     classification_code = rel.RelatingClassification.ItemReference
     log_to_construct[rel.RelatingClassification.Name +"-"+classification_code] = {}
-    print(rel.RelatingClassification.Name, classification_code)
+
   
     
     if "NL/SfB" in domain_name:
@@ -81,25 +77,16 @@ for rel in relclassref:
 
     r = requests.get(url)
     bsdd_response = json.loads(r.text) 
-    print(bsdd_response)
-    if 'relatedIfcEntityNames' in bsdd_response.keys():
-        print(bsdd_response['relatedIfcEntityNames'])
-        
-    else:
-        print('no related entities')
 
     if 'classificationProperties' in bsdd_response.keys():
         classification_properties = bsdd_response['classificationProperties']
-        # print(len(classification_properties))
-        packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
-        # print(packed_properties)
 
+        packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
         for e in rel.RelatedObjects:
-            print("     ", e.GlobalId)
-            print("     ", e)
+
             log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId] = []
             packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, e)]
-            # print(len(packed_output))
+
             to_compare = [packed_output, packed_properties]
             match = 0
             for mvd_data, bsdd_data in itertools.product(*to_compare):
@@ -116,31 +103,24 @@ for rel in relclassref:
                             compval = False
                         
                         if mvd_data[2] == compval:
-                            print("        ",mvd_data, bsdd_data, 'PASSED')
+                           
                             log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
 
                         elif isinstance(compval,str):
                             if not len(compval):
-                                print("        ",mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD')
+                              
                                 log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
 
                         else:
-                            print("        ",mvd_data, bsdd_data,  'FAILED')
+                           
                             log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
                     else:
-                        print("        ",mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED')
+                       
                         log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
 
             if len(log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId]) == 0 :
-                print("        ","NO WATCH WITH" ,  packed_properties)
+               
                 log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId] = [packed_properties,"NO WATCH WITH"]
-
-
-            # if match == 0:
-            #     print("        ",  'NO MATCH with' ,packed_properties)
-            #     log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((packed_properties,  'FAILED - NO MATCH WITH',)) 
-
-                       
 
 jsonout = os.path.join(os.getcwd(), "dresult_bsdd.json")
 

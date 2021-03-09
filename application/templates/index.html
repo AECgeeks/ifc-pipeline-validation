@@ -5,18 +5,18 @@
     <title>buildingSMART IFC Validation Service</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    
+
     <script>
         var isIE = !!window.MSInputMethodContext;
         if (isIE) {
-            FileList.prototype.map = function(fn) { var r = []; for (var i = 0; i < this.length; ++i) { r.push(fn(this[i])); } return r; }
+            FileList.prototype.map = function (fn) { var r = []; for (var i = 0; i < this.length; ++i) { r.push(fn(this[i])); } return r; }
         }
     </script>
 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='validation.css') }}">
     {{ dropzone.load_css() }}
     {{ dropzone.style('border: 2px dashed #0087F7; min-height: 400px;') }}
-    
+
     <style>
         .dropzone .dz-preview .dz-image {
             width: 300px;
@@ -32,21 +32,23 @@
         .dropzone * {
             border-radius: 0 !important;
         }
-        
+
         .dropzone .dz-preview .dz-details .dz-size {
             margin-bottom: 2em;
         }
-        
+
         .dropzone {
             border: 2px dashed #bbb;
             border-radius: 20px;
             background: #fafafa;
         }
-        
-        .dropzone .dz-preview .dz-details .dz-filename span, .dropzone .dz-preview .dz-details .dz-size span {
+
+        .dropzone .dz-preview .dz-details .dz-filename span,
+        .dropzone .dz-preview .dz-details .dz-size span {
             background: none;
         }
     </style>
+
 <body style="text-align: center">
 
 
@@ -64,11 +66,46 @@
     <div id="main2">
 
 
-    <div id="submitzone">
- 
+        <div id="submitzone">
 
-    {{ dropzone.create('put_main') }}
-    {{ dropzone.load_js() }}
+
+            {{ dropzone.create('put_main') }}
+            {{ dropzone.load_js() }}
+
+
+
+            <button id="submit">Submit</button>
+
+            <div style="text-align: left; height: 100px;width:200px; background-color:rgb(191, 191, 207);">
+                <div>
+                    <input type="checkbox" id="syntax" name="scales" checked>
+                    <label for="Syntax">Syntax</label>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="schema" name="horns">
+                    <label for="Schema">Schema</label>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="mvd" name="horns">
+                    <label for="MVD">MVD</label>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="bsdd" name="horns">
+                    <label for="bSDD">bSDD</label>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
 
     <script>
         Dropzone.prototype.defaultOptions.dictDefaultMessage = "Drop files or click here to upload";
@@ -80,7 +117,7 @@
             addRemoveLinks: false,
             timeout: 0,
             maxFilesize: 8 * 1024,
-            
+
             init: function () {
                 var submitButton = document.querySelector("#submit")
                 myDropzone = this;
@@ -91,20 +128,27 @@
                 });
 
                 this.on("success", function (file, response) {
-                    window.location = response.url;
+                    validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
+                    var suffix = "";
+
+                    for (var i = 0; i < validationTypes.length; i++) {
+                        var s = document.getElementById(validationTypes[i]).checked ? 1 : 0;
+                        suffix = suffix + s.toString();
+
+                    }
+
+                    window.location = response.url + '/' + suffix;
+
+
                 });
             }
 
 
-            
+
+
+
         };
     </script>
-    
-    <button id="submit">Submit</button>
-</div>
-
-
-</div>
-    
 </body>
+
 </html>
