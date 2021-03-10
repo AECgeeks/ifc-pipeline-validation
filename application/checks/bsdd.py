@@ -7,27 +7,27 @@ import itertools
 import sys
 import os 
 
-
 def pack_classification(classification_props):
     return classification_props['propertySet'], classification_props['name'], classification_props['dataType'], classification_props['predefinedValue']
 
 def pack_mvd(mvd_output):
     return list(mvd_output.values())[0], list(mvd_output.values())[1], list(mvd_output.values())[3].wrappedValue
 
-mvd_fn= os.path.join(os.path.dirname(__file__), "ifcopenshell/mvd/mvd_examples/officials/ReferenceView_V1-2.mvdxml")
+mvd_fn= os.path.join(os.path.dirname(__file__), "ifcopenshell/mvd/mvd_examples/xset.mvdxml")
 
-def get_xset_rule(mvd_fn, ifc_type, pset_or_qset):
-    mvd_concept_roots = ifcopenshell.mvd.concept_root.parse(mvd_fn)
-    for concept_root in mvd_concept_roots:
-        if concept_root.entity == "IfcWall": #Modify mvdxml parsing to rather loop through CT
-            for c in concept_root.concepts():
-                if c.name == pset_or_qset:
-                    for r in c.template().rules:
-                        # print("  ", r.attribute)
-                        if r.attribute == "IsDefinedBy":
-                            return r
+ifc_fn = sys.argv[1]
+ifc_file = ifcopenshell.open(ifc_fn)
 
+def get_xset_rule(mvd_fn, pset_or_qset):
+    concept_root = list(ifcopenshell.mvd.concept_root.parse(mvd_fn))[0]
+    for c in concept_root.concepts():
+        if c.name == pset_or_qset:
+            for r in c.template().rules:
+                print(r)
+                if r.attribute == "IsDefinedBy":
+                    return r
 
+rule_tree = get_xset_rule(mvd_fn, "pset")
 
 simple_type_python_mapping = {
     # @todo should include unicode for Python2
@@ -40,40 +40,31 @@ simple_type_python_mapping = {
     "binary": str,  # maps to a str of "0" and "1"
 }
 
-
-
-
-
-
-
-pset = 'Property Sets for Objects'
-qset = 'Quantity Sets'
-
-rule_tree = get_xset_rule(mvd_fn, 'IfcWall', pset)
-
-ifc_fn = sys.argv[1]
-ifc_file = ifcopenshell.open(ifc_fn)
-
-
 classref = ifc_file.by_type("IfcClassificationReference")
-relclassref = ifc_file.by_type("IfcRelAssociatesClassification")
+
+rel_associate_classifications = ifc_file.by_type("IfcRelAssociatesClassification")
 
 log_to_construct = {}
 
-for rel in relclassref:
-    domain = rel.RelatingClassification.ReferencedSource
+for rel in rel_associate_classifications:
 
-    domain_name = domain.Name
-    classification_code = rel.RelatingClassification.ItemReference
-    log_to_construct[rel.RelatingClassification.Name +"-"+classification_code] = {}
+    #import pdb;pdb.set_trace()
+
+    classification_reference = rel.RelatingClassification
+    classification_reference_code = classification_reference.ItemReference
+    classification_reference_name = classification_reference.Name
+
+    classification = classification_reference.ReferencedSource
+    classification_name = classification.Name
+    
+    log_to_construct[classification_reference_name +"-"+classification_reference_code] = {}
 
   
-    
-    if "NL/SfB" in domain_name:
-        domain_name = "nlsfb"
+    if "NL/SfB" in classification_name:
+        classification_name = "nlsfb"
 
 
-    url = "http://identifier.buildingsmart.org/uri/"+ domain_name + "/" + "nlsfb2005-2.2/class/"+classification_code
+    url = "http://identifier.buildingsmart.org/uri/"+ classification_name + "/" + "nlsfb2005-2.2/class/"+classification_reference_code
 
     r = requests.get(url)
     bsdd_response = json.loads(r.text) 
@@ -84,7 +75,7 @@ for rel in relclassref:
         packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
         for e in rel.RelatedObjects:
 
-            log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId] = []
+            log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId] = []
             packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, e)]
 
             to_compare = [packed_output, packed_properties]
@@ -104,29 +95,28 @@ for rel in relclassref:
                         
                         if mvd_data[2] == compval:
                            
-                            log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
+                            log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
 
                         elif isinstance(compval,str):
                             if not len(compval):
                               
-                                log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
+                                log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
 
                         else:
                            
-                            log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
+                            log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
                     else:
                        
-                        log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
+                        log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
 
-            if len(log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId]) == 0 :
+            if len(log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId]) == 0 :
                
-                log_to_construct[rel.RelatingClassification.Name +"-"+classification_code][e.GlobalId] = [packed_properties,"NO WATCH WITH"]
+                log_to_construct[rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId] = [packed_properties,"NO WATCH WITH"]
 
 jsonout = os.path.join(os.getcwd(), "dresult_bsdd.json")
 
 with open(jsonout, 'w', encoding='utf-8') as f:
     json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
-
 
 
 jsonresultout = os.path.join(os.getcwd(), "result_bsdd.json")
