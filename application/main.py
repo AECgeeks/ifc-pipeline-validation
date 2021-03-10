@@ -35,6 +35,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, send_file, render_template, abort, jsonify, redirect, url_for, make_response
 from flask_cors import CORS
 from flask_basicauth import BasicAuth
+
 from flasgger import Swagger
 
 import utils
@@ -84,6 +85,11 @@ if not DEVELOPMENT:
 
     q = Queue(connection=Redis(host=os.environ.get("REDIS_HOST", "localhost")), default_timeout=3600)
 
+
+application.config['BASIC_AUTH_USERNAME'] = 'admin'
+application.config['BASIC_AUTH_PASSWORD'] = 'bim'
+application.config['BASIC_AUTH_FORCE'] = True
+basic_auth = BasicAuth(application)
 
 @application.route('/', methods=['GET'])
 def get_main():
