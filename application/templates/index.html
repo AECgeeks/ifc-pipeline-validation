@@ -76,29 +76,29 @@
 
             <button id="submit">Submit</button>
 
-            <!-- <div style="text-align: left; height: 100px;width:200px; background-color:rgb(191, 191, 207);">
+            <div id="config">
                 <div>
-                    <input type="checkbox" id="syntax" name="scales" checked>
+                    <input type="checkbox" id="syntax_outside" name="syntax" checked>
                     <label for="Syntax">Syntax</label>
                 </div>
 
                 <div>
-                    <input type="checkbox" id="schema" name="horns">
+                    <input type="checkbox" id="schema_outside" name="schema" checked>
                     <label for="Schema">Schema</label>
                 </div>
 
                 <div>
-                    <input type="checkbox" id="mvd" name="horns">
+                    <input type="checkbox" id="mvd_outside" name="mvd" checked>
                     <label for="MVD">MVD</label>
                 </div>
 
                 <div>
-                    <input type="checkbox" id="bsdd" name="horns">
+                    <input type="checkbox" id="bsdd_outside" name="bsdd" checked>
                     <label for="bSDD">bSDD</label>
                 </div>
 
 
-            </div> -->
+            </div>
 
 
         </div>
@@ -119,35 +119,51 @@
             maxFilesize: 8 * 1024,
 
             init: function () {
-                var submitButton = document.querySelector("#submit")
+                var submitButton = document.querySelector("#submit");
                 myDropzone = this;
 
-                // var checkbox = document.createElement('input');
-                // checkbox.content = "test"
-                // checkbox.type = "checkbox";
-                // checkbox.name = "name";
-                // checkbox.value = "value";
-                // checkbox.id = "id";
+                var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
 
-                // checkbox.style.visibility = "hidden"; 
-                // myDropzone.element.appendChild(checkbox);
+                for (var i = 0; i < validationTypes.length; i++) {
+                    var checkbox = document.createElement('input');
+                    checkbox.type = "checkbox";
+                    checkbox.name = validationTypes[i];
+                    checkbox.value = 0;
+                    checkbox.checked = 1;
 
-            
+                    checkbox.id = validationTypes[i];
+                    checkbox.style.visibility = "hidden";
+                    myDropzone.element.appendChild(checkbox);
+
+                }
+
+
                 submitButton.addEventListener("click", function () {
+
+                    for (var i = 0; i < validationTypes.length; i++) {
+
+
+                        var checkboxToUpdate = document.getElementById(validationTypes[i]);
+                        var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
+
+                        console.log("checked outside ", checkboxOutside.checked);
+
+                        if (checkboxOutside.checked == 1) {
+                            checkboxToUpdate.value = 1;
+                        }
+
+                    }
+
+
                     myDropzone.removeEventListeners();
                     myDropzone.processQueue();
+
+
+
+
                 });
 
                 this.on("success", function (file, response) {
-                    validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
-                    var suffix = "";
-
-                    // for (var i = 0; i < validationTypes.length; i++) {
-                    //     var s = document.getElementById(validationTypes[i]).checked ? 1 : 0;
-                    //     suffix = suffix + s.toString();
-
-                    // }
-
                     window.location = response.url;
 
 

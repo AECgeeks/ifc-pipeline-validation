@@ -59,7 +59,7 @@ for rel in rel_associate_classifications:
     
     log_to_construct[classification_reference_name +"-"+classification_reference_code] = {}
 
-  
+
     if "NL/SfB" in classification_name:
         classification_name = "nlsfb"
 

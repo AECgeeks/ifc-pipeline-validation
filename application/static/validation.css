@@ -16,6 +16,28 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   /* background-color:green */
 }
 
+
+#config{
+  display: flex;
+  flex-direction:column;
+  /* align-items: center; */
+  justify-content: center;
+  text-align: left;
+  height: 100px;
+  width:200px;
+  background-color:rgb(191, 191, 207);
+  border-radius: 5px;
+}
+
+
+#myDropzone{
+  display: flex;
+  flex-direction: column;
+  max-height: 200px;
+  overflow: auto;
+  
+}
+
 #main {
   display: flex;
   align-items: center;
