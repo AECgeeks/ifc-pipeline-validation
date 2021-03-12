@@ -35,6 +35,21 @@ time, mark, audio, video {
 
 
 
+  
+#bs{
+
+  height: 8vh;
+  }
+  
+    
+
+
+
+
+
+
+
+
   #main{
     display:flex;
     align-items:center; 

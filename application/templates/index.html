@@ -15,32 +15,43 @@
 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='validation.css') }}">
     {{ dropzone.load_css() }}
-    {{ dropzone.style('border: 2px dashed #0087F7; min-height: 400px;') }}
+    {{ dropzone.style('border: 2px dashed #0087F7; min-height: 20vh;') }}
 
     <style>
         .dropzone .dz-preview .dz-image {
-            width: 300px;
+            width: 100%;
             background: #eee !important;
             border: solid 1px #ddd;
         }
 
-        .dropzone .dz-preview .dz-progress {
+        /* .dropzone .dz-preview .dz-progress {
             width: 200px;
             margin-left: -100px;
+           
+        } */
+
+        .dropzone .dz-preview .dz-details .dz-size {
+            margin-bottom: 2em;
+        }
+
+
+
+        .dropzone .dz-preview .dz-progress {
+            width: 80%;
+            margin-left: -40%;
+
         }
 
         .dropzone * {
             border-radius: 0 !important;
         }
 
-        .dropzone .dz-preview .dz-details .dz-size {
-            margin-bottom: 2em;
-        }
 
         .dropzone {
             border: 2px dashed #bbb;
             border-radius: 20px;
             background: #fafafa;
+            width: 100%;
         }
 
         .dropzone .dz-preview .dz-details .dz-filename span,
@@ -55,12 +66,11 @@
     <div id="navbar">
 
         <a href="/" style="padding-left: 5px;" id="logo">
-            <img src="{{url_for('static', filename='navbar/BuildingSmart-logo.png')}}" />
+            <img id="bs" src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
         </a>
         <div id="logo">
             <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" />
         </div>
-
     </div>
 
     <div id="main2">
