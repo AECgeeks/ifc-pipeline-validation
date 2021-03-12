@@ -202,21 +202,35 @@ class svg_generation_task(task):
                 self.sub_progress(i)
 
 
-def do_process(id):
+def do_process(id, validation_config):
     d = utils.storage_dir_for_id(id)
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
-    tasks = [
-        # syntax_validation_task,
-        # ifc_validation_task,
-        bsdd_validation_task,
-        mvd_validation_task,
-        # xml_generation_task,
-        # geometry_generation_task,
-        # svg_generation_task,
-        # glb_optimize_task,
-        # gzip_task
-    ]
+    tasks = []
+
+    for task, to_validate in validation_config.items():
+        if int(to_validate):
+            if task == 'syntax':
+                tasks.append(syntax_validation_task)
+            elif task == 'schema':
+                tasks.append(ifc_validation_task)
+            elif task == 'mvd':
+                tasks.append(mvd_validation_task)
+            else:
+                tasks.append(bsdd_validation_task)
+            
+        
+    # tasks = [
+    #     # syntax_validation_task,
+    #     # ifc_validation_task,
+    #     bsdd_validation_task,
+    #     mvd_validation_task,
+    #     # xml_generation_task,
+    #     # geometry_generation_task,
+    #     # svg_generation_task,
+    #     # glb_optimize_task,
+    #     # gzip_task
+    # ]
     
     tasks_on_aggregate = []
     
@@ -288,9 +302,9 @@ def do_process(id):
     set_progress(id, elapsed)
 
 
-def process(ids, callback_url, val=0):
+def process(ids, validation_config, callback_url):
     try:
-        do_process(ids)
+        do_process(ids, validation_config)
         status = "success"
     except Exception as e:
         traceback.print_exc(file=sys.stdout)

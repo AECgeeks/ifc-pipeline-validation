@@ -148,7 +148,7 @@ def process_upload_multiple(files, callback_url=None):
     return id
 
 
-def process_upload_validation(files, callback_url=None):
+def process_upload_validation(files,validation_config, callback_url=None):
     
     ids = []
     for file in files:
@@ -168,11 +168,11 @@ def process_upload_validation(files, callback_url=None):
     
     if DEVELOPMENT:
         for id in ids:
-            t = threading.Thread(target=lambda: worker.process(id, callback_url))
+            t = threading.Thread(target=lambda: worker.process(id, validation_config, callback_url))
             t.start()
     else:
         for id in ids:
-            q.enqueue(worker.process, id, callback_url)
+            q.enqueue(worker.process, id, validation_config, callback_url)
 
     
     return ids
@@ -191,8 +191,10 @@ def put_main():
             file = f
             files.append(file)    
 
+    validation_config = request.form.to_dict()
+
     if VALIDATION:
-        ids = process_upload_validation(files)
+        ids = process_upload_validation(files, validation_config)
     elif VIEWER:
         ids = process_upload_multiple(files)
 
