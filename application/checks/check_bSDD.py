@@ -29,13 +29,17 @@ def get_xset_rule(mvd_fn, pset_or_qset):
                 if r.attribute == "IsDefinedBy":
                     return r
 
-def get_domain_fuzzy(domains, domain_ref):
+def get_domain_fuzzy(domains, domain_ref, tolerance=50):
     idx = 0
     for i in range(len(domains)):
+        #todo: Handle no match at all case
+        #print(domains[i]['name'],fuzz.partial_ratio(domains[idx]['name'], domain_ref) ,fuzz.partial_ratio(domains[i]['name'], domain_ref) )
         if fuzz.partial_ratio(domains[i]['name'], domain_ref) > fuzz.partial_ratio(domains[idx]['name'], domain_ref):
             idx = i
-
-    return domains[idx]
+    if fuzz.partial_ratio(domains[idx]['name'], domain_ref) > tolerance:
+        return domains[idx]
+    else:
+        return 'The domain has not been found in the bSDD.'
 
 def get_domains():
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Domain/v2"
@@ -97,61 +101,64 @@ def validate_consistency(ifc_file):
         classification = classification_reference.ReferencedSource
         classification_name = classification.Name
         
-     
-        
-        # String matching as between bsdd and IFC name
+        # String matching between bsdd and IFC name
         classification_name2 = get_domain_fuzzy(get_domains(), classification_name)
-
-        if classification_name2['name'] not in log_to_construct.keys():
-            log_to_construct[classification_name2['name']] = {}
         
-        log_to_construct[classification_name2['name']][classification_reference_name +"-"+classification_reference_code] = {}
-        bsdd_response = get_classification(classification_name2['name'], str(classification_reference_code))
 
-        if not isinstance(bsdd_response, str):
-            bsdd_response = get_classification_object(bsdd_response['namespaceUri'])
-            
-            if 'classificationProperties' in bsdd_response.keys():
-                classification_properties = bsdd_response['classificationProperties']
-                packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
+        if isinstance(classification_name2, str):
+            log_to_construct[classification_name] = classification_name2
 
-                for e in rel.RelatedObjects:
-                    
-                    log_to_construct[classification_name2['name']][classification_reference_name +"-"+classification_reference_code][e.GlobalId] = []
-                    packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, e)]
+        else:   
+            if classification_name2['name'] not in log_to_construct.keys():
+                log_to_construct[classification_name2['name']] = {}
+    
+            log_to_construct[classification_name2['name']][classification_reference_name +"-"+classification_reference_code] = {}
+            bsdd_response = get_classification(classification_name2['name'], str(classification_reference_code))
 
-                    to_compare = [packed_output, packed_properties]
-                    match = 0
-                    for mvd_data, bsdd_data in itertools.product(*to_compare):
-                        match = mvd_data[0] == bsdd_data[0] and mvd_data[1] == bsdd_data[1]
+            if not isinstance(bsdd_response, str):
+                bsdd_response = get_classification_object(bsdd_response['namespaceUri'])
+                
+                if 'classificationProperties' in bsdd_response.keys():
+                    classification_properties = bsdd_response['classificationProperties']
+                    packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
 
-                        if match:
-                            if isinstance(mvd_data[2],simple_type_python_mapping[bsdd_data[2]]):
-                                compval = bsdd_data[3]
+                    for e in rel.RelatedObjects:
+                        
+                        log_to_construct[classification_name2['name']][classification_reference_name +"-"+classification_reference_code][e.GlobalId] = []
+                        packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, e)]
 
-                                if bsdd_data[3] == 'TRUE':
-                                    compval = True
+                        to_compare = [packed_output, packed_properties]
+                        match = 0
+                        for mvd_data, bsdd_data in itertools.product(*to_compare):
+                            match = mvd_data[0] == bsdd_data[0] and mvd_data[1] == bsdd_data[1]
 
-                                elif bsdd_data[3] == 'FALSE':
-                                    compval = False
-                                
-                                if mvd_data[2] == compval:
-                                    log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
+                            if match:
+                                if isinstance(mvd_data[2],simple_type_python_mapping[bsdd_data[2]]):
+                                    compval = bsdd_data[3]
 
-                                elif isinstance(compval,str):
-                                    if not len(compval):
+                                    if bsdd_data[3] == 'TRUE':
+                                        compval = True
+
+                                    elif bsdd_data[3] == 'FALSE':
+                                        compval = False
                                     
-                                        log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
+                                    if mvd_data[2] == compval:
+                                        log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
+
+                                    elif isinstance(compval,str):
+                                        if not len(compval):
+                                        
+                                            log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
+                                    else:
+                                    
+                                        log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
                                 else:
                                 
-                                    log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
-                            else:
-                            
-                                log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
+                                    log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
 
-                    if len(log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId]) == 0 :
-                    
-                        log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId] = [packed_properties,"NO WATCH WITH"]
+                        if len(log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId]) == 0 :
+                        
+                            log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId] = [packed_properties,"NO MATCH WITH"]
 
 
     detailed_results_path = os.path.join(os.getcwd(), "dresult_bsdd.json")
