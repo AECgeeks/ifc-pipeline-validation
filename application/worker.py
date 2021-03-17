@@ -108,7 +108,7 @@ class bsdd_validation_task(task):
     est_time =5
 
     def execute(self, directory, id):
-        check_program = os.path.join(os.getcwd() + "/checks", "check_bSDD.py")
+        check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
         outname = id +"_bsdd.txt"
         with open(os.path.join(directory, outname), "w") as f:
             subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)

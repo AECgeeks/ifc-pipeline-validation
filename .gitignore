@@ -21,3 +21,4 @@ application/checks/request_builder.py
 application/checks/dresult_bsdd.json
 application/checks/result_bsdd.json
 application/checks/parse_results.py
+application/checks/test.py

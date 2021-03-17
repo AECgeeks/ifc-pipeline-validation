@@ -27,6 +27,7 @@ from __future__ import print_function
 import os
 import json
 import threading
+from pathlib import Path
 
 from collections import defaultdict, namedtuple
 from flask_dropzone import Dropzone
@@ -364,22 +365,27 @@ def log_results(i, ids):
         b = a
         j+=1
         a = 32*j
+        
 
-    result_logs = {  
-        'syntaxlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_syntax.json"),
-        'schemalog': os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_schema.json"),
-        'mvdlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_mvd.json"),
-        'bsddlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_bsdd.json")
+  
+    # result_logs = {  
+    #     'syntaxlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_syntax.json"),
+    #     'schemalog': os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_schema.json"),
+    #     'mvdlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_mvd.json"),
+    #     'bsddlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_bsdd.json")
 
-    }
+    # }
 
-    for k, v in result_logs.items():
-        with open(v) as json_file:
-            data = json.load(json_file)
-            result_logs[k] = list(data.values())[0]
+
+    # for k, v in result_logs.items():
+    #     with open(v) as json_file:
+    #         data = json.load(json_file)
+    #         result_logs[k] = list(data.values())[0]
     
-    # return jsonify({"Schema": "v", "MVD":"w", "BSdd":"v"})
-    return jsonify(result_logs)
+    
+    # return jsonify({"schema": "v", "mvd":"w", "bsdd":"v"})
+    return jsonify({'bsddlog': "i",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v"})
+    # return jsonify(result_logs)
 
 
 @application.route('/report/<id>/<ids>/<fn>')
@@ -413,13 +419,6 @@ def view_report(id,ids,fn):
             print(data[classification].keys())
 
             
-
-
-
-
-
-    
-
 
     # for k,v in data.items():
     #     d = {'v':0, 'i':0,'t':0}
