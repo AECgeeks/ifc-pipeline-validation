@@ -10,11 +10,7 @@ import os
 from anytree import Node, RenderTree
 
 
-# ifc_fn = sys.argv[1]
-# ifc_file = ifcopenshell.open(ifc_fn)
-
 mvd_fn= os.path.join(os.path.dirname(__file__), "./ifcopenshell/mvd/mvd_examples/officials/ReferenceView_V1-2.mvdxml")
-
 
 def create_tree(rulepoint, parent_node=None):
     #Function to create a tree of the Rules of the ConceptTemplates
@@ -45,10 +41,8 @@ for pre, _, node in RenderTree(create_tree(rule_tree)):
     print("%s%s" % (pre, node.name))
 
 
+tree = create_tree(rule_tree) # Create the tree (call the function)
+print(RenderTree(tree).by_attr('id'))
+print(RenderTree(tree))
 
-
-mytree = create_tree(rule_tree) # Create the tree (call the function)
-print(RenderTree(mytree).by_attr('id'))
-print(RenderTree(mytree))
-# print(rule_tree)
 
