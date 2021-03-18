@@ -80,7 +80,7 @@ class syntax_validation_task(task):
 
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_syntax.json"), "w")
-        check_program = os.path.join(os.getcwd() + "/checks/ifc-python-parser", "parse_file.py")
+        check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
         subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
 
 
