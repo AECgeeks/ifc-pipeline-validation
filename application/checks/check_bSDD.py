@@ -19,7 +19,6 @@ def pack_classification(classification_props):
 def pack_mvd(mvd_output):
     return list(mvd_output.values())[0], list(mvd_output.values())[1], list(mvd_output.values())[3].wrappedValue
 
-
 def get_xset_rule(mvd_fn, pset_or_qset):
     concept_root = list(ifcopenshell.mvd.concept_root.parse(mvd_fn))[0]
     for c in concept_root.concepts():
@@ -45,7 +44,6 @@ def get_domains():
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Domain/v2"
     r = requests.get(url)
     return json.loads(r.text) 
-
 
 def get_classification(domain_ref, item_ref):
     domain_found = 0
@@ -80,8 +78,7 @@ def get_classification(domain_ref, item_ref):
         print(domain_ref)
         print("The domain", domain_ref,"has not been found in the bSDD.")
         return 'This domain has not been found in the bSDD.'
-
-        
+   
 def get_classification_object(uri):
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v2"
     base_url = "https://bs-dd-api-prototype.azurewebsites.net/api/"
@@ -89,7 +86,6 @@ def get_classification_object(uri):
     r = requests.get(url, {'namespaceUri':uri})
     return json.loads(r.text) 
     
-
 def validate_consistency(ifc_file):
     rel_associate_classifications = ifc_file.by_type("IfcRelAssociatesClassification")
     log_to_construct = {}
@@ -104,10 +100,8 @@ def validate_consistency(ifc_file):
         # String matching between bsdd and IFC name
         classification_name2 = get_domain_fuzzy(get_domains(), classification_name)
         
-
         if isinstance(classification_name2, str):
             log_to_construct[classification_name] = classification_name2
-
         else:   
             if classification_name2['name'] not in log_to_construct.keys():
                 log_to_construct[classification_name2['name']] = {}
@@ -183,7 +177,6 @@ if __name__ == "__main__":
         "logical": bool,  # still not implemented in IfcOpenShell
         "binary": str,  # maps to a str of "0" and "1"
     }
-
 
     ifc_fn = sys.argv[1]
     ifc_file = ifcopenshell.open(ifc_fn)
