@@ -29,6 +29,7 @@ def get_xset_rule(mvd_fn, pset_or_qset):
                     return r
 
 def get_domain_fuzzy(domains, domain_ref, tolerance=50):
+    #todo: check for case also
     idx = 0
     for i in range(len(domains)):
         #todo: Handle no match at all case

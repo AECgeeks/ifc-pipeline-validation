@@ -105,14 +105,14 @@ class mvd_validation_task(task):
             subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
 
 class bsdd_validation_task(task):
-    est_time =5
+    est_time = 30
 
     def execute(self, directory, id):
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
         outname = id +"_bsdd.txt"
         with open(os.path.join(directory, outname), "w") as f:
             subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
- 
+   
 
 class xml_generation_task(task):
     est_time = 1
