@@ -61,71 +61,74 @@
         }
     </style>
 
-<body style="text-align: center">
+<body>
 
+    <div class="full-screen">
+        <div class="header">
 
-    <div id="navbar">
-
-        <a href="/" style="padding-left: 5px;" id="logo">
-            <img id="bs" src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
-        </a>
-        <div id="logo">
-            <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" />
-        </div>
-    </div>
-
-    <div id="main2">
-
-
-        <div id="submitzone">
-
-
-            {{ dropzone.create('put_main') }}
-            {{ dropzone.load_js() }}
-
-
-
-           
-
-            <div id="config">
-
-             
-                <div>
-                    <input type="checkbox" id="syntax_outside" name="syntax">
-                    <label for="Syntax">Syntax</label>
-                </div>
-
-                <div>
-                    <input type="checkbox" id="schema_outside" name="schema">
-                    <label for="Schema">Schema</label>
-                </div>
-
-                <div>
-                    <input type="checkbox" id="mvd_outside" name="mvd">
-                    <label for="MVD">MVD</label>
-                </div>
-
-                <div>
-                    <input type="checkbox" id="bsdd_outside" name="bsdd" checked>
-                    <label for="bSDD">bSDD</label>
-                </div>
-
-                <div>
-                    <input type="checkbox" id="ids_outside" name="bsdd">
-                    <label for="IDS">IDS</label>
-                </div>
-
-
-
+            <a href="/" style="padding-left: 5px;" id="logo">
+                <img class="bsdd-logo" src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
+            </a>
+            <div id="logo">
+                <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" />
             </div>
-
-            <button id="submit">Start validation</button>
-
-
+        </div>
+    
+        <div class="main">
+    
+    
+            <div class="submit-area">
+    
+    
+                {{ dropzone.create('put_main') }}
+                {{ dropzone.load_js() }}
+    
+    
+    
+            
+                <div id="config">
+    
+                 
+                    <div>
+                        <input type="checkbox" id="syntax_outside" name="syntax">
+                        <label for="Syntax">Syntax</label>
+                    </div>
+    
+                    <div>
+                        <input type="checkbox" id="schema_outside" name="schema">
+                        <label for="Schema">Schema</label>
+                    </div>
+    
+                    <div>
+                        <input type="checkbox" id="mvd_outside" name="mvd">
+                        <label for="MVD">MVD</label>
+                    </div>
+    
+                    <div>
+                        <input type="checkbox" id="bsdd_outside" name="bsdd" checked>
+                        <label for="bSDD">bSDD</label>
+                    </div>
+    
+                    <div>
+                        <input type="checkbox" id="ids_outside" name="bsdd">
+                        <label for="IDS">IDS</label>
+                    </div>
+    
+    
+    
+                </div>
+    
+                <button id="submit">Start validation</button>
+    
+    
+            </div>
+    
+    
         </div>
 
-
     </div>
+
+    
 
 
     <script>
