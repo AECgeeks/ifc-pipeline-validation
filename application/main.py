@@ -456,7 +456,6 @@ def view_report(id,ids,fn):
     result_logs['bsddlog'] = {"schema": "v"}
 
 
-    
     return render_template('report_consistency.html',f = data, result_logs=result_logs, fn=fn)
 
 

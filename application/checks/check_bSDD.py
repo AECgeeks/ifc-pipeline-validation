@@ -92,6 +92,8 @@ def validate_consistency(ifc_file):
     log_to_construct = {}
 
     for rel in rel_associate_classifications:
+        # sys.stdout.write(".")
+        # sys.stdout.flush()
         classification_reference = rel.RelatingClassification
         classification_reference_code = classification_reference.ItemReference
         classification_reference_name = classification_reference.Name
