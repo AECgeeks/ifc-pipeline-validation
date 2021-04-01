@@ -19,17 +19,6 @@ html, body, .full-screen {
   flex-direction: column;
 }
 
-/* .full-screen > * {
-  flex: 0 0 auto;
-  
-} */
-
-/* .full-screen > .main {
-  flex: 1 0 auto;
-  
-  display: flex;
-} */
-
 /****** navigation ******/
 
 .header {
@@ -54,7 +43,6 @@ html, body, .full-screen {
   background-size: cover;
   width: 100%;
   flex: 1 1 auto;
-
 }
 
 /****** submit area ******/
@@ -69,9 +57,6 @@ html, body, .full-screen {
   gap: 15px;
   width: 300px;
   height: 500px;
-  /* position: sticky; */
-  /* flex: 1 1 auto; */
-  /* flex-basis: auto; */
 }
 
 #myDropzone {
@@ -80,31 +65,25 @@ html, body, .full-screen {
   overflow: auto;
   text-align: center;
   height: 300px;
-  width:80%;
-
+  width: 80%;
 }
-
 
 #config {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   justify-content: center;
   text-align: left;
-  /* min-height: 500; */
-  width:80%;
-  /* width:200px; */
+  width: 80%;
   background-color: rgb(181, 201, 255);
   border-radius: 5px;
-  /* font-size: 14%; */
   font-family: Calibri;
 }
-
 
 #submit {
   padding: 10px 20px;
   border-radius: 5px;
   width: 40%;
+  font-size: 15px;
 }
 
 a:visited {

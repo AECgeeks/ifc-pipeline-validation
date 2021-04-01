@@ -24,19 +24,15 @@
             border: solid 1px #ddd;
         }
 
-        /* .dropzone .dz-preview .dz-progress {
-            width: 200px;
-            margin-left: -100px;
-           
-        } */
 
         .dropzone .dz-preview .dz-details .dz-size {
             margin-bottom: 2em;
         }
 
-        .dz-message{
+        .dz-message {
             font-family: Calibri;
         }
+
         .dropzone .dz-preview .dz-progress {
             width: 80%;
             margin-left: -40%;
@@ -67,68 +63,64 @@
         <div class="header">
 
             <a href="/" style="padding-left: 5px;" id="logo">
-                <img class="bsdd-logo" src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
+                <img class="bsdd-logo"
+                    src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
             </a>
             <div id="logo">
                 <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" />
             </div>
         </div>
-    
+
         <div class="main">
-    
-    
+
+
             <div class="submit-area">
-    
-    
+
+
                 {{ dropzone.create('put_main') }}
                 {{ dropzone.load_js() }}
-    
-    
-    
-            
+
                 <div id="config">
-    
-                 
                     <div>
-                        <input type="checkbox" id="syntax_outside" name="syntax">
+                        <input type="checkbox" id="syntax_outside" name="syntax" disabled="disabled">
                         <label for="Syntax">Syntax</label>
                     </div>
-    
+
                     <div>
                         <input type="checkbox" id="schema_outside" name="schema">
                         <label for="Schema">Schema</label>
                     </div>
-    
+
                     <div>
                         <input type="checkbox" id="mvd_outside" name="mvd">
                         <label for="MVD">MVD</label>
                     </div>
-    
+
                     <div>
                         <input type="checkbox" id="bsdd_outside" name="bsdd" checked>
                         <label for="bSDD">bSDD</label>
                     </div>
-    
+
                     <div>
-                        <input type="checkbox" id="ids_outside" name="bsdd">
+                        <input type="checkbox" id="ids_outside" name="ids" disabled="disabled">
                         <label for="IDS">IDS</label>
                     </div>
-    
-    
-    
+
+
+
                 </div>
-    
+
                 <button id="submit">Start validation</button>
-    
-    
+
+
             </div>
-    
-    
+
+
         </div>
 
     </div>
 
-    
+
 
 
     <script>
@@ -170,7 +162,7 @@
                         var checkboxToUpdate = document.getElementById(validationTypes[i]);
                         var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
 
-                    
+
                         if (checkboxOutside.checked == 1) {
                             checkboxToUpdate.value = 1;
                         }
