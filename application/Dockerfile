@@ -2,7 +2,7 @@ FROM debian:buster-slim
 
 WORKDIR /
 RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev npm python3-setuptools python3-dev python3-wheel supervisor
-RUN python3 -m pip install flask flask-cors numpy Pillow gunicorn rq redis sqlalchemy<1.4.0 psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests flask-dropzone lark-parser pyparsing XlsxWriter fuzzywuzzy python-Levenshtein --upgrade
+RUN python3 -m pip install flask flask-cors numpy Pillow gunicorn rq redis SQLAlchemy==1.3.24 psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests flask-dropzone lark-parser pyparsing XlsxWriter fuzzywuzzy python-Levenshtein --upgrade
 RUN npm install -g jsdoc gltf-pipeline requirejs npx uglify-js
 
 # IfcConvert v0.6.0
