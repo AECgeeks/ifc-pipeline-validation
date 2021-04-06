@@ -3,7 +3,6 @@ import ifcopenshell.util.element
 
 from xml.dom.minidom import parse
 
-
 class exception(Exception):
     pass
 
@@ -52,12 +51,13 @@ class facet(metaclass=meta_facet):
         self.node = node
 
     def __getattr__(self, k):
-        v = self.node.getElementsByTagName(k)[0]
-        elems = [n for n in v.childNodes if n.nodeType == n.ELEMENT_NODE]
-        if elems:
-            return restriction(elems[0])
-        else:
-            return v.firstChild.nodeValue.strip()
+        if len(self.node.getElementsByTagName(k)):
+            v = self.node.getElementsByTagName(k)[0]
+            elems = [n for n in v.childNodes if n.nodeType == n.ELEMENT_NODE]
+            if elems:
+                return restriction(elems[0])
+            else:
+                return v.firstChild.nodeValue.strip()
 
     def __iter__(self):
         for k in self.parameters:
@@ -72,7 +72,7 @@ class entity(facet):
     The IDS entity facet currently *with* inheritance
     """
 
-    parameters = ["name"]
+    parameters = ["name", "predefinedtype"]
     message = "an entity name '%(name)s'"
 
     def __call__(self, inst, logger):
@@ -96,6 +96,7 @@ class classification(facet):
             if association.is_a("IfcRelAssociatesClassification"):
                 cref = association.RelatingClassification
                 refs.append((cref.ReferencedSource, cref.Name))
+        
 
         return facet_evaluation(
             (self.system, self.value) in refs,
@@ -103,23 +104,33 @@ class classification(facet):
             "",
         )
 
+    def get_res(self, inst):
+        refs = []
+        for association in inst.HasAssociations:
+            if association.is_a("IfcRelAssociatesClassification"):
+                cref = association.RelatingClassification
+                refs.append((cref.ReferencedSource.Name, cref.Name + "_" + cref.ItemReference))
+        return refs
 
+
+        
 class property(facet):
     """
     The IDS property facet implenented using `ifcopenshell.util.element`
     """
 
-    parameters = ["property", "propertyset", "value"]
-    message = "a property '%(property)s' in '%(propertyset)s' with value '%(value)s'"
+    parameters = ["name", "propertyset", "value"]
+    message = "a property '%(name)s' in '%(propertyset)s' with value '%(value)s'"
 
     def __call__(self, inst, logger):
         props = ifcopenshell.util.element.get_psets(inst)
+        
         pset = props.get(self.propertyset)
-        val = pset.get(self.property) if pset else None
+        val = pset.get(self.name) if pset else None
         logger.debug("Testing %s == %s", val, self.value)
 
         di = {
-            "property": self.property,
+            "name": self.name,
             "propertyset": self.propertyset,
             "value": val,
         }
@@ -128,12 +139,72 @@ class property(facet):
             msg = self.message % di
         else:
             if pset:
-                msg = "a set '%(propertyset)s', but no property '%(property)'" % di
+                msg = "a set '%(propertyset)s', but no property '%(name)'" % di
             else:
                 msg = "no set '%(propertyset)s'" % di
 
         return facet_evaluation(val == self.value, msg)
 
+    def get_res(self, inst):
+        props = ifcopenshell.util.element.get_psets(inst)
+        pset = props.get(self.propertyset)
+        val = pset.get(self.name) if pset else None
+
+    
+        di = {
+            "name": self.name,
+            "propertyset": self.propertyset,
+            "value": val,
+        }
+
+        if not pset:
+            
+            di = {
+                "name": 0,
+                "propertyset": 0,
+                "value": 0,
+            }
+            return di
+
+
+
+        return di
+
+
+
+class material(facet):
+    """
+    The IDS material facet 
+    """
+    parameters = ["name", "value"]
+    message = "a material '%(name)s'"
+
+    def __call__(self, inst, logger):
+        material_relations = [rel for rel in inst.HasAssociations if rel.is_a("IfcRelAssociatesMaterial")]
+
+        for rel in material_relations:
+            if rel.RelatingMaterial.is_a("IfcMaterialLayerSetUsage"):
+                layers = rel.RelatingMaterial.ForLayerSet.MaterialLayers
+                names = [layer.Material.Name for layer in layers]
+
+        return facet_evaluation(1,"test")
+
+
+    def get_res(self, inst):
+        material_relations = [rel for rel in inst.HasAssociations if rel.is_a("IfcRelAssociatesMaterial")]
+        values = []
+        for rel in material_relations:
+            if rel.RelatingMaterial.is_a("IfcMaterialLayerSetUsage"):
+                layers = rel.RelatingMaterial.ForLayerSet.MaterialLayers
+                names = [layer.Material.Name for layer in layers]
+                values.append(names)
+  
+            elif rel.RelatingMaterial.is_a("IfcMaterial"):
+                name = rel.RelatingMaterial.Name
+                values.append(name)
+
+        return values
+                
 
 class boolean_logic:
     """
@@ -166,16 +237,32 @@ class restriction:
     """
 
     def __init__(self, node):
-        self.options = [
-            n.getAttribute("value")
-            for n in node.childNodes
-            if n.nodeType == n.ELEMENT_NODE and n.tagName.endswith("enumeration")
-        ]
+     
+        self.options = []
+        
+        for n in node.childNodes:
+            if n.nodeType == n.ELEMENT_NODE and n.tagName.endswith("enumeration"):
+                self.options.append(n.getAttribute("value"))
+                self.type = "enumeration"
+
+            if n.nodeType == n.ELEMENT_NODE and n.tagName.endswith("Inclusive"):
+                self.options.append(n.getAttribute("value"))
+                self.type = "bound"
+            
+            if n.nodeType == n.ELEMENT_NODE and n.tagName.endswith("length"):
+                self.options.append(n.getAttribute("value"))
+                self.type = "length"
+            
+            if n.nodeType == n.ELEMENT_NODE and n.tagName.endswith("pattern"):
+                self.options.append(n.getAttribute("value"))
+                self.type = "pattern"
+        
 
     def __eq__(self, other):
         return other in self.options
 
     def __repr__(self):
+        #todo: different repr according to the type
         return " or ".join(self.options)
 
 
@@ -197,10 +284,10 @@ class specification:
         phrases[0].tagName == "applicability" or error("expected <applicability>")
         phrases[1].tagName == "requirements" or error("expected <requirements>")
 
-        self.applicabiliy, self.requirements = (boolean_and(parse_rules(phrase)) for phrase in phrases)
+        self.applicability, self.requirements = (boolean_and(parse_rules(phrase)) for phrase in phrases)
 
     def __call__(self, inst, logger):
-        if self.applicabiliy(inst, logger):
+        if self.applicability(inst, logger):
             valid = self.requirements(inst, logger)
             if valid:
                 logger.info(str(self) + "\n%s has" % inst + " " + str(valid) + " so is compliant")
@@ -208,7 +295,7 @@ class specification:
                 logger.error(str(self) + "\n%s has" % inst + " " + str(valid) + " so is not compliant")
 
     def __str__(self):
-        return "Given an instance with %(applicabiliy)s\nWe expect %(requirements)s" % self.__dict__
+        return "Given an instance with %(applicability)s\nWe expect %(requirements)s" % self.__dict__
 
 
 class ids:
@@ -225,6 +312,7 @@ class ids:
             specification(n) for n in ids.childNodes if n.nodeType == n.ELEMENT_NODE and n.tagName == "specification"
         ]
 
+        
     def validate(self, ifc_file, logger):
         for spec in self.specifications:
             for elem in ifc_file.by_type("IfcObject"):
@@ -235,10 +323,75 @@ if __name__ == "__main__":
     import sys
     import logging
     import ifcopenshell
+    import os
+    import json
 
     logger = logging.getLogger("IDS")
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     ids_file = ids(sys.argv[1])
     ifc_file = ifcopenshell.open(sys.argv[2])
-    ids_file.validate(ifc_file, logger)
+    
+    terms = ids_file.specifications[0].requirements.terms
+
+    requirements = ids_file.specifications[0].requirements
+
+    walls = ifc_file.by_type("IfcWall")
+
+    log_to_construct =  {}
+
+    for index, specification in  enumerate(ids_file.specifications):
+        log_to_construct[index] = {}
+        log_to_construct[index]['applicability'] = {}
+
+        for t_id, t in enumerate(specification.applicability.terms):
+            facet_type = type(t).__name__
+
+            if not facet_type in log_to_construct[index]['applicability'].keys():
+                log_to_construct[index]['applicability'][facet_type] = {}
+            
+            param_values = [str(getattr(t,t.parameters[i])) for i in range(len(t.parameters)) ]
+           
+            zip_iterator = zip(t.parameters, param_values)
+            a_dictionary = dict(zip_iterator)
+
+            log_to_construct[index]['applicability'][facet_type][t_id] = a_dictionary
+
+        log_to_construct[index]['requirements'] = {}
+
+    
+        for t_id, t in enumerate(specification.requirements.terms):
+            
+            facet_type = type(t).__name__
+      
+
+            if not facet_type in log_to_construct[index]['requirements'].keys():
+                log_to_construct[index]['requirements'][facet_type] = {}
+
+            log_to_construct[index]['requirements'][facet_type][t_id] = {}
+            log_to_construct[index]['requirements'][facet_type][t_id]['requirements'] = {}
+            log_to_construct[index]['requirements'][facet_type][t_id]['values'] = {}
+
+            param_values = [str(getattr(t,t.parameters[i])) for i in range(len(t.parameters)) ]
+    
+            zip_iterator = zip(t.parameters, param_values)
+            a_dictionary = dict(zip_iterator)
+
+
+            log_to_construct[index]['requirements'][facet_type][t_id]['requirements'] = a_dictionary
+
+            for w in ifc_file.by_type("IfcWall"):
+                if facet_type == 'property':
+                    log_to_construct[index]['requirements'][facet_type][t_id]['values'][w.GlobalId] = t.get_res(w)
+
+                if facet_type == 'classification':
+                    log_to_construct[index]['requirements'][facet_type][t_id]['values'][w.GlobalId] = t.get_res(w)
+
+                if facet_type == 'material':
+                    log_to_construct[index]['requirements'][facet_type][t_id]['values'][w.GlobalId] = t.get_res(w)
+
+
+    ids_results_path = os.path.join(os.getcwd(), "ids_result_bsdd.json")
+
+    with open(ids_results_path, 'w', encoding='utf-8') as f:
+        json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
