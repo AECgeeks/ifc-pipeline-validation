@@ -99,6 +99,7 @@ def get_main():
 
 
 def process_upload(filewriter, callback_url=None):
+    
     id = utils.generate_id()
     d = utils.storage_dir_for_id(id)
     os.makedirs(d)
@@ -111,6 +112,7 @@ def process_upload(filewriter, callback_url=None):
     session.close()
     
     if DEVELOPMENT:
+        
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
         t.start()
   
@@ -150,7 +152,8 @@ def process_upload_multiple(files, callback_url=None):
 
 
 def process_upload_validation(files,validation_config, callback_url=None):
-    
+    print("MAIddddddddddddddddddddddddddddddN", threading.current_thread().__class__.__name__)
+    # assert threading.current_thread() is threading.main_thread()
     ids = []
     for file in files:
         fn = file.filename
@@ -213,6 +216,13 @@ def put_main():
         return jsonify({"url":url})
     else:
         return redirect(url)
+
+
+
+
+@application.route('/idschecking', methods=['GET'])
+def ids_front():
+    return "IFC input for IDS validation"
 
 
 
@@ -405,58 +415,18 @@ def view_report(id,ids,fn):
         a = 32*j
     
 
+    f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "info.json")
+    bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
 
-    f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
 
-    print(f)
-
-    intermediate_scores =  {}
     with open(f) as json_file:
-        data = json.load(json_file)
-        
-        for classification in data.keys():
-            print(classification)
-            print(data[classification].keys())
+        info = json.load(json_file)
 
-            
+    with open(bsdd_json) as json_file:
+        bsdd_result = json.load(json_file)
 
-    # for k,v in data.items():
-    #     d = {'v':0, 'i':0,'t':0}
-    #     intermediate_scores[k] = d
+    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result)
 
-    #     for m in v.values():
-    #         for p in m:
-    #             if p[1] == "Not present":
-    #                 intermediate_scores[k]['i'] += 1
-    #             elif p[1] == "wrong type":
-    #                 intermediate_scores[k]['t'] += 1
-
-    #             else:
-    #                 intermediate_scores[k]['v'] += 1
-
-    
-
-    # result_logs = {  
-    #     'syntaxlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_syntax.json"),
-    #     'schemalog': os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_schema.json"),
-    #     'mvdlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_mvd.json"),
-    #     'bsddlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "result_bsdd.json")
-
-    # }
-
-    # for k, v in result_logs.items():
-    #     with open(v) as json_file:
-    #         data = json.load(json_file)
-    #         result_logs[k] = list(data.values())[0]
-
-    result_logs = {}
-    result_logs['syntaxlog'] = {"schema": "v"}
-    result_logs['schemalog'] = {"schema": "v"}
-    result_logs['mvdlog'] = {"schema": "v"}
-    result_logs['bsddlog'] = {"schema": "v"}
-
-
-    return render_template('report_consistency.html',f = data, result_logs=result_logs, fn=fn)
 
 
 @application.route('/m/<fn>', methods=['GET'])
