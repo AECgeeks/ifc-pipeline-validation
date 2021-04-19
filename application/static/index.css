@@ -37,6 +37,7 @@ html, body, .full-screen {
 .main {
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   background-image: url('./icons/background.jpg');
   background-repeat: no-repeat;
@@ -45,9 +46,66 @@ html, body, .full-screen {
   flex: 1 1 auto;
 }
 
+
+/****** tabs ******/
+.tabs{
+  display: flex;
+  align-items:center;
+  justify-content:space-around;
+  /* width:300px;
+  padding-left: 10px;
+  padding-right: 10px; */
+  width: 320px;
+  background-color:#e7e7e7;
+  gap:3px;
+  font-family: Calibri;
+  height:30px;
+  border-top-right-radius:15px;
+
+  
+}
+
+.tab{
+  border: none;
+background: none;
+width:50%;
+font-size: 20px;
+
+/* height: 40px; */
+height: 100%;
+
+}
+
+#ifc_button{
+  color:rgb(0, 157, 176);
+}
+
+.tab:active{
+  /* background:rgb(255, 255, 255); */
+  border: none;
+  outline:0;
+}
+/* button:focus{
+  background:rgb(255, 255, 255);
+  border: none;
+  outline:0;
+} */
+
+button:focus{
+  outline:0;
+}
+
+/* .tab:hover{
+  background:bisque;
+} */
+
+
+
 /****** submit area ******/
 
-.submit-area {
+.submit-area{
+ 
+  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,11 +137,12 @@ html, body, .full-screen {
   font-family: Calibri;
 }
 
-#submit {
+.submit-button {
   padding: 10px 20px;
   border-radius: 5px;
   width: 40%;
   font-size: 15px;
+  /* border: none; */
 }
 
 a:visited {

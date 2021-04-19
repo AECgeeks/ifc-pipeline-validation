@@ -80,7 +80,6 @@
         function completeTable(i, results, ids, rows) {
 
             fetch("/reslogs/" + i + "/" + ids).then(function (r) { return r.json(); }).then(function (r) {
-                console.log("log received", r)
                 
                 var schemaImg = document.createElement("img");
                 schemaImg.src = "/static/icons/"+ icons[r['schemalog']]+".png";
@@ -103,10 +102,10 @@
             repText.innerHTML = "View report"
             var fn = rows[i + 1].cells[4].innerHTML;
             var st = window.location.href;
-            console.log(st.split('/')[2]);
+
             var baseUrl = st.split('/')[2];
             
-            console.log("baseURL", baseUrl)
+            
             var url = "/report/"+ i+"/"+ids + "/" + fn;
             
             repText.href = url;
@@ -115,7 +114,7 @@
 
             rows[i + 1].cells[5].appendChild(repText)
 
-            console.log(repText);
+            
 
 
             rows[i + 1].cells[5].style.color = "#0070C0";
