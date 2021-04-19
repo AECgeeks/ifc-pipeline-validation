@@ -152,7 +152,7 @@ def process_upload_multiple(files, callback_url=None):
 
 
 def process_upload_validation(files,validation_config, callback_url=None):
-    print("MAIddddddddddddddddddddddddddddddN", threading.current_thread().__class__.__name__)
+    
     # assert threading.current_thread() is threading.main_thread()
     ids = []
     for file in files:
@@ -360,8 +360,6 @@ def get_viewer(id):
 def log_results(i, ids):
     # d = utils.storage_dir_for_id(id)
     # input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
-    print("i", i)
-    print("ids", ids)
     n_ids = int(len(ids)/32)
 
     all_ids = []
