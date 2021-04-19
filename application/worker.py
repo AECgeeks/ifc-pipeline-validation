@@ -75,13 +75,35 @@ class task(object):
         self.sub_progress(100)
 
 
+class general_info_task(task):
+    
+    est_time = 1
+    
+    #import pdb; pdb.set_trace()
+    def execute(self, directory, id):
+        info_program = os.path.join(os.getcwd() + "/checks", "info.py")
+        subprocess.call([sys.executable, info_program, id + ".ifc"], cwd=directory)
+
+
 class syntax_validation_task(task):
     est_time = 10
 
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_syntax.json"), "w")
         check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
-        subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
+        #subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=subprocess.PIPE)
+        i = 0
+        while True:
+            ch = proc.stdout.read(1)
+            
+            if not ch and proc.poll() is not None:
+                break
+
+            if ch and ord(ch) == ord('.'):
+                i += 1
+                self.sub_progress(i)
+
 
 
 class ifc_validation_task(task):
@@ -90,14 +112,25 @@ class ifc_validation_task(task):
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_schema.json"), "w")
         check_program = os.path.join(os.getcwd() + "/checks", "validate.py")
-        subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
+        #subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=subprocess.PIPE)
+        i = 0
+        while True:
+            ch = proc.stdout.read(1)
+            
+            if not ch and proc.poll() is not None:
+                break
+
+            if ch and ord(ch) == ord('.'):
+                i += 1
+                self.sub_progress(i)
+
 
 class mvd_validation_task(task):
     est_time =10
 
     
     def execute(self, directory, id):
-        print(directory)
         check_program = os.path.join(os.getcwd() + "/checks", "check_MVD.py")
         outname = id +"_mvd.txt"
       
@@ -110,6 +143,7 @@ class bsdd_validation_task(task):
     def execute(self, directory, id):
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
         outname = id +"_bsdd.txt"
+
         # with open(os.path.join(directory, outname), "w") as f:
         #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
 
@@ -117,7 +151,7 @@ class bsdd_validation_task(task):
         i = 0
         while True:
             ch = proc.stdout.read(1)
-
+        
             if not ch and proc.poll() is not None:
                 break
 
@@ -219,7 +253,7 @@ def do_process(id, validation_config):
     d = utils.storage_dir_for_id(id)
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
-    tasks = []
+    tasks = [general_info_task]
 
     for task, to_validate in validation_config.items():
         if int(to_validate):
@@ -231,7 +265,8 @@ def do_process(id, validation_config):
                 tasks.append(mvd_validation_task)
             else:
                 tasks.append(bsdd_validation_task)
-            
+    
+    
         
     # tasks = [
     #     # syntax_validation_task,
@@ -316,6 +351,7 @@ def do_process(id, validation_config):
 
 
 def process(ids, validation_config, callback_url):
+
     try:
         do_process(ids, validation_config)
         status = "success"
