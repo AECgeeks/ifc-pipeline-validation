@@ -3,10 +3,12 @@ import json
 import pprint
 import ifcopenshell
 from ifcopenshell.mvd import mvd
+import ifcopenshell.util.element
 import itertools
 import sys
 import os 
 import time
+import numpy as np
 from Levenshtein import distance
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
@@ -68,11 +70,11 @@ def get_classification(domain_ref, item_ref):
                     #     print('errr', ref, '  ', item_ref)
                     
                 if found_ref == 0:
-                    print('No classification matched with the reference code provided' , '(',item_ref,')')
+                    #print('No classification matched with the reference code provided' , '(',item_ref,')')
                     return 'No classification matched with the reference code provided.'
 
             else:
-                print('No classification found for the domain ', domain_ref)
+                #print('No classification found for the domain ', domain_ref)
                 return 'No classification found for this domain.'
         
     if domain_found == 0:
@@ -86,83 +88,95 @@ def get_classification_object(uri):
 
     r = requests.get(url, {'namespaceUri':uri})
     return json.loads(r.text) 
-    
+
+
 def validate_consistency(ifc_file):
     rel_associate_classifications = ifc_file.by_type("IfcRelAssociatesClassification")
     log_to_construct = {}
 
-    for rel in rel_associate_classifications:
-        # sys.stdout.write(".")
-        # sys.stdout.flush()
-        classification_reference = rel.RelatingClassification
-        classification_reference_code = classification_reference.ItemReference
-        classification_reference_name = classification_reference.Name
-        classification = classification_reference.ReferencedSource
-        classification_name = classification.Name
-        
-        # String matching between bsdd and IFC name
-        classification_name2 = get_domain_fuzzy(get_domains(), classification_name)
-        
-        if isinstance(classification_name2, str):
-            log_to_construct[classification_name] = classification_name2
-        else:   
-            if classification_name2['name'] not in log_to_construct.keys():
-                log_to_construct[classification_name2['name']] = {}
-    
-            log_to_construct[classification_name2['name']][classification_reference_name +"-"+classification_reference_code] = {}
-            bsdd_response = get_classification(classification_name2['name'], str(classification_reference_code))
+    prog = 0
 
-            if not isinstance(bsdd_response, str):
-                bsdd_response = get_classification_object(bsdd_response['namespaceUri'])
+    n = len(rel_associate_classifications)
+
+    if n:
+        rnd_array = np.random.multinomial(100, np.ones(n)/n, size=1)[0]
+
+        for idx, rel in enumerate(rel_associate_classifications):
+            sys.stdout.write(rnd_array[idx] * ".")
+            sys.stdout.flush()
+
+            # import pdb; pdb.set_trace()
+
+            #todo: handle IfcClassificationReference IFC4 schema's attributes change
+            classification_reference = rel.RelatingClassification
+            classification_reference_code = classification_reference.ItemReference
+            classification_reference_name = classification_reference.Name
+            classification = classification_reference.ReferencedSource
+            classification_name = classification.Name
+        
+            # String matching between bsdd and IFC name
+            domain_name = get_domain_fuzzy(get_domains(), classification_name)
+            
+            if isinstance(domain_name, str):
+                log_to_construct[classification_name] = domain_name
+            else:   
+                if domain_name['name'] not in log_to_construct.keys():
+                    log_to_construct[domain_name['name']] = {}
+        
                 
-                if 'classificationProperties' in bsdd_response.keys():
-                    classification_properties = bsdd_response['classificationProperties']
-                    packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
+                log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code] = {}
 
-                    for e in rel.RelatedObjects:
-                        
-                        log_to_construct[classification_name2['name']][classification_reference_name +"-"+classification_reference_code][e.GlobalId] = []
-                        packed_output = [pack_mvd(d) for d in mvd.extract_data(rule_tree, e)]
+                short_classification_dict = log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]
 
-                        to_compare = [packed_output, packed_properties]
-                        match = 0
-                        for mvd_data, bsdd_data in itertools.product(*to_compare):
-                            match = mvd_data[0] == bsdd_data[0] and mvd_data[1] == bsdd_data[1]
 
-                            if match:
-                                if isinstance(mvd_data[2],simple_type_python_mapping[bsdd_data[2]]):
-                                    compval = bsdd_data[3]
+                bsdd_response = get_classification(domain_name['name'], str(classification_reference_code))
 
-                                    if bsdd_data[3] == 'TRUE':
-                                        compval = True
+                if not isinstance(bsdd_response, str):
+                    bsdd_response = get_classification_object(bsdd_response['namespaceUri'])
+                    
+                    if 'classificationProperties' in bsdd_response.keys():
+                        classification_properties = bsdd_response['classificationProperties']
+                        packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
 
-                                    elif bsdd_data[3] == 'FALSE':
-                                        compval = False
-                                    
-                                    if mvd_data[2] == compval:
-                                        log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED',))
+                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'] = {}
+                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'] = {}
 
-                                    elif isinstance(compval,str):
-                                        if not len(compval):
-                                        
-                                            log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'PASSED BUT ABSENT VALUE IN BSDD',)) 
-                                    else:
-                                    
-                                        log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED',)) 
-                                else:
+                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'] = bsdd_response['classificationProperties']
+
+                        for e in rel.RelatedObjects:
+                            for p in log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements']:
+                                #print(log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'])
+                                if not e.GlobalId in  log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'].keys():
+                                    log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'][e.GlobalId] =[]
+                                name = p['name']
+                                pset_name = p['propertySet']
+                                props = ifcopenshell.util.element.get_psets(e)
+                                pset = props.get(pset_name)
+                                val = pset.get(name) if pset else None
                                 
-                                    log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId].append((mvd_data, bsdd_data,  'FAILED - WRONG TYPE USED',)) 
+                                if not pset:
+                                    di = {
+                                            "name": 0,
+                                            "propertyset": 0,
+                                            "value": 0,
+                                        }
+                                else:
+                                    di = {
+                                        "name": name,
+                                        "propertyset": pset_name,
+                                        "value": val,
+                                    }
 
-                        if len(log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId]) == 0 :
-                        
-                            log_to_construct[classification_name2['name']][rel.RelatingClassification.Name +"-"+classification_reference_code][e.GlobalId] = [packed_properties,"NO MATCH WITH"]
+                                log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'][e.GlobalId].append(di)
+    else:
+        log_to_construct['result'] = "No classification detected in the file."
 
 
     detailed_results_path = os.path.join(os.getcwd(), "dresult_bsdd.json")
 
     with open(detailed_results_path, 'w', encoding='utf-8') as f:
         json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
-
+        
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -185,7 +199,7 @@ if __name__ == "__main__":
     ifc_file = ifcopenshell.open(ifc_fn)
 
     validate_consistency(ifc_file)
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
 
     results_path = os.path.join(os.getcwd(), "result_bsdd.json")
 
