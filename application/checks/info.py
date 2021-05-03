@@ -15,17 +15,15 @@ try:
 except:
     detected_mvd: "no MVD detected"
 
-# try:
-#     authoring_app = ifc_file.header.file_name.toString().split(",")[-3]
-# except:
-#     authoring_app = 'no authoring app detected'
-
-#import pdb; pdb.set_trace()
+try:
+    authoring_app = ifc_file.by_type("IfcApplication")[0].ApplicationFullName
+except:
+    authoring_app = 'no authoring app detected'
 
 file_info = {
     'size':str(round(os.path.getsize(sys.argv[1])*10**-6)) + "MB",
     'schema':ifc_file.schema,
-    # 'app': authoring_app
+    'app': authoring_app,
     'mvd': detected_mvd
 
     }
