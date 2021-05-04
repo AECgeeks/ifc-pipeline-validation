@@ -139,9 +139,14 @@ def validate_consistency(ifc_file):
                         packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
 
                         log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'] = {}
+                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['types'] = []
                         log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'] = {}
 
                         log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'] = bsdd_response['classificationProperties']
+                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['types'] = bsdd_response['relatedIfcEntityNames']
+                        # bsdd_response['relatedIfcEntityNames']
+                        # import pdb; pdb.set_trace()
+                        
 
                         for e in rel.RelatedObjects:
                             for p in log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements']:

@@ -159,7 +159,29 @@ class bsdd_validation_task(task):
                 i += 1
                 self.sub_progress(i)
 
-   
+
+class ids_validation_task(task):
+    est_time = 10
+
+    def execute(self, directory, id):
+        check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
+        outname = id +"_bsdd.txt"
+
+        # with open(os.path.join(directory, outname), "w") as f:
+        #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
+
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
+        i = 0
+        while True:
+            ch = proc.stdout.read(1)
+        
+            if not ch and proc.poll() is not None:
+                break
+
+            if ch and ord(ch) == ord('.'):
+                i += 1
+                self.sub_progress(i)
+
 
 class xml_generation_task(task):
     est_time = 1
@@ -249,13 +271,16 @@ class svg_generation_task(task):
                 self.sub_progress(i)
 
 
-def do_process(id, validation_config):
+def do_process(id, validation_config, ids_spec):
+
     d = utils.storage_dir_for_id(id)
+    
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
     tasks = [general_info_task]
 
     for task, to_validate in validation_config.items():
+       
         if int(to_validate):
             if task == 'syntax':
                 tasks.append(syntax_validation_task)
@@ -263,11 +288,11 @@ def do_process(id, validation_config):
                 tasks.append(ifc_validation_task)
             elif task == 'mvd':
                 tasks.append(mvd_validation_task)
-            else:
+            elif task == 'bsdd':
                 tasks.append(bsdd_validation_task)
-    
-    
-        
+            else:
+                tasks.append(ids_validation_task)
+
     # tasks = [
     #     # syntax_validation_task,
     #     # ifc_validation_task,
@@ -350,10 +375,9 @@ def do_process(id, validation_config):
     set_progress(id, elapsed)
 
 
-def process(ids, validation_config, callback_url):
-
+def process(ids, validation_config, ids_spec = None , callback_url=None):
     try:
-        do_process(ids, validation_config)
+        do_process(ids, validation_config, ids_spec)
         status = "success"
     except Exception as e:
         traceback.print_exc(file=sys.stdout)

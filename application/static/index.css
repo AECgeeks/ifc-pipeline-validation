@@ -39,7 +39,7 @@ html, body, .full-screen {
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  background-image: url('./icons/background.jpg');
+  background-image: url('./icons/background2.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
@@ -132,7 +132,8 @@ button:focus{
   justify-content: center;
   text-align: left;
   width: 80%;
-  background-color: rgb(181, 201, 255);
+  background-color:rgba(0, 158, 176, 0.384);
+  /* background-color: rgb(181, 201, 255); */
   border-radius: 5px;
   font-family: Calibri;
 }

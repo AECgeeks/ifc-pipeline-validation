@@ -19,3 +19,4 @@ application/checks/result_bsdd.json
 application/checks/__pycache__
 application/checks/.pytest_cache
 application/checks/tests/test_files
+*.txt

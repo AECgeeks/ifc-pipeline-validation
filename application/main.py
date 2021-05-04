@@ -98,6 +98,13 @@ def get_main():
     #return send_file("bsddlog.json", mimetype='text/plain')
 
 
+
+# @application.route('/ids', methods=['GET'])
+# def get_main():
+#     return render_template('index.html')
+#     #return send_file("bsddlog.json", mimetype='text/plain')
+
+
 def process_upload(filewriter, callback_url=None):
     
     id = utils.generate_id()
@@ -162,9 +169,7 @@ def process_upload_validation(files,validation_config, callback_url=None):
         ids.append(id)
         d = utils.storage_dir_for_id(id)
         os.makedirs(d)
-    
         filewriter(os.path.join(d, id+".ifc"))
-    
         session = database.Session()
         session.add(database.model(id, fn))
         session.commit()
@@ -182,23 +187,130 @@ def process_upload_validation(files,validation_config, callback_url=None):
     return ids
 
 
+def process_upload_validation_ids(files,validation_config, ids_spec, callback_url=None):
+    
+    # assert threading.current_thread() is threading.main_thread()
+    ids = []
+    for file in files:
+        fn = file.filename
+        filewriter = lambda fn: file.save(fn)
+        id = utils.generate_id()
+        ids.append(id)
+        d = utils.storage_dir_for_id(id)
+        os.makedirs(d)
+        filewriter(os.path.join(d, id+".ifc"))
+        session = database.Session()
+        session.add(database.model(id, fn))
+        session.commit()
+        session.close()
+    
+    if DEVELOPMENT:
+        for id in ids:
+            t = threading.Thread(target=lambda: worker.process(id, validation_config, ids_spec,callback_url ))
+            t.start()
+    else:
+        for id in ids:
+            q.enqueue(worker.process, id, validation_config, ids_spec,callback_url)
+
+    
+    return ids
+
+
+
+
+
+
+
+
+
+
+
+def upload_ids(files,validation_config, callback_url=None):
+    
+    ids = []
+    for file in files:
+        fn = file.filename
+        filewriter = lambda fn: file.save(fn)
+        id = utils.generate_id()
+        ids.append(id)
+        d = utils.storage_dir_for_id(id)
+        os.makedirs(d)
+        filewriter(os.path.join(d, id+".xml"))
+        session = database.Session()
+        session.add(database.model(id, fn))
+        session.commit()
+        session.close()
+    
+    # if DEVELOPMENT:
+    #     for id in ids:
+    #         t = threading.Thread(target=lambda: worker.process(id, validation_config, callback_url))
+    #         t.start()
+    # else:
+    #     for id in ids:
+    #         q.enqueue(worker.process, id, validation_config, callback_url)
+
+    return ids
+
+def process_ids(files,validation_config, callback_url=None):
+    ids = []
+    for file in files:
+        fn = file.filename
+        filewriter = lambda fn: file.save(fn)
+        id = utils.generate_id()
+        ids.append(id)
+        d = utils.storage_dir_for_id(id)
+        os.makedirs(d)
+        filewriter(os.path.join(d, id+".xml"))
+        session = database.Session()
+        session.add(database.model(id, fn))
+        session.commit()
+        session.close()
+
+    # if DEVELOPMENT:
+    #     for id in ids:
+    #         t = threading.Thread(target=lambda: worker.process(id, validation_config, callback_url))
+    #         t.start()
+    # else:
+    #     for id in ids:
+    #         q.enqueue(worker.process, id, validation_config, callback_url)
+
+    return ids
+
+
+
+
+
+
+
+
+
 @application.route('/', methods=['POST'])
 def put_main():
  
     ids = []
     files = []
 
-    # import pdb;pdb.set_trace()
+    extensions = set()
 
     for key, f in request.files.items():
+        
         if key.startswith('file'):
             file = f
             files.append(file)    
 
+            if file.filename.endswith('.xml'):
+                extensions.add('xml')
+            if file.filename.endswith('.ifc'):
+                extensions.add('ifc')
+           
     validation_config = request.form.to_dict()
 
     if VALIDATION:
-        ids = process_upload_validation(files, validation_config)
+        if 'xml' in extensions:
+            ids = upload_ids(files, validation_config)
+        else:
+            ids = process_upload_validation(files, validation_config)
+
     elif VIEWER:
         ids = process_upload_multiple(files)
 
@@ -207,25 +319,93 @@ def put_main():
         idstr += i
 
     if VALIDATION:
-        url = url_for('validate_files', id=idstr) 
+        if 'xml' in extensions:
+            url = url_for('ids_front', id=idstr)
+        else:
+            url = url_for('validate_files', id=idstr) 
     
     elif VIEWER:
         url = url_for('check_viewer', id=idstr) 
 
     if request.accept_mimetypes.accept_json:
         return jsonify({"url":url})
-    else:
-        return redirect(url)
+    # else:
+    #     return redirect(url)
 
 
 
+@application.route('/checkids/<test>', methods=['POST'])
+def put_main2(test):
+    ids = []
+    files = []
 
-@application.route('/idschecking', methods=['GET'])
-def ids_front():
-    return "IFC input for IDS validation"
+    extensions = set()
+
+    for key, f in request.files.items():
+        
+        if key.startswith('file'):
+            file = f
+            files.append(file)    
+            if file.filename.endswith('.xml'):
+                extensions.add('xml')
+            if file.filename.endswith('.ifc'):
+                extensions.add('ifc')
+           
+    validation_config = request.form.to_dict()
+
+    if VALIDATION:
+        if 'xml' in extensions:
+            ids = upload_ids_ids(files, validation_config, test)
+        else:
+            ids = process_upload_validation_ids(files, validation_config, test)
+
+    elif VIEWER:
+        ids = process_upload_multiple(files)
+
+    idstr = ""
+    for i in ids:
+        idstr += i
+
+    if VALIDATION:
+        if 'xml' in extensions:
+            url = url_for('ids_front', id=idstr)
+        else:
+            url = url_for('validate_files', id=idstr) 
+    
+    elif VIEWER:
+        url = url_for('check_viewer', id=idstr) 
+
+    if request.accept_mimetypes.accept_json:
+        return jsonify({"url":url})
 
 
+@application.route('/idschecking/<id>', methods=['GET', 'POST'])
+def ids_front(id):
 
+    if request.method == 'GET':
+        n_files = int(len(id)/32)
+        all_ids = []
+        b = 0
+        i = 1
+        a = 32
+        for d in range(n_files):
+            token = id[b:a]
+            all_ids.append(token)
+            b = a
+            i+= 1
+            a = 32*i
+            
+        filenames = []
+
+        for i in all_ids:
+            session = database.Session()
+            model = session.query(database.model).filter(database.model.code == i).all()[0]
+            filenames.append(model.filename)
+            session.close()
+
+        return render_template('ids.html', id=id, filenames=filenames)
+
+  
 @application.route('/p/<id>', methods=['GET'])
 def check_viewer(id):
     if not utils.validate_id(id):
@@ -422,6 +602,7 @@ def view_report(id,ids,fn):
 
     with open(bsdd_json) as json_file:
         bsdd_result = json.load(json_file)
+
 
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result)
 

@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>buildingSMART IFC Validation Service</title>
-</head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script type="text/javascript">
+        var isIE = !!window.MSInputMethodContext;
+        if (isIE) {
+            document.write('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
+            document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
+        }
+
+     
+
+    </script>
 
 <script>
     var info = {{info|tojson}}; 
@@ -15,7 +25,231 @@
 
 </script>
 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report_consistency.css') }}">
+
 <body>
-    
+
+ 
+    <div class="header">
+
+        <a href="/" style="padding-left: 5px;" id="logo">
+            <img class="bsdd-logo" src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
+        </a>
+        <div id="logo">
+            <img src="{{url_for('static', filename='navbar/BuildingSmart-items.png')}}" />
+        </div>
+    </div>
+
+
+    <div id="main">
+
+
+
+
+        <table>
+            <tr>
+               <td style="font-style: italic;">General info</td>
+               <td></td>
+            </tr>
+            <tr>
+                <td>File name</td>
+               <td>{{fn}}</td>
+               
+                <!-- <td>{{info["schema"]}}</td> -->
+            </tr>
+            <tr>
+                <td>IFC schema</td>
+                <td>{{info["schema"]}}</td>
+            </tr>
+            <tr>
+                <td>Authoring application</td>
+                <td>{{info["app"]}}</td>
+            </tr>
+            <tr>
+                <td>MVD(s)</td>
+                <td>{{info["mvd"]}}</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td style="font-style: italic;">Overall results</td>
+            </tr>
+
+            <tr>
+                <td>Syntax</td>
+                <td style="color:green;">&check;</td>
+            </tr>
+
+            <tr>
+                <td>Schema</td>
+                <td>Not validated</td>
+            </tr>
+
+            <tr>
+                <td>MVD</td>
+                <td style="color:green;">&check;</td>
+            </tr>
+
+            <tr>
+                <td>bsDD</td>
+                <td>&cross;</td>
+            </tr>
+
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td style="font-style: italic;">General metrics</tr>
+            </tr>
+
+            <tr>
+                <td>Schema</td>
+                <td>Conform</td>
+
+            </tr>
+
+            <tr>
+                <td>MVD % compliance</td>
+                <td>20%</td>
+            </tr>
+            <tr>
+                <td>bSDD % compliance</td>
+                <td>34%</td>
+            </tr>
+
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td style="font-style: italic;">Detailed results</td>
+            </tr>
+
+
+            {%for domain, obj in bsdd_result.items()%}
+
+                <tr>
+                    <td>Domain: {{domain}}</td>
+                </tr>
+
+                {% for classification, classification_obj in obj.items() %}
+                    <tr>
+                        <td>Classification: {{classification}} - 20% failing</td>
+                    </tr>
+                     
+                    <tr>
+
+                        {% if 'requirements' in classification_obj.keys() %}
+
+
+                            {% for t in classification_obj['types']%}
+                                <tr>
+                                    <td>{{t}}</td>
+                                </tr>
+
+                            {%endfor%}
+
+
+
+                            {% for r in classification_obj['requirements']%}
+                                <tr>
+                                    <td>{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
+                                </tr>
+
+                            {%endfor%}
+
+
+                           
+
+                            <tr> 
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+
+                            {% for entity, entity_responses in classification_obj['values'].items() %}
+                                <tr>
+                                    <td>{{entity}}</td>
+                                    
+                                </tr>
+
+
+                                {% for resp in entity_responses%}
+                                    <tr>
+                                        <td>{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
+                                        <td style="color: red;">&cross;</td>
+                                    </tr>
+
+                                   
+                                {%endfor%}
+
+                                <tr> 
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+
+                            {%endfor%}
+                       
+                        
+                        {%else%}
+                        <tr>
+                            <td>No requirements for this classification</td>
+                        </tr>       
+
+                        {%endif%}
+
+                    </tr> 
+
+                    <!-- <tr>
+                        <td>{{classification_obj['requirements']}}</td>
+                    </tr>  -->
+
+                    
+                    <!-- <tr>
+                        <td>{{classification_obj['values']}}</td>
+                    </tr> -->
+                    
+
+                    <tr> <td>&nbsp;</td></tr>
+                    <tr> <td>&nbsp;</td></tr>
+                    <tr> <td>&nbsp;</td></tr>
+                    
+                {% endfor %}
+
+
+
+
+
+
+
+
+
+            {% endfor %}
+          
+     
+
+
+
+
+       
+           
+
+        </table>
+
+
+
+
+    </div>
+        
 </body>
+
+
+
+
+
 </html>
