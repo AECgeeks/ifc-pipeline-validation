@@ -2,7 +2,7 @@ import requests
 import json
 import pprint
 import ifcopenshell
-from ifcopenshell.mvd import mvd
+# from ifcopenshell.mvd import mvd
 import ifcopenshell.util.element
 import itertools
 import sys
@@ -21,7 +21,7 @@ def pack_classification(classification_props):
 def pack_mvd(mvd_output):
     return list(mvd_output.values())[0], list(mvd_output.values())[1], list(mvd_output.values())[3].wrappedValue
 
-def get_xset_rule(mvd_fn, pset_or_qset):
+# def get_xset_rule(mvd_fn, pset_or_qset):
     concept_root = list(ifcopenshell.mvd.concept_root.parse(mvd_fn))[0]
     for c in concept_root.concepts():
         if c.name == pset_or_qset:
@@ -200,8 +200,8 @@ def validate_consistency(ifc_file):
 if __name__ == "__main__":
     start_time = time.time()
 
-    mvd_fn= os.path.join(os.path.dirname(__file__), "ifcopenshell/mvd/mvd_examples/xset.mvdxml")
-    rule_tree = get_xset_rule(mvd_fn, "pset")
+    # mvd_fn= os.path.join(os.path.dirname(__file__), "ifcopenshell/mvd/mvd_examples/xset.mvdxml")
+    # rule_tree = get_xset_rule(mvd_fn, "pset")
 
     simple_type_python_mapping = {
         # @todo should include unicode for Python2

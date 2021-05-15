@@ -59,8 +59,11 @@
             <tr>
                 <td>File name</td>
                <td>{{fn}}</td>
-               
-                <!-- <td>{{info["schema"]}}</td> -->
+            </tr>
+
+            <tr>
+                <td>File size</td>
+                <td>{{info["size"]}}</td>
             </tr>
 
 
@@ -145,12 +148,12 @@
             {%for domain, obj in bsdd_result.items()%}
 
                 <tr>
-                    <td style="font-size: 25px;">Domain: {{domain}}</td>
+                    <td class ="domain" style="font-size: 25px;">Domain: {{domain}}</td>
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
                     <tr>
-                        <td style="font-size: 22px;">Classification: {{classification}} - 20% failing</td>
+                        <td class ="classification" style="font-size: 22px;">Classification: {{classification}} - 20% failing</td>
                     </tr>
 
                     <tr>
@@ -164,7 +167,7 @@
 
                             {% for t in classification_obj['types']%}
                                 <tr>
-                                    <td>{{t}}</td>
+                                    <td class="ifctype">{{t}}</td>
                                 </tr>
 
                             {%endfor%}
@@ -173,7 +176,7 @@
 
                             {% for r in classification_obj['requirements']%}
                                 <tr>
-                                    <td>{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
+                                    <td class=requirement>{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
                                 </tr>
 
                             {%endfor%}
