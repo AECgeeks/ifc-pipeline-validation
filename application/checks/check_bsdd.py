@@ -90,6 +90,12 @@ def get_classification_object(uri):
     return json.loads(r.text) 
 
 
+def control_values(requirements, data):
+    print(data)
+    print(requirements)
+
+
+
 def validate_consistency(ifc_file):
     rel_associate_classifications = ifc_file.by_type("IfcRelAssociatesClassification")
     log_to_construct = {}
@@ -126,7 +132,8 @@ def validate_consistency(ifc_file):
                 
                 log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code] = {}
 
-                short_classification_dict = log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]
+                #short_classification_dict = log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]
+                json_shortcut = log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]
 
 
                 bsdd_response = get_classification(domain_name['name'], str(classification_reference_code))
@@ -138,21 +145,22 @@ def validate_consistency(ifc_file):
                         classification_properties = bsdd_response['classificationProperties']
                         packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
 
-                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'] = {}
-                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['types'] = []
-                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'] = {}
+                        
+                        json_shortcut['requirements'] = {}
+                        json_shortcut['types'] = []
+                        json_shortcut['values'] = {}
 
-                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'] = bsdd_response['classificationProperties']
-                        log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['types'] = bsdd_response['relatedIfcEntityNames']
-                        # bsdd_response['relatedIfcEntityNames']
+                        json_shortcut['requirements'] = bsdd_response['classificationProperties']
+                        json_shortcut['types'] = bsdd_response['relatedIfcEntityNames']
+                        
                         # import pdb; pdb.set_trace()
                         
-
                         for e in rel.RelatedObjects:
-                            for p in log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements']:
+
+                            for p in json_shortcut['requirements']:
                                 #print(log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'])
-                                if not e.GlobalId in  log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'].keys():
-                                    log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'][e.GlobalId] =[]
+                                if not e.GlobalId in  json_shortcut['values'].keys():
+                                    json_shortcut['values'][e.GlobalId] = []
                                 name = p['name']
                                 pset_name = p['propertySet']
                                 props = ifcopenshell.util.element.get_psets(e)
@@ -164,15 +172,21 @@ def validate_consistency(ifc_file):
                                             "name": 0,
                                             "propertyset": 0,
                                             "value": 0,
+                                            "result": 0
                                         }
                                 else:
                                     di = {
                                         "name": name,
                                         "propertyset": pset_name,
                                         "value": val,
+                                        "result":1
                                     }
 
-                                log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['values'][e.GlobalId].append(di)
+                                #control_values()
+
+                                json_shortcut['values'][e.GlobalId].append(di)
+    
+                            
     else:
         log_to_construct['result'] = "No classification detected in the file."
 

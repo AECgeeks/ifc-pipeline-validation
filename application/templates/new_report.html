@@ -48,8 +48,13 @@
 
         <table>
             <tr>
-               <td style="font-style: italic;">General info</td>
+               <td style="font-style: italic; font-size: 30px;">General information</td>
                <td></td>
+            </tr>
+
+            <tr>
+                <td>Date</td>
+                <td>18/05/1815</td>
             </tr>
             <tr>
                 <td>File name</td>
@@ -57,6 +62,8 @@
                
                 <!-- <td>{{info["schema"]}}</td> -->
             </tr>
+
+
             <tr>
                 <td>IFC schema</td>
                 <td>{{info["schema"]}}</td>
@@ -75,7 +82,7 @@
             </tr>
 
             <tr>
-                <td style="font-style: italic;">Overall results</td>
+                <td style="font-style: italic; font-size: 30px;">Overall results</td>
             </tr>
 
             <tr>
@@ -104,7 +111,7 @@
             </tr>
 
             <tr>
-                <td style="font-style: italic;">General metrics</tr>
+                <td style="font-style: italic; font-size: 30px;">General metrics</tr>
             </tr>
 
             <tr>
@@ -128,19 +135,26 @@
             </tr>
 
             <tr>
-                <td style="font-style: italic;">Detailed results</td>
+                <td style="font-style: italic; font-size: 30px;"> &#9660; Detailed results</td>
             </tr>
 
+            <tr>
+                <td style="font-style: italic; font-size: 27px;"> &#9660; bSDD consistency</td>
+            </tr>
 
             {%for domain, obj in bsdd_result.items()%}
 
                 <tr>
-                    <td>Domain: {{domain}}</td>
+                    <td style="font-size: 25px;">Domain: {{domain}}</td>
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
                     <tr>
-                        <td>Classification: {{classification}} - 20% failing</td>
+                        <td style="font-size: 22px;">Classification: {{classification}} - 20% failing</td>
+                    </tr>
+
+                    <tr>
+                        <td>Requirements</td>
                     </tr>
                      
                     <tr>
@@ -174,7 +188,7 @@
 
                             {% for entity, entity_responses in classification_obj['values'].items() %}
                                 <tr>
-                                    <td>{{entity}}</td>
+                                    <td>&#9660; {{entity}}</td>
                                     
                                 </tr>
 
@@ -182,7 +196,14 @@
                                 {% for resp in entity_responses%}
                                     <tr>
                                         <td>{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
-                                        <td style="color: red;">&cross;</td>
+
+                                        {% if resp['result'] == 0 %}
+                                            <td style="color: red;">&cross;</td>
+                                        {%endif%}
+                                        {% if resp['result'] == 1 %}
+                                            <td style="color: green;">&check;</td>
+                                        {% endif %}
+
                                     </tr>
 
                                    
