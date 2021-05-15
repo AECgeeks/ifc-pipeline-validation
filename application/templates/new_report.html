@@ -43,9 +43,6 @@
 
     <div id="main">
 
-
-
-
         <table>
             <tr>
                <td style="font-style: italic; font-size: 30px;">General information</td>
@@ -138,11 +135,13 @@
             </tr>
 
             <tr>
-                <td style="font-style: italic; font-size: 30px;"> &#9660; Detailed results</td>
+                <!-- &#9660; -->
+                
+                <td style="font-style: italic; font-size: 30px;"> &#9654; Detailed results</td>
             </tr>
 
             <tr>
-                <td style="font-style: italic; font-size: 27px;"> &#9660; bSDD consistency</td>
+                <td style="font-style: italic; font-size: 27px;"> &#9654; bSDD consistency</td>
             </tr>
 
             {%for domain, obj in bsdd_result.items()%}
@@ -191,20 +190,20 @@
 
                             {% for entity, entity_responses in classification_obj['values'].items() %}
                                 <tr>
-                                    <td>&#9660; {{entity}}</td>
+                                    <td>&#9654; {{entity}}</td>
                                     
                                 </tr>
 
 
                                 {% for resp in entity_responses%}
                                     <tr>
-                                        <td>{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
+                                        <td style="display: none;">{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
 
                                         {% if resp['result'] == 0 %}
-                                            <td style="color: red;">&cross;</td>
+                                            <td style="color: red; display: none;">&cross;</td>
                                         {%endif%}
                                         {% if resp['result'] == 1 %}
-                                            <td style="color: green;">&check;</td>
+                                            <td style="color: green; display:none;">&check;</td>
                                         {% endif %}
 
                                     </tr>
@@ -222,7 +221,7 @@
                         
                         {%else%}
                         <tr>
-                            <td>No requirements for this classification</td>
+                            <td>No requirement for this classification</td>
                         </tr>       
 
                         {%endif%}
