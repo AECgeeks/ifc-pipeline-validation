@@ -137,22 +137,22 @@
             <tr>
                 <!-- &#9660; -->
                 
-                <td style="font-style: italic; font-size: 30px;"> &#9654; Detailed results</td>
+                <td style="font-style: italic; font-size: 30px;"> &#x25BC; Detailed results</td>
             </tr>
 
             <tr>
-                <td style="font-style: italic; font-size: 27px;"> &#9654; bSDD consistency</td>
+                <td style="font-size: 27px;"> &emsp; &#x25BC; bSDD consistency</td>
             </tr>
 
             {%for domain, obj in bsdd_result.items()%}
 
                 <tr>
-                    <td class ="domain" style="font-size: 25px;" data-parent="bsdd" >Domain: {{domain}}</td>
+                    <td class ="domain" style="font-size: 25px;" data-parent="bsdd" >&emsp; &emsp; &#x25BC;Domain: {{domain}}</td>
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
                     <tr>
-                        <td class ="classification" style="font-size: 22px;">Classification: {{classification}} - 20% failing</td>
+                        <td class ="classification" style="font-size: 22px;">&emsp; &emsp; &emsp; &#x25BC; Classification: {{classification}} - 20% failing</td>
                     </tr>
 
                     <tr>
