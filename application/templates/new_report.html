@@ -147,7 +147,7 @@
             {%for domain, obj in bsdd_result.items()%}
 
                 <tr>
-                    <td class ="domain" style="font-size: 25px;">Domain: {{domain}}</td>
+                    <td class ="domain" style="font-size: 25px;" data-parent="bsdd" >Domain: {{domain}}</td>
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
@@ -175,7 +175,7 @@
 
                             {% for r in classification_obj['requirements']%}
                                 <tr>
-                                    <td class=requirement>{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
+                                    <td class=requirement data-parent="classification">{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
                                 </tr>
 
                             {%endfor%}
@@ -200,10 +200,10 @@
                                         <td style="display: none;">{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
 
                                         {% if resp['result'] == 0 %}
-                                            <td style="color: red; display: none;">&cross;</td>
+                                            <td style="color: red; display: none;"data-parent="{{entity}}">&cross;</td>
                                         {%endif%}
                                         {% if resp['result'] == 1 %}
-                                            <td style="color: green; display:none;">&check;</td>
+                                            <td style="color: green; "data-parent="{{entity}}">&check;</td>
                                         {% endif %}
 
                                     </tr>
