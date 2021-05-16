@@ -156,7 +156,7 @@
                     </tr>
 
                     <tr>
-                        <td>Requirements</td>
+                        <td> &emsp; &emsp; &emsp; &emsp;Requirements</td>
                     </tr>
                      
                     <tr>
@@ -166,7 +166,7 @@
 
                             {% for t in classification_obj['types']%}
                                 <tr>
-                                    <td class="ifctype">{{t}}</td>
+                                    <td class="ifctype">  &emsp; &emsp; &emsp; &emsp;{{t}}</td>
                                 </tr>
 
                             {%endfor%}
@@ -175,7 +175,7 @@
 
                             {% for r in classification_obj['requirements']%}
                                 <tr>
-                                    <td class=requirement data-parent="classification">{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
+                                    <td class=requirement data-parent="classification"> &emsp; &emsp; &emsp; &emsp;{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
                                 </tr>
 
                             {%endfor%}
@@ -190,20 +190,20 @@
 
                             {% for entity, entity_responses in classification_obj['values'].items() %}
                                 <tr>
-                                    <td>&#9654; {{entity}}</td>
+                                    <td> &emsp; &emsp; &emsp; &emsp; &#9654; {{entity}}</td>
                                     
                                 </tr>
 
 
                                 {% for resp in entity_responses%}
                                     <tr>
-                                        <td style="display: none;">{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
+                                        <td> &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
 
                                         {% if resp['result'] == 0 %}
-                                            <td style="color: red; display: none;"data-parent="{{entity}}">&cross;</td>
+                                            <td style="color: red;"data-parent= "{{entity}}">&emsp; &emsp; &emsp; &emsp; &cross;</td>
                                         {%endif%}
                                         {% if resp['result'] == 1 %}
-                                            <td style="color: green; "data-parent="{{entity}}">&check;</td>
+                                            <td style="color: green; "data-parent="{{entity}}"> &emsp; &emsp; &emsp; &emsp; &check;</td>
                                         {% endif %}
 
                                     </tr>
@@ -221,7 +221,7 @@
                         
                         {%else%}
                         <tr>
-                            <td>No requirement for this classification</td>
+                            <td>&emsp; &emsp; &emsp; &emsp; No requirement for this classification</td>
                         </tr>       
 
                         {%endif%}
