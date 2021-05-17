@@ -12,9 +12,6 @@
             document.write('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
             document.write('<script type="text/javascript" src="/static/lib/fetch.umd.js"><\/script>');
         }
-
-     
-
     </script>
 
 <script>
@@ -23,32 +20,37 @@
     var bsdd_result = {{bsdd_result|tojson}}
 
     function xPlay(clicked){
-        console.log("test");
-        console.log(clicked);
         var parentName = clicked.dataset.parent;
-        console.log(parentName);
         var childrenName = parentName + "/" + clicked.dataset.current;
-        console.log(childrenName);        
-        var t = childrenName;
-        var q = '[data-parent='+'"'+t+'"'+']';
-        console.log(q)
+        var q = '[data-parent='+'"'+childrenName+'"'+']';
+ 
         var children = document.querySelectorAll(q);
-        console.log("children", children)
-       
+
         if(clicked.dataset.state == "on"){
-            console.log("on to off")
+            // on to off
             clicked.dataset.state = "off";
+
+            // Change arrow symbol
+            var elements = clicked.cells[0].innerText.split(' ')
+            elements[elements.length-2] = '\u25B6';
+            clicked.cells[0].innerText = elements.join(" ")
+
             for (var i = 0; i < children.length; i++) {
                 // children[i].style.color = "red"; 
                 children[i].style.display = "none";
 	        }
         }
         else{
-            console.log("off to on")
+            // off to on
             clicked.dataset.state = "on";
+            // Change arrow symbol
+            var elements = clicked.cells[0].innerText.split(' ')
+            elements[elements.length-2] = '\u25BC';
+            clicked.cells[0].innerText = elements.join(" ")
+
             for (var i = 0; i < children.length; i++) {
+                // children[i].style.color = "blue";
                 children[i].style.display = "table-row";
-                // children[i].style.color = "blue"; 
 	        }
         }
 
@@ -234,6 +236,11 @@
                                     <td> 
                                         &emsp; &emsp; &emsp; &emsp; &#x25BC; {{entity}}
                                     </td>
+
+                                    <td> 
+                                       20%
+                                    </td>
+                                    
                                     
                                 </tr>
                                 <!-- &#x25BC;
@@ -255,7 +262,7 @@
                                    
                                 {%endfor%}
 
-                                <tr> 
+                                <tr data-parent="{{domain}}/{{classification}}/{{entity}}"> 
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                 </tr>
