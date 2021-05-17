@@ -45,6 +45,7 @@
             clicked.dataset.state = "on";
             // Change arrow symbol
             var elements = clicked.cells[0].innerText.split(' ')
+
             elements[elements.length-2] = '\u25BC';
             clicked.cells[0].innerText = elements.join(" ")
 
@@ -187,7 +188,7 @@
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
-                    <tr data-parent="{{domain}}">
+                    <tr data-state="on" data-current="classification" data-parent="{{domain}}">
                         <td class ="classification" style="font-size: 22px;">
                             &emsp; &emsp; &emsp; &#x25BC; Classification: {{classification}}
                         </td>
@@ -232,9 +233,9 @@
                             </tr>
 
                             {% for entity, entity_responses in classification_obj['values'].items() %}
-                                <tr data-state = "on" data-current = {{entity}} data-parent="{{domain}}/{{classification}}" onclick="xPlay(this)">
+                                <tr data-state ="off" data-current = {{entity}} data-parent="{{domain}}/{{classification}}" onclick="xPlay(this)">
                                     <td> 
-                                        &emsp; &emsp; &emsp; &emsp; &#x25BC; {{entity}}
+                                        &emsp; &emsp; &emsp; &emsp; &#9654; {{entity}}
                                     </td>
 
                                     <td> 
@@ -247,8 +248,10 @@
                                 &#9654; -->
 
                                 {% for resp in entity_responses%}
-                                    <tr data-parent="{{domain}}/{{classification}}/{{entity}}">
-                                        <td> &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
+                                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}">
+                                        <td>
+                                            &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}
+                                        </td>
 
                                         {% if resp['result'] == 0 %}
                                             <td style="color: red;"data-parent= "{{entity}}">&cross;</td>
@@ -262,7 +265,7 @@
                                    
                                 {%endfor%}
 
-                                <tr data-parent="{{domain}}/{{classification}}/{{entity}}"> 
+                                <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"> 
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                 </tr>
