@@ -33,8 +33,7 @@
      
         if(clicked.dataset.state == "on"){
             // on to off
-
-            var q = '[data-parent='+'"'+childrenName+'"'+']';
+            var q = '[data-parent*='+'"'+childrenName+'"'+']';
             var children = document.querySelectorAll(q);
 
             clicked.dataset.state = "off";
@@ -45,7 +44,14 @@
             clicked.cells[0].innerText = elements.join(" ")
 
             for (var i = 0; i < children.length; i++) {
-                // children[i].style.color = "red"; 
+                if(children[i].dataset.state == "on"){
+                    children[i].dataset.state = "off";
+
+                    var el = children[i].cells[0].innerText.split(' ')
+                    el[children[i].dataset.level] = '\u25B6';
+                    children[i].cells[0].innerText = el.join(" ")
+
+                }
                 children[i].style.display = "none";
 	        }
         }
@@ -63,8 +69,8 @@
             clicked.cells[0].innerText = elements.join(" ")
 
             for (var i = 0; i < children.length; i++) {
-                // children[i].style.color = "blue";
                 children[i].style.display = "table-row";
+                
                             
 	        }
         }
@@ -153,7 +159,7 @@
 
             <tr>
                 <td>bsDD</td>
-                <td>&cross;</td>
+                <td style="color:red;">&cross;</td>
             </tr>
 
             <tr>
