@@ -22,6 +22,40 @@
     var fn = "{{fn}}";
     var bsdd_result = {{bsdd_result|tojson}}
 
+    function xPlay(clicked){
+        console.log("test");
+        console.log(clicked);
+        var parentName = clicked.dataset.parent;
+        console.log(parentName);
+        var childrenName = parentName + "/" + clicked.dataset.current;
+        console.log(childrenName);        
+        var t = childrenName;
+        var q = '[data-parent='+'"'+t+'"'+']';
+        console.log(q)
+        var children = document.querySelectorAll(q);
+        console.log("children", children)
+       
+        if(clicked.dataset.state == "on"){
+            console.log("on to off")
+            clicked.dataset.state = "off";
+            for (var i = 0; i < children.length; i++) {
+                // children[i].style.color = "red"; 
+                children[i].style.display = "none";
+	        }
+        }
+        else{
+            console.log("off to on")
+            clicked.dataset.state = "on";
+            for (var i = 0; i < children.length; i++) {
+                children[i].style.display = "table-row";
+                // children[i].style.color = "blue"; 
+	        }
+        }
+
+    }
+
+
+
 
 </script>
 
@@ -151,22 +185,27 @@
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
-                    <tr>
-                        <td class ="classification" style="font-size: 22px;">&emsp; &emsp; &emsp; &#x25BC; Classification: {{classification}} - 20% failing</td>
+                    <tr data-parent="{{domain}}">
+                        <td class ="classification" style="font-size: 22px;">
+                            &emsp; &emsp; &emsp; &#x25BC; Classification: {{classification}}
+                        </td>
+                        <td class ="classification" style="font-size: 22px;">
+                            20% failing
+                        </td>
                     </tr>
 
-                    <tr>
+                    <tr data-parent="{{domain}}/{{classification}}">
                         <td> &emsp; &emsp; &emsp; &emsp;Requirements</td>
                     </tr>
                      
                     <tr>
 
                         {% if 'requirements' in classification_obj.keys() %}
-
-
                             {% for t in classification_obj['types']%}
                                 <tr>
-                                    <td class="ifctype">  &emsp; &emsp; &emsp; &emsp;{{t}}</td>
+                                    <td class="ifctype" data-parent="{{domain}}/{{classification}}">
+                                        &emsp; &emsp; &emsp; &emsp;{{t}}
+                                    </td>
                                 </tr>
 
                             {%endfor%}
@@ -174,8 +213,10 @@
 
 
                             {% for r in classification_obj['requirements']%}
-                                <tr>
-                                    <td class=requirement data-parent="classification"> &emsp; &emsp; &emsp; &emsp;{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}} </td>
+                                <tr data-parent="{{domain}}/{{classification}}">
+                                    <td>
+                                        &emsp; &emsp; &emsp; &emsp;{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}}
+                                    </td>
                                 </tr>
 
                             {%endfor%}
@@ -189,21 +230,24 @@
                             </tr>
 
                             {% for entity, entity_responses in classification_obj['values'].items() %}
-                                <tr>
-                                    <td> &emsp; &emsp; &emsp; &emsp; &#9654; {{entity}}</td>
+                                <tr data-state = "on" data-current = {{entity}} data-parent="{{domain}}/{{classification}}" onclick="xPlay(this)">
+                                    <td> 
+                                        &emsp; &emsp; &emsp; &emsp; &#x25BC; {{entity}}
+                                    </td>
                                     
                                 </tr>
-
+                                <!-- &#x25BC;
+                                &#9654; -->
 
                                 {% for resp in entity_responses%}
-                                    <tr>
+                                    <tr data-parent="{{domain}}/{{classification}}/{{entity}}">
                                         <td> &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}</td>
 
                                         {% if resp['result'] == 0 %}
-                                            <td style="color: red;"data-parent= "{{entity}}">&emsp; &emsp; &emsp; &emsp; &cross;</td>
+                                            <td style="color: red;"data-parent= "{{entity}}">&cross;</td>
                                         {%endif%}
                                         {% if resp['result'] == 1 %}
-                                            <td style="color: green; "data-parent="{{entity}}"> &emsp; &emsp; &emsp; &emsp; &check;</td>
+                                            <td style="color: green; "data-parent="{{entity}}">&check;</td>
                                         {% endif %}
 
                                     </tr>
@@ -220,8 +264,10 @@
                        
                         
                         {%else%}
-                        <tr>
-                            <td>&emsp; &emsp; &emsp; &emsp; No requirement for this classification</td>
+                        <tr data-parent="{{domain}}/{{classification}}">
+                            <td >
+                                &emsp; &emsp; &emsp; &emsp; No requirement for this classification
+                            </td>
                         </tr>       
 
                         {%endif%}
@@ -245,29 +291,23 @@
                 {% endfor %}
 
 
-
-
-
-
-
-
-
             {% endfor %}
           
      
-
-
-
-
-       
-           
-
         </table>
 
 
 
 
     </div>
+
+
+
+
+
+
+
+
         
 </body>
 
