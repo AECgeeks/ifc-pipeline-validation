@@ -203,12 +203,12 @@
 
             {%for domain, obj in bsdd_result.items()%}
 
-                <tr data-current="{{domain}}" data-state="off" onclick="xPlay(this)">
-                    <td class ="domain" style="font-size: 25px;">&emsp; &emsp; &#9654; Domain: {{domain}}</td>
+                <tr data-current="{{domain}}" data-state="on" onclick="xPlay(this)">
+                    <td class ="domain" style="font-size: 25px;">&emsp; &emsp;  &#x25BC; Domain: {{domain}}</td>
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
-                    <tr style="display: none;" data-state="off" data-current="{{classification}}" data-parent="{{domain}}" data-level=3 onclick="xPlay(this)">
+                    <tr data-state="off" data-current="{{classification}}" data-parent="{{domain}}" data-level=3 onclick="xPlay(this)">
                         <td class ="classification" style="font-size: 22px;">
                             &emsp; &emsp; &emsp; &#9654; Classification: {{classification}}
                         </td>
@@ -225,8 +225,8 @@
 
                         {% if 'requirements' in classification_obj.keys() %}
                             {% for t in classification_obj['types']%}
-                                <tr style="display: none;">
-                                    <td class="ifctype" data-parent="{{domain}}/{{classification}}" data-level=4>
+                                <tr style="display: none;" data-parent="{{domain}}/{{classification}}" data-level=4>
+                                    <td class="ifctype" >
                                         &emsp; &emsp; &emsp; &emsp;{{t}}
                                     </td>
                                 </tr>
