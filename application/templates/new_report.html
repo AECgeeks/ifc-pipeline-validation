@@ -21,18 +21,27 @@
 
     function xPlay(clicked){
         var parentName = clicked.dataset.parent;
-        var childrenName = parentName + "/" + clicked.dataset.current;
-        var q = '[data-parent='+'"'+childrenName+'"'+']';
- 
-        var children = document.querySelectorAll(q);
 
+        if(parentName == undefined){
+            var childrenName = clicked.dataset.current;
+        }
+
+        else{ 
+            var childrenName = parentName + "/" + clicked.dataset.current;
+        }
+       
+     
         if(clicked.dataset.state == "on"){
             // on to off
+
+            var q = '[data-parent='+'"'+childrenName+'"'+']';
+            var children = document.querySelectorAll(q);
+
             clicked.dataset.state = "off";
 
             // Change arrow symbol
             var elements = clicked.cells[0].innerText.split(' ')
-            elements[elements.length-2] = '\u25B6';
+            elements[clicked.dataset.level] = '\u25B6';
             clicked.cells[0].innerText = elements.join(" ")
 
             for (var i = 0; i < children.length; i++) {
@@ -43,15 +52,20 @@
         else{
             // off to on
             clicked.dataset.state = "on";
+
+            
+            var q = '[data-parent='+'"'+childrenName+'"'+']';
+            var children = document.querySelectorAll(q);
             // Change arrow symbol
             var elements = clicked.cells[0].innerText.split(' ')
 
-            elements[elements.length-2] = '\u25BC';
+            elements[clicked.dataset.level] = '\u25BC';
             clicked.cells[0].innerText = elements.join(" ")
 
             for (var i = 0; i < children.length; i++) {
                 // children[i].style.color = "blue";
                 children[i].style.display = "table-row";
+                            
 	        }
         }
 
@@ -183,21 +197,21 @@
 
             {%for domain, obj in bsdd_result.items()%}
 
-                <tr>
-                    <td class ="domain" style="font-size: 25px;" data-parent="bsdd" >&emsp; &emsp; &#x25BC;Domain: {{domain}}</td>
+                <tr data-current="{{domain}}" data-state="off" onclick="xPlay(this)">
+                    <td class ="domain" style="font-size: 25px;">&emsp; &emsp; &#9654; Domain: {{domain}}</td>
                 </tr>
 
                 {% for classification, classification_obj in obj.items() %}
-                    <tr data-state="on" data-current="classification" data-parent="{{domain}}">
+                    <tr style="display: none;" data-state="off" data-current="{{classification}}" data-parent="{{domain}}" data-level=3 onclick="xPlay(this)">
                         <td class ="classification" style="font-size: 22px;">
-                            &emsp; &emsp; &emsp; &#x25BC; Classification: {{classification}}
+                            &emsp; &emsp; &emsp; &#9654; Classification: {{classification}}
                         </td>
                         <td class ="classification" style="font-size: 22px;">
                             20% failing
                         </td>
                     </tr>
 
-                    <tr data-parent="{{domain}}/{{classification}}">
+                    <tr style="display: none;" data-parent="{{domain}}/{{classification}}" data-level=4>
                         <td> &emsp; &emsp; &emsp; &emsp;Requirements</td>
                     </tr>
                      
@@ -205,8 +219,8 @@
 
                         {% if 'requirements' in classification_obj.keys() %}
                             {% for t in classification_obj['types']%}
-                                <tr>
-                                    <td class="ifctype" data-parent="{{domain}}/{{classification}}">
+                                <tr style="display: none;">
+                                    <td class="ifctype" data-parent="{{domain}}/{{classification}}" data-level=4>
                                         &emsp; &emsp; &emsp; &emsp;{{t}}
                                     </td>
                                 </tr>
@@ -216,7 +230,7 @@
 
 
                             {% for r in classification_obj['requirements']%}
-                                <tr data-parent="{{domain}}/{{classification}}">
+                                <tr style="display: none;" data-parent="{{domain}}/{{classification}}" data-level=4>
                                     <td>
                                         &emsp; &emsp; &emsp; &emsp;{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}}
                                     </td>
@@ -227,13 +241,13 @@
 
                            
 
-                            <tr> 
+                            <!-- <tr> 
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
-                            </tr>
+                            </tr> -->
 
                             {% for entity, entity_responses in classification_obj['values'].items() %}
-                                <tr data-state ="off" data-current = {{entity}} data-parent="{{domain}}/{{classification}}" onclick="xPlay(this)">
+                                <tr style="display: none;" data-state ="off" data-current = {{entity}} data-parent="{{domain}}/{{classification}}" data-level=4 onclick="xPlay(this)">
                                     <td> 
                                         &emsp; &emsp; &emsp; &emsp; &#9654; {{entity}}
                                     </td>
@@ -248,16 +262,16 @@
                                 &#9654; -->
 
                                 {% for resp in entity_responses%}
-                                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}">
+                                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}" data-level=5>
                                         <td>
                                             &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}
                                         </td>
 
                                         {% if resp['result'] == 0 %}
-                                            <td style="color: red;"data-parent= "{{entity}}">&cross;</td>
+                                            <td style="color: red;"data-parent= "{{domain}}/{{classification}}/{{entity}}">&cross;</td>
                                         {%endif%}
                                         {% if resp['result'] == 1 %}
-                                            <td style="color: green; "data-parent="{{entity}}">&check;</td>
+                                            <td style="color: green; "data-parent="{{domain}}/{{classification}}/{{entity}}">&check;</td>
                                         {% endif %}
 
                                     </tr>
@@ -265,20 +279,21 @@
                                    
                                 {%endfor%}
 
-                                <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"> 
+                                <!-- <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> 
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
-                                </tr>
+                                </tr> -->
 
                             {%endfor%}
                        
                         
                         {%else%}
-                        <tr data-parent="{{domain}}/{{classification}}">
+                        <tr style="display: none;" data-parent="{{domain}}/{{classification}}" data-level=4>
                             <td >
                                 &emsp; &emsp; &emsp; &emsp; No requirement for this classification
                             </td>
-                        </tr>       
+                        </tr>
+                          
 
                         {%endif%}
 
@@ -293,10 +308,10 @@
                         <td>{{classification_obj['values']}}</td>
                     </tr> -->
                     
-
-                    <tr> <td>&nbsp;</td></tr>
-                    <tr> <td>&nbsp;</td></tr>
-                    <tr> <td>&nbsp;</td></tr>
+<!-- 
+                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> <td>&nbsp;</td></tr>
+                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> <td>&nbsp;</td></tr>
+                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> <td>&nbsp;</td></tr> -->
                     
                 {% endfor %}
 
