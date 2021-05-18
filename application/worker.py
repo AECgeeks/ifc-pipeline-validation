@@ -275,6 +275,23 @@ def do_process(id, validation_config, ids_spec):
 
     d = utils.storage_dir_for_id(id)
     
+    n_ids_spec = int(len(ids_spec)/32)
+    ids_spec_storages = []
+    b = 0
+    j = 1
+    a = 32
+    for n in range(n_ids_spec):
+        token = ids_spec[b:a]
+        ids_spec_storages.append(utils.storage_dir_for_id(token))
+        # count += 1
+        b = a
+        j+=1
+        a = 32*j
+
+    for ids_folder in ids_spec_storages:
+        for ids_file in os.listdir(ids_folder):
+            shutil.copy(os.path.join(ids_folder, ids_file), d )
+    
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
     tasks = [general_info_task]
