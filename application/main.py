@@ -555,25 +555,9 @@ def log_results(i, ids):
         a = 32*j
         
 
-  
-    # result_logs = {  
-    #     'syntaxlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_syntax.json"),
-    #     'schemalog': os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_schema.json"),
-    #     'mvdlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_mvd.json"),
-    #     'bsddlog' : os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "result_bsdd.json")
-
-    # }
-
-
-    # for k, v in result_logs.items():
-    #     with open(v) as json_file:
-    #         data = json.load(json_file)
-    #         result_logs[k] = list(data.values())[0]
     
+    return jsonify({'bsddlog': "n",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v", 'idslog':"n"})
     
-    # return jsonify({"schema": "v", "mvd":"w", "bsdd":"v"})
-    return jsonify({'bsddlog': "i",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v"})
-    # return jsonify(result_logs)
 
 
 @application.route('/report/<id>/<ids>/<fn>')
@@ -598,6 +582,7 @@ def view_report(id,ids,fn):
     f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "info.json")
     bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
     ids_output = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "ids.txt")
+
     config = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "config.json")
 
     
