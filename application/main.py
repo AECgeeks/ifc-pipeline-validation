@@ -593,20 +593,30 @@ def view_report(id,ids,fn):
         a = 32*j
     
 
+
+
     f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "info.json")
     bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
     ids_output = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "ids.txt")
+    config = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "config.json")
+
+    
 
     with open(f) as json_file:
         info = json.load(json_file)
 
-    with open(bsdd_json) as json_file:
-        bsdd_result = json.load(json_file)
+    # with open(bsdd_json) as json_file:
+    #     bsdd_result = json.load(json_file)
+
+    # ids_result = open(os.path.join(utils.storage_dir_for_id(all_ids[int(id)]),"ids.txt"), "r")    
+    # ids_result = ids_result.read()
+    # splitted = [line.strip() for line in ids_result]
+
+
+    # ff = open(ids_output)
+
 
     
-    with open(ids_output) as fids:
-        ids_result = fids.read()
-
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result=ids_result)
 
 

@@ -167,6 +167,7 @@ class ids_validation_task(task):
         print(directory)
         check_program = os.path.join(os.getcwd() + "/checks", "ids.py")
      
+
         #todo allow series of ids specs to be processed
         ids_files = [f for f in os.listdir(directory) if f.endswith(".xml")]
         proc = subprocess.Popen([sys.executable, check_program, ids_files[0], id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
@@ -273,6 +274,11 @@ class svg_generation_task(task):
 def do_process(id, validation_config, ids_spec):
 
     d = utils.storage_dir_for_id(id)
+
+    
+    with open(os.path.join(d,'config.json'), 'w') as outfile:
+        json.dump(validation_config, outfile)
+
     
     n_ids_spec = int(len(ids_spec)/32)
     ids_spec_storages = []
@@ -308,6 +314,9 @@ def do_process(id, validation_config, ids_spec):
                 tasks.append(bsdd_validation_task)
             else:
                 tasks.append(ids_validation_task)
+
+
+    # import pdb; pdb.set_trace()
 
     # tasks = [
     #     # syntax_validation_task,

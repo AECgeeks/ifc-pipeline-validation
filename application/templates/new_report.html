@@ -18,6 +18,7 @@
     var info = {{info|tojson}}; 
     var fn = "{{fn}}";
     var bsdd_result = {{bsdd_result|tojson}}
+    
 
     function xPlay(clicked){
         var parentName = clicked.dataset.parent;
@@ -101,6 +102,19 @@
     <div id="main">
 
         <table>
+            
+            {% for line in ids_result %}
+
+                <tr>
+                    <td>{{line}}</td>
+                </tr>
+
+            {% endfor %}
+
+
+
+
+
             <tr>
                <td style="font-style: italic; font-size: 30px;">General information</td>
                <td></td>
