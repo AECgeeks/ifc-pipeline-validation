@@ -164,13 +164,12 @@ class ids_validation_task(task):
     est_time = 10
 
     def execute(self, directory, id):
-        check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
-        outname = id +"_bsdd.txt"
-
-        # with open(os.path.join(directory, outname), "w") as f:
-        #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
-
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
+        print(directory)
+        check_program = os.path.join(os.getcwd() + "/checks", "ids.py")
+     
+        #todo allow series of ids specs to be processed
+        ids_files = [f for f in os.listdir(directory) if f.endswith(".xml")]
+        proc = subprocess.Popen([sys.executable, check_program, ids_files[0], id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
         i = 0
         while True:
             ch = proc.stdout.read(1)
