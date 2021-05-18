@@ -280,20 +280,20 @@ def do_process(id, validation_config, ids_spec):
         json.dump(validation_config, outfile)
 
     if 'ids' in validation_config.keys():
-        ids_spec_storages = utils.unconcatenate_ids(ids_spec)
-        # n_ids_spec = int(len(ids_spec)/32)
-        # ids_spec_storages = []
-        # b = 0
-        # j = 1
-        # a = 32
+        ids_spec_storages = []
+        n_ids_spec = int(len(ids_spec)/32)
+        ids_spec_storages = []
+        b = 0
+        j = 1
+        a = 32
 
-        # for n in range(n_ids_spec):
-        #     token = ids_spec[b:a]
-        #     ids_spec_storages.append(utils.storage_dir_for_id(token))
-        #     # count += 1
-        #     b = a
-        #     j+=1
-        #     a = 32*j
+        for n in range(n_ids_spec):
+            token = ids_spec[b:a]
+            ids_spec_storages.append(utils.storage_dir_for_id(token))
+            # count += 1
+            b = a
+            j+=1
+            a = 32*j
 
         for ids_folder in ids_spec_storages:
             for ids_file in os.listdir(ids_folder):

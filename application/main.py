@@ -24,6 +24,7 @@
 
 from __future__ import print_function
 
+
 import os
 import json
 import threading
@@ -383,17 +384,18 @@ def put_main2(test):
 def ids_front(id):
 
     if request.method == 'GET':
+        all_ids = utils.unconcatenate_ids(id)
         n_files = int(len(id)/32)
-        all_ids = []
-        b = 0
-        i = 1
-        a = 32
-        for d in range(n_files):
-            token = id[b:a]
-            all_ids.append(token)
-            b = a
-            i+= 1
-            a = 32*i
+        # all_ids = []
+        # b = 0
+        # i = 1
+        # a = 32
+        # for d in range(n_files):
+        #     token = id[b:a]
+        #     all_ids.append(token)
+        #     b = a
+        #     i+= 1
+        #     a = 32*i
             
         filenames = []
 
@@ -418,17 +420,21 @@ def check_viewer(id):
 def validate_files(id):
     # if not utils.validate_id(id):
     #     abort(404)
+
+
+    all_ids = utils.unconcatenate_ids(id)
+
     n_files = int(len(id)/32)
-    all_ids = []
-    b = 0
-    i = 1
-    a = 32
-    for d in range(n_files):
-        token = id[b:a]
-        all_ids.append(token)
-        b = a
-        i+= 1
-        a = 32*i
+    # all_ids = []
+    # b = 0
+    # i = 1
+    # a = 32
+    # for d in range(n_files):
+    #     token = id[b:a]
+    #     all_ids.append(token)
+    #     b = a
+    #     i+= 1
+    #     a = 32*i
         
     filenames = []
 
@@ -445,21 +451,23 @@ def validate_files(id):
 def get_validation_progress(id):
     if not utils.validate_id(id):
         abort(404)
-    
-    n_ids = int(len(id)/32)
 
-    count = 0
-    all_ids = []
-    b = 0
-    i = 1
-    a = 32
-    for d in range(n_ids):
-        token = id[b:a]
-        all_ids.append(token)
-        # count += 1
-        b = a
-        i+=1
-        a = 32*i
+
+    all_ids = utils.unconcatenate_ids(id)
+    # n_ids = int(len(id)/32)
+
+    # count = 0
+    # all_ids = []
+    # b = 0
+    # i = 1
+    # a = 32
+    # for d in range(n_ids):
+    #     token = id[b:a]
+    #     all_ids.append(token)
+    #     # count += 1
+    #     b = a
+    #     i+=1
+    #     a = 32*i
         
     model_progresses = []
 
@@ -540,19 +548,22 @@ def get_viewer(id):
 def log_results(i, ids):
     # d = utils.storage_dir_for_id(id)
     # input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
-    n_ids = int(len(ids)/32)
 
-    all_ids = []
-    b = 0
-    j = 1
-    a = 32
-    for d in range(n_ids):
-        token = ids[b:a]
-        all_ids.append(token)
-        # count += 1
-        b = a
-        j+=1
-        a = 32*j
+    all_ids = utils.unconcatenate_ids(ids)
+
+    # n_ids = int(len(ids)/32)
+
+    # all_ids = []
+    # b = 0
+    # j = 1
+    # a = 32
+    # for d in range(n_ids):
+    #     token = ids[b:a]
+    #     all_ids.append(token)
+    #     # count += 1
+    #     b = a
+    #     j+=1
+    #     a = 32*j
         
 
     
@@ -562,19 +573,22 @@ def log_results(i, ids):
 
 @application.route('/report/<id>/<ids>/<fn>')
 def view_report(id,ids,fn):
-    n_ids = int(len(ids)/32)
 
-    all_ids = []
-    b = 0
-    j = 1
-    a = 32
-    for d in range(n_ids):
-        token = ids[b:a]
-        all_ids.append(token)
-        # count += 1
-        b = a
-        j+=1
-        a = 32*j
+    all_ids = utils.unconcatenate_ids(ids)
+
+    # n_ids = int(len(ids)/32)
+
+    # all_ids = []
+    # b = 0
+    # j = 1
+    # a = 32
+    # for d in range(n_ids):
+    #     token = ids[b:a]
+    #     all_ids.append(token)
+    #     # count += 1
+    #     b = a
+    #     j+=1
+    #     a = 32*j
     
 
 
@@ -590,8 +604,8 @@ def view_report(id,ids,fn):
     with open(f) as json_file:
         info = json.load(json_file)
 
-    # with open(bsdd_json) as json_file:
-    #     bsdd_result = json.load(json_file)
+    with open(bsdd_json) as json_file:
+        bsdd_result = json.load(json_file)
 
     # ids_result = open(os.path.join(utils.storage_dir_for_id(all_ids[int(id)]),"ids.txt"), "r")    
     # ids_result = ids_result.read()
@@ -602,7 +616,7 @@ def view_report(id,ids,fn):
 
 
     
-    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result=ids_result)
+    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result)
 
 
 
