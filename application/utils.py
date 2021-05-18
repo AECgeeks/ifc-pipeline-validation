@@ -58,3 +58,17 @@ def validate_id(id):
 
     return len(set(id) - set(string.ascii_letters)) == 0
 
+
+def unconcanate_ids(id):
+    n_files = int(len(id)/32)
+    unconcatenated = []
+    b = 0
+    i = 1
+    a = 32
+    for d in range(n_files):
+        token = id[b:a]
+        unconcatenated.append(token)
+        b = a
+        i+= 1
+        a = 32*i
+    return unconcatenated
