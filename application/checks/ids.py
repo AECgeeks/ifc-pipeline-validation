@@ -257,9 +257,9 @@ class specification:
             valid = self.requirements(inst, logger)
 
             if valid:
-                logger.info({'guid':inst.GlobalId, 'result':valid.success,'sentence':str(self) + "\n%s has" % inst + " " + str(valid) + " so is compliant"})
+                logger.info({"guid":inst.GlobalId, "result":valid.success,"sentence":str(self) + "\n%s has" % inst + " " + str(valid) + " so is compliant"})
             else:
-                logger.error({'guid':inst.GlobalId, 'result':valid.success, 'sentence':str(self) + "\n%s has" % inst + " " + str(valid) + " so is not compliant"})
+                logger.error({"guid":inst.GlobalId, "result":valid.success, "sentence":str(self) + "\n%s has" % inst + " " + str(valid) + " so is not compliant"})
 
     def __str__(self):
         return "Given an instance with %(applicabiliy)s\nWe expect %(requirements)s" % self.__dict__

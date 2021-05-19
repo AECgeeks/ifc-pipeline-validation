@@ -612,19 +612,33 @@ def view_report(id,ids,fn):
                 bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")  
                 with open(bsdd_json) as json_file:
                     bsdd_result = json.load(json_file)
-
+            
             else:
                 print("%s not validated" % (cfg))
+                bsdd_result = {'status':0}
         
         if cfg == 'ids':
             if val == 1:
                 print("todo get the %s checking log" % (cfg))
                 ids_output = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "ids.txt")
-            else:
-                print("%s not validated" % (cfg))
+                with open(ids_output) as ids_file:
+                    ids_result = ids_file.readlines()
+                    ids_to_pass = []
+                    for l in ids_result:
+                        if "'" in l:
+                            print(l)
+                            print(l.replace("'", '"'))
+                            l = l.replace("'", '"')
+                            l = l.replace("[classification_eval_todo]", "classification_eval_todo")
+                        else:
+                            ids_to_pass.append(l)
+                        
+        else:
+            print("%s not validated" % (cfg))
+            ids_result = {'status':0}
             
     
-    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result)
+    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass)
 
 
 

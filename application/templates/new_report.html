@@ -103,14 +103,7 @@
 
         <table>
             
-            {% for line in ids_result %}
-
-                <tr>
-                    <td>{{line}}</td>
-                </tr>
-
-            {% endfor %}
-
+           
 
 
 
@@ -211,133 +204,162 @@
                 <td style="font-style: italic; font-size: 30px;">Detailed results</td>
             </tr>
 
-            <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)" >
-                <td style="font-size: 27px;"> &emsp; &#x25BC; bSDD consistency</td>
-            </tr>
+           
 
-            {%for domain, obj in bsdd_result.items()%}
 
-                <tr data-current="{{domain}}" data-parent="bsdd" data-state="on" data-level=2 onclick="xPlay(this)">
-                    <td class ="domain" style="font-size: 25px;">&emsp; &emsp;  &#x25BC; Domain: {{domain}}</td>
+            {% if not "status" in bsdd_result.keys() %}
+                <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)" >
+                    <td style="font-size: 27px;"> &emsp; &#x25BC; bSDD consistency</td>
                 </tr>
+                {%for domain, obj in bsdd_result.items()%}
 
-                {% for classification, classification_obj in obj.items() %}
-                    <tr data-state="off" data-current="{{classification}}" data-parent="bsdd/{{domain}}" data-level=3 onclick="xPlay(this)">
-                        <td class ="classification" style="font-size: 22px;">
-                            &emsp; &emsp; &emsp; &#9654; Classification: {{classification}}
-                        </td>
-                        <td class ="classification" style="font-size: 22px;">
-                            20% failing
-                        </td>
+                    <tr data-current="{{domain}}" data-parent="bsdd" data-state="on" data-level=2 onclick="xPlay(this)">
+                        <td class ="domain" style="font-size: 25px;">&emsp; &emsp;  &#x25BC; Domain: {{domain}}</td>
                     </tr>
 
-                    <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
-                        <td> &emsp; &emsp; &emsp; &emsp;Requirements</td>
-                    </tr>
-                     
-                    <tr>
+                    {% for classification, classification_obj in obj.items() %}
+                        <tr data-state="off" data-current="{{classification}}" data-parent="bsdd/{{domain}}" data-level=3 onclick="xPlay(this)">
+                            <td class ="classification" style="font-size: 22px;">
+                                &emsp; &emsp; &emsp; &#9654; Classification: {{classification}}
+                            </td>
+                            <td class ="classification" style="font-size: 22px;">
+                                20% failing
+                            </td>
+                        </tr>
 
-                        {% if 'requirements' in classification_obj.keys() %}
-                            {% for t in classification_obj['types']%}
-                                <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
-                                    <td class="ifctype" >
-                                        &emsp; &emsp; &emsp; &emsp;{{t}}
-                                    </td>
-                                </tr>
+                        <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
+                            <td> &emsp; &emsp; &emsp; &emsp;Requirements</td>
+                        </tr>
+                        
+                        <tr>
 
-                            {%endfor%}
-
-
-
-                            {% for r in classification_obj['requirements']%}
-                                <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
-                                    <td>
-                                        &emsp; &emsp; &emsp; &emsp;{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}}
-                                    </td>
-                                </tr>
-
-                            {%endfor%}
-
-
-                           
-
-                            <!-- <tr> 
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr> -->
-
-                            {% for entity, entity_responses in classification_obj['values'].items() %}
-                                <tr style="display: none;" data-state ="off" data-current = {{entity}} data-parent="bsdd/{{domain}}/{{classification}}" data-level=4 onclick="xPlay(this)">
-                                    <td> 
-                                        &emsp; &emsp; &emsp; &emsp; &#9654; {{entity}}
-                                    </td>
-
-                                    <td> 
-                                       20%
-                                    </td>
-                                    
-                                    
-                                </tr>
-                                <!-- &#x25BC;
-                                &#9654; -->
-
-                                {% for resp in entity_responses%}
-                                    <tr style="display:none;" data-parent="bsdd/{{domain}}/{{classification}}/{{entity}}" data-level=5>
-                                        <td>
-                                            &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}
+                            {% if 'requirements' in classification_obj.keys() %}
+                                {% for t in classification_obj['types']%}
+                                    <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
+                                        <td class="ifctype" >
+                                            &emsp; &emsp; &emsp; &emsp;{{t}}
                                         </td>
-
-                                        {% if resp['result'] == 0 %}
-                                            <td style="color: red;"data-parent= "bsdd/{{domain}}/{{classification}}/{{entity}}">&cross;</td>
-                                        {%endif%}
-                                        {% if resp['result'] == 1 %}
-                                            <td style="color: green; "data-parent="bsdd/{{domain}}/{{classification}}/{{entity}}">&check;</td>
-                                        {% endif %}
-
                                     </tr>
 
-                                   
                                 {%endfor%}
 
-                                <!-- <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> 
+
+
+                                {% for r in classification_obj['requirements']%}
+                                    <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
+                                        <td>
+                                            &emsp; &emsp; &emsp; &emsp;{{r['propertySet']}} - {{r['name']}} - {{r['dataType']}}
+                                        </td>
+                                    </tr>
+
+                                {%endfor%}
+
+
+                            
+
+                                <!-- <tr> 
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                 </tr> -->
 
-                            {%endfor%}
-                       
+                                {% for entity, entity_responses in classification_obj['values'].items() %}
+                                    <tr style="display: none;" data-state ="off" data-current = {{entity}} data-parent="bsdd/{{domain}}/{{classification}}" data-level=4 onclick="xPlay(this)">
+                                        <td> 
+                                            &emsp; &emsp; &emsp; &emsp; &#9654; {{entity}}
+                                        </td>
+
+                                        <td> 
+                                        20%
+                                        </td>
+                                        
+                                        
+                                    </tr>
+                                    <!-- &#x25BC;
+                                    &#9654; -->
+
+                                    {% for resp in entity_responses%}
+                                        <tr style="display:none;" data-parent="bsdd/{{domain}}/{{classification}}/{{entity}}" data-level=5>
+                                            <td>
+                                                &emsp; &emsp; &emsp; &emsp; &emsp;{{resp['propertyset']}}-{{resp['name']}}-{{resp['value']}}
+                                            </td>
+
+                                            {% if resp['result'] == 0 %}
+                                                <td style="color: red;"data-parent= "bsdd/{{domain}}/{{classification}}/{{entity}}">&cross;</td>
+                                            {%endif%}
+                                            {% if resp['result'] == 1 %}
+                                                <td style="color: green; "data-parent="bsdd/{{domain}}/{{classification}}/{{entity}}">&check;</td>
+                                            {% endif %}
+
+                                        </tr>
+
+                                    
+                                    {%endfor%}
+
+                                    <!-- <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> 
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </tr> -->
+
+                                {%endfor%}
                         
-                        {%else%}
-                        <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
-                            <td >
-                                &emsp; &emsp; &emsp; &emsp; No requirement for this classification
-                            </td>
-                        </tr>
-                          
+                            
+                            {%else%}
+                            <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
+                                <td >
+                                    &emsp; &emsp; &emsp; &emsp; No requirement for this classification
+                                </td>
+                            </tr>
+                            
 
-                        {%endif%}
+                            {%endif%}
 
-                    </tr> 
+                        </tr> 
 
-                    <!-- <tr>
-                        <td>{{classification_obj['requirements']}}</td>
-                    </tr>  -->
+            
 
-                    
-                    <!-- <tr>
-                        <td>{{classification_obj['values']}}</td>
-                    </tr> -->
-                    
-<!-- 
-                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> <td>&nbsp;</td></tr>
-                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> <td>&nbsp;</td></tr>
-                    <tr style="display:none;" data-parent="{{domain}}/{{classification}}/{{entity}}"data-level=5> <td>&nbsp;</td></tr> -->
-                    
+                    {% endfor %}
+
+
                 {% endfor %}
 
 
+            
+            {%else%}
+
+                <tr data-current="bsdd" data-state="on" data-level=1>
+                    <td style="font-size: 27px;"> &emsp; &#x25BC; bSDD consistency</td>
+                </tr>
+
+                <tr >
+                    <td> &emsp; &emsp; Not validated</td>
+                </tr>
+
+            
+            {%endif%}
+
+
+
+
+
+
+            {% for line in ids_result %}
+
+                <tr>
+                    <td>{{line}}</td>
+                    
+                </tr>
+
             {% endfor %}
-          
+
+
+
+
+
+
+
+
+
+            
      
         </table>
 
