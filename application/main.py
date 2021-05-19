@@ -564,6 +564,8 @@ def log_results(i, ids):
     #     b = a
     #     j+=1
     #     a = 32*j
+
+
         
 
     
@@ -576,45 +578,51 @@ def view_report(id,ids,fn):
 
     all_ids = utils.unconcatenate_ids(ids)
 
-    # n_ids = int(len(ids)/32)
-
-    # all_ids = []
-    # b = 0
-    # j = 1
-    # a = 32
-    # for d in range(n_ids):
-    #     token = ids[b:a]
-    #     all_ids.append(token)
-    #     # count += 1
-    #     b = a
-    #     j+=1
-    #     a = 32*j
-    
-
-
-
     f = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "info.json")
-    bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")
-    ids_output = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "ids.txt")
-
-    config = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "config.json")
-
-    
-
     with open(f) as json_file:
         info = json.load(json_file)
 
-    with open(bsdd_json) as json_file:
-        bsdd_result = json.load(json_file)
+    config_file = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "config.json")
+    with open(config_file) as json_file:
+        config = json.load(json_file)
 
-    # ids_result = open(os.path.join(utils.storage_dir_for_id(all_ids[int(id)]),"ids.txt"), "r")    
-    # ids_result = ids_result.read()
-    # splitted = [line.strip() for line in ids_result]
+    for cfg, val in config.items():
+        val = int(val)
 
+        if cfg == 'syntax':
+            if val == 1:
+                print("todo get the %s checking log" % (cfg))
+            else:
+                print("%s not validated" % (cfg)) 
+        if cfg == 'schema':
+            if val == 1:
+                print("todo get the %s checking log" % (cfg))
+            else:
+                print("%s not validated" % (cfg))
 
-    # ff = open(ids_output)
+        if cfg == 'mvd':
+            if val == 1:
+                print("todo get the %s checking log" % (cfg))
+            else:
+                print("%s not validated" % (cfg))
+        
+        if cfg == 'bsdd':
+            if val == 1:
+                print("todo get the %s checking log" % (cfg))
+                bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")  
+                with open(bsdd_json) as json_file:
+                    bsdd_result = json.load(json_file)
 
-
+            else:
+                print("%s not validated" % (cfg))
+        
+        if cfg == 'ids':
+            if val == 1:
+                print("todo get the %s checking log" % (cfg))
+                ids_output = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "ids.txt")
+            else:
+                print("%s not validated" % (cfg))
+            
     
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result)
 
