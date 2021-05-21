@@ -343,7 +343,7 @@ def put_main2(test):
     extensions = set()
 
     for key, f in request.files.items():
-        
+        print(key)
         if key.startswith('file'):
             file = f
             files.append(file)    
@@ -588,26 +588,26 @@ def view_report(id,ids,fn):
 
     for cfg, val in config.items():
         val = int(val)
-
+    
         if cfg == 'syntax':
-            if val == 1:
+            if val:
                 print("todo get the %s checking log" % (cfg))
             else:
                 print("%s not validated" % (cfg)) 
         if cfg == 'schema':
-            if val == 1:
+            if val:
                 print("todo get the %s checking log" % (cfg))
             else:
                 print("%s not validated" % (cfg))
 
         if cfg == 'mvd':
-            if val == 1:
+            if val:
                 print("todo get the %s checking log" % (cfg))
             else:
                 print("%s not validated" % (cfg))
         
         if cfg == 'bsdd':
-            if val == 1:
+            if val:
                 print("todo get the %s checking log" % (cfg))
                 bsdd_json = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "dresult_bsdd.json")  
                 with open(bsdd_json) as json_file:
@@ -615,10 +615,10 @@ def view_report(id,ids,fn):
             
             else:
                 print("%s not validated" % (cfg))
-                bsdd_result = {'status':0}
+                bsdd_result = {'status': 0 }
         
         if cfg == 'ids':
-            if val == 1:
+            if val:
                 print("todo get the %s checking log" % (cfg))
                 ids_output = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "ids.txt")
                 with open(ids_output) as ids_file:
@@ -626,18 +626,15 @@ def view_report(id,ids,fn):
                     ids_to_pass = []
                     for l in ids_result:
                         if "'" in l:
-                            print(l)
-                            print(l.replace("'", '"'))
                             l = l.replace("'", '"')
                             l = l.replace("[classification_eval_todo]", "classification_eval_todo")
                         else:
                             ids_to_pass.append(l)
+            else:
+                ids_to_pass = {'status':0}
+                print("%s not validated" % (cfg))
                         
-        else:
-            print("%s not validated" % (cfg))
-            ids_result = {'status':0}
-            
-    
+        
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass)
 
 

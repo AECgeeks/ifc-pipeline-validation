@@ -279,7 +279,7 @@ def do_process(id, validation_config, ids_spec):
     with open(os.path.join(d,'config.json'), 'w') as outfile:
         json.dump(validation_config, outfile)
 
-    if 'ids' in validation_config.keys():
+    if ids_spec:    
         ids_spec_storages = []
         n_ids_spec = int(len(ids_spec)/32)
         ids_spec_storages = []

@@ -112,6 +112,11 @@
                         <label for="bSDD">bSDD</label>
                     </div>
 
+                    <div>
+                        <input type="checkbox" id="ids_outside" name="ids" disabled="disabled">
+                        <label for="ids">IDS</label>
+                    </div>
+
                 </div>
 
                 <button class="submit-button" id="submit">Start validation</button>
@@ -187,7 +192,7 @@
 
                 myDropzone = this;
 
-                var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
+                var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd', 'ids'];
 
                 for (var i = 0; i < validationTypes.length; i++) {
                     var checkbox = document.createElement('input');

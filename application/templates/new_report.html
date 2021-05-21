@@ -341,17 +341,15 @@
 
 
 
+            {% if not 'status' in ids_result.keys() %}
+                {% for line in ids_result %}
 
-            {% for line in ids_result %}
+                    <tr>
+                        <td>{{line}}</td>
+                    </tr>
 
-                <tr>
-                    <td>{{line}}</td>
-                    
-                </tr>
-
-            {% endfor %}
-
-
+                {% endfor %}
+            {% endif%}
 
 
 
