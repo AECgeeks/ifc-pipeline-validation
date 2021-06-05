@@ -218,14 +218,6 @@ def process_upload_validation_ids(files,validation_config, ids_spec, callback_ur
 
 
 
-
-
-
-
-
-
-
-
 def upload_ids(files,validation_config, callback_url=None):
     
     ids = []
@@ -276,14 +268,6 @@ def process_ids(files,validation_config, callback_url=None):
     #         q.enqueue(worker.process, id, validation_config, callback_url)
 
     return ids
-
-
-
-
-
-
-
-
 
 @application.route('/', methods=['POST'])
 def put_main():
@@ -343,7 +327,6 @@ def put_main2(test):
     extensions = set()
 
     for key, f in request.files.items():
-        print(key)
         if key.startswith('file'):
             file = f
             files.append(file)    
@@ -386,16 +369,6 @@ def ids_front(id):
     if request.method == 'GET':
         all_ids = utils.unconcatenate_ids(id)
         n_files = int(len(id)/32)
-        # all_ids = []
-        # b = 0
-        # i = 1
-        # a = 32
-        # for d in range(n_files):
-        #     token = id[b:a]
-        #     all_ids.append(token)
-        #     b = a
-        #     i+= 1
-        #     a = 32*i
             
         filenames = []
 
@@ -421,21 +394,10 @@ def validate_files(id):
     # if not utils.validate_id(id):
     #     abort(404)
 
-
     all_ids = utils.unconcatenate_ids(id)
 
     n_files = int(len(id)/32)
-    # all_ids = []
-    # b = 0
-    # i = 1
-    # a = 32
-    # for d in range(n_files):
-    #     token = id[b:a]
-    #     all_ids.append(token)
-    #     b = a
-    #     i+= 1
-    #     a = 32*i
-        
+            
     filenames = []
 
     for i in all_ids:
@@ -452,22 +414,7 @@ def get_validation_progress(id):
     if not utils.validate_id(id):
         abort(404)
 
-
     all_ids = utils.unconcatenate_ids(id)
-    # n_ids = int(len(id)/32)
-
-    # count = 0
-    # all_ids = []
-    # b = 0
-    # i = 1
-    # a = 32
-    # for d in range(n_ids):
-    #     token = id[b:a]
-    #     all_ids.append(token)
-    #     # count += 1
-    #     b = a
-    #     i+=1
-    #     a = 32*i
         
     model_progresses = []
 
@@ -546,28 +493,8 @@ def get_viewer(id):
 
 @application.route('/reslogs/<i>/<ids>')
 def log_results(i, ids):
-    # d = utils.storage_dir_for_id(id)
-    # input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
-
+ 
     all_ids = utils.unconcatenate_ids(ids)
-
-    # n_ids = int(len(ids)/32)
-
-    # all_ids = []
-    # b = 0
-    # j = 1
-    # a = 32
-    # for d in range(n_ids):
-    #     token = ids[b:a]
-    #     all_ids.append(token)
-    #     # count += 1
-    #     b = a
-    #     j+=1
-    #     a = 32*j
-
-
-        
-
     
     return jsonify({'bsddlog': "n",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v", 'idslog':"n"})
     
@@ -634,7 +561,7 @@ def view_report(id,ids,fn):
                 ids_to_pass = {'status':0}
                 print("%s not validated" % (cfg))
                         
-        
+    #import pdb; pdb.set_trace()
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass)
 
 

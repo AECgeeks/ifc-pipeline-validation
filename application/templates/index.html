@@ -89,7 +89,6 @@
 
                 {{ dropzone.load_js() }}
 
-
                 <script> const virgindz = document.getElementById("myDropzone");</script>
                 <div id="config">
                     <div>
@@ -215,11 +214,9 @@
                         var checkboxToUpdate = document.getElementById(validationTypes[i]);
                         var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
 
-
                         if (checkboxOutside.checked == 1) {
                             checkboxToUpdate.value = 1;
                         }
-
                     }
 
                     myDropzone.processQueue();
@@ -304,10 +301,16 @@
                         // copyLink.href = url;
                         newDiv.appendChild(copyLink);
 
+                        var linkArea = document.createElement("TEXTAREA");
+                        newDiv.appendChild(linkArea);
+                        linkArea.value = window.location.origin + ""; 
+                        // window.location.hostname + newUrl
+                        linkArea.style.resize = "none";
+                        linkArea.style.height = "20px;"
+                        linkArea.style.whiteSpace = "nowrap";
+                        linkArea.style.overflow = "hidden";
 
-                        
-
-
+                    
                     }
 
                 });

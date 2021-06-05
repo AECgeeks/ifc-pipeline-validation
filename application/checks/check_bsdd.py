@@ -21,15 +21,6 @@ def pack_classification(classification_props):
 def pack_mvd(mvd_output):
     return list(mvd_output.values())[0], list(mvd_output.values())[1], list(mvd_output.values())[3].wrappedValue
 
-# def get_xset_rule(mvd_fn, pset_or_qset):
-    concept_root = list(ifcopenshell.mvd.concept_root.parse(mvd_fn))[0]
-    for c in concept_root.concepts():
-        if c.name == pset_or_qset:
-            for r in c.template().rules:
-                # print(r)
-                if r.attribute == "IsDefinedBy":
-                    return r
-
 def get_domain_fuzzy(domains, domain_ref, tolerance=50):
     #todo: check for case also
     idx = 0
@@ -111,13 +102,15 @@ def validate_consistency(ifc_file):
             sys.stdout.write(rnd_array[idx] * ".")
             sys.stdout.flush()
 
-            # import pdb; pdb.set_trace()
-
-            #todo: handle IfcClassificationReference IFC4 schema's attributes change
             classification_reference = rel.RelatingClassification
-            classification_reference_code = classification_reference.ItemReference
-            classification_reference_name = classification_reference.Name
-            classification = classification_reference.ReferencedSource
+
+            if ifc_file.schema == "IFC2X3":
+                classification_reference_code = classification_reference.ItemReference
+            else:
+                classification_reference_code = classification_reference.Identification
+
+            classification_reference_name = classification_reference.Name # Same
+            classification = classification_reference.ReferencedSource #Same
             classification_name = classification.Name
         
             # String matching between bsdd and IFC name
@@ -129,12 +122,9 @@ def validate_consistency(ifc_file):
                 if domain_name['name'] not in log_to_construct.keys():
                     log_to_construct[domain_name['name']] = {}
         
-                
                 log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code] = {}
 
-                #short_classification_dict = log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]
                 json_shortcut = log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]
-
 
                 bsdd_response = get_classification(domain_name['name'], str(classification_reference_code))
 
@@ -142,10 +132,6 @@ def validate_consistency(ifc_file):
                     bsdd_response = get_classification_object(bsdd_response['namespaceUri'])
                     
                     if 'classificationProperties' in bsdd_response.keys():
-                        classification_properties = bsdd_response['classificationProperties']
-                        packed_properties = [pack_classification(p) for p in bsdd_response['classificationProperties']]
-
-                        
                         json_shortcut['requirements'] = {}
                         json_shortcut['types'] = []
                         json_shortcut['values'] = {}
@@ -153,40 +139,46 @@ def validate_consistency(ifc_file):
                         json_shortcut['requirements'] = bsdd_response['classificationProperties']
                         json_shortcut['types'] = bsdd_response['relatedIfcEntityNames']
                         
-                        # import pdb; pdb.set_trace()
-                        
+                    
                         for e in rel.RelatedObjects:
 
                             for p in json_shortcut['requirements']:
-                                #print(log_to_construct[domain_name['name']][classification_reference_name +"-"+classification_reference_code]['requirements'])
                                 if not e.GlobalId in  json_shortcut['values'].keys():
                                     json_shortcut['values'][e.GlobalId] = []
+
+                                checking = {"pset":0, "pname":0, "ptype":0}
+
                                 name = p['name']
-                                pset_name = p['propertySet']
-                                props = ifcopenshell.util.element.get_psets(e)
-                                pset = props.get(pset_name)
-                                val = pset.get(name) if pset else None
-                                
-                                if not pset:
-                                    di = {
-                                            "name": 0,
-                                            "propertyset": 0,
-                                            "value": 0,
-                                            "result": 0
-                                        }
+                                pset_spec = p['propertySet']
+                                ptype = p['dataType']
+                        
+                                if pset_spec:
+                                    props = ifcopenshell.util.element.get_psets(e)
+                                    pset = props.get(pset_spec)
+
+                                    if pset:
+                                        checking["pset"] = 1
+                                        val = pset.get(name) 
+                                        if val is not None:
+                                            checking["pname"] = 1  
+                                        else:
+                                            val = "No property found in the instance property set"     
                                 else:
-                                    di = {
-                                        "name": name,
-                                        "propertyset": pset_name,
-                                        "value": val,
-                                        "result":1
-                                    }
+                                    pset_spec = "No property set specified in the bSDD."
+                                    name = "NaN"
 
-                                #control_values()
+                                
+                                di = {
+                                    "name": name,
+                                    "propertyset": pset_spec,
+                                    "value": val,
+                                    "type":ptype,
+                                    "result":1
+                                }
 
+                                
                                 json_shortcut['values'][e.GlobalId].append(di)
-    
-                            
+            
     else:
         log_to_construct['result'] = "No classification detected in the file."
 
