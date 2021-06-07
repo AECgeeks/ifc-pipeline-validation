@@ -391,6 +391,21 @@ if __name__ == "__main__":
                     log_to_construct[index]['requirements'][facet_type][t_id]['values'][w.GlobalId] = t.get_res(w)
 
 
+
+    # try:
+    #     config_path = os.path.join(os.getcwd(), "config.json")
+    #     with open(config_path) as json_file:
+    #         config = json.load(json_file)
+
+    #         config["results"]["idsdlog"] = "v"
+        
+    #     with open(config_path, 'w', encoding='utf-8') as f:
+    #         json.dump(config, f, ensure_ascii=False, indent=4)
+    
+    # except:
+    #     pass
+
+
     ids_results_path = os.path.join(os.getcwd(), "ids_result_bsdd.json")
 
     with open(ids_results_path, 'w', encoding='utf-8') as f:

@@ -98,6 +98,12 @@
                 rows[i + 1].cells[1].appendChild(schemaImg);
                 rows[i + 1].cells[2].appendChild(MVDImg);
                 rows[i + 1].cells[3].appendChild(bsddImg);
+
+                rows[i + 1].cells[7].innerHTML = r["time"];
+                rows[i + 1].cells[7].style.fontWeight = "bold";
+                rows[i + 1].cells[7].style.color = "#d9d9d9";
+
+
             });
 
 
@@ -109,19 +115,11 @@
             var st = window.location.href;
 
             var baseUrl = st.split('/')[2];
-            
-            
             var url = "/report/"+ i+"/"+ids + "/" + fn;
             
             repText.href = url;
-
-
-
             rows[i + 1].cells[6].appendChild(repText)
-
-            
-
-
+        
             rows[i + 1].cells[6].style.color = "#0070C0";
             rows[i + 1].cells[6].style.fontWeight = "bold";
             rows[i + 1].cells[6].id = "report"
@@ -134,10 +132,7 @@
             rows[i + 1].cells[8].style.color = "rgb(105, 125, 239)";
             rows[i + 1].cells[9].style.color = "rgb(224, 101, 101)";
 
-            var date = new Date().toLocaleString();
-            rows[i + 1].cells[7].innerHTML = date;
-            rows[i + 1].cells[7].style.fontWeight = "bold";
-            rows[i + 1].cells[7].style.color = "#d9d9d9";
+       
             
         }
 

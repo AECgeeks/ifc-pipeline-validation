@@ -305,6 +305,8 @@ def do_process(id, validation_config, ids_spec):
 
     tasks = [general_info_task]
 
+    #import pdb; pdb.set_trace()
+
     for task, to_validate in validation_config["config"].items():
        
         if int(to_validate):

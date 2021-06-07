@@ -342,7 +342,14 @@ def put_main2(test):
             if file.filename.endswith('.ifc'):
                 extensions.add('ifc')
            
-    validation_config = request.form.to_dict()
+    val_config = request.form.to_dict()
+    val_results = {k + "log":'n' for (k,v) in val_config.items()}
+    
+    validation_config = {}
+    validation_config["config"] = val_config
+    validation_config["results"] = val_results
+
+
 
     if VALIDATION:
         if 'xml' in extensions:
@@ -508,12 +515,11 @@ def log_results(i, ids):
     with open(config_file) as json_file:
         config = json.load(json_file)
 
-    # todo: add the date in ISO format
 
+    time = datetime.datetime.now()
+    time = time.strftime("%Y-%m-%d %H:%M:%S")
+    config["time"] = time
 
-    #import pdb; pdb.set_trace()
-
-    #return jsonify({'bsddlog': "n",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v", 'idslog':"n"})
     return jsonify(config)
     
 
@@ -533,7 +539,6 @@ def view_report(id,ids,fn):
     with open(config_file) as json_file:
         config = json.load(json_file)
     
-    #import pdb; pdb.set_trace()
 
     for cfg, val in config.items():
         val = int(val)
