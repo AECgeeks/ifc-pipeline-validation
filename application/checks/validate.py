@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import sys
+import sys, os
 import json
 import functools
 
@@ -167,6 +167,17 @@ def validate(f, logger):
                     logger.error(str(e))
                 else:
                     logger.error("In %s\n%s", inst, e)
+
+    try:
+        config_path = os.path.join(os.getcwd(), "config.json")
+        with open(config_path) as json_file:
+            config = json.load(json_file)
+        config["results"]["schemalog"] = "v"
+        
+        with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, ensure_ascii=False, indent=4)
+    except:
+        pass
 
 
 if __name__ == "__main__":

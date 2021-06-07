@@ -106,7 +106,7 @@ def validate_consistency(ifc_file):
         for idx, rel in enumerate(rel_associate_classifications):
             sys.stdout.write(rnd_array[idx] * ".")
             sys.stdout.flush()
-
+            #import pdb; pdb.set_trace()
             classification_reference = rel.RelatingClassification
 
             if ifc_file.schema == "IFC2X3":
@@ -115,11 +115,19 @@ def validate_consistency(ifc_file):
                 classification_reference_code = classification_reference.Identification
 
             classification_reference_name = classification_reference.Name # Same
+
+           
             classification = classification_reference.ReferencedSource #Same
-            classification_name = classification.Name
-        
-            # String matching between bsdd and IFC name
-            domain_name = get_domain_fuzzy(get_domains(), classification_name)
+                 # String matching between bsdd and IFC name
+            if classification:
+                classification_name = classification.Name
+                domain_name = get_domain_fuzzy(get_domains(), classification_name)
+            else:
+            # todo: Handle the case NoneType' object has no attribute 'Name'
+                domain_name = "no classification associated to the reference in the file"
+                classification_name = "no classification associated to the reference in the file"
+                
+            
             
             if isinstance(domain_name, str):
                 log_to_construct[classification_name] = domain_name

@@ -38,6 +38,7 @@
                 <th>Schema</th>
                 <th>MVD</th>
                 <th>bSDD</th>
+                <th>IDS</th>
                 <th>File format</th>
  
             </tr>
@@ -49,6 +50,7 @@
                 {% set format = filenames[i][-3::]|string %}
 
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -83,7 +85,7 @@
             fetch("/reslogs/" + i + "/" + ids).then(function (r) { return r.json(); }).then(function (r) {
                 
                 var syntaxImg = document.createElement("img");
-                syntaxImg.src = "/static/icons/"+ icons[r["results"]['schemalog']]+".png";
+                syntaxImg.src = "/static/icons/"+ icons[r["results"]['syntaxlog']]+".png";
 
                 var schemaImg = document.createElement("img");
                 schemaImg.src = "/static/icons/"+ icons[r["results"]['schemalog']]+".png";
@@ -94,14 +96,18 @@
                 var bsddImg = document.createElement("img");
                 bsddImg.src = "/static/icons/"+ icons[r["results"]['bsddlog']]+".png";
 
+                var idsImg = document.createElement("img");
+                idsImg.src = "/static/icons/"+ icons[r["results"]['idslog']]+".png";
+
                 rows[i + 1].cells[0].appendChild(syntaxImg);
                 rows[i + 1].cells[1].appendChild(schemaImg);
                 rows[i + 1].cells[2].appendChild(MVDImg);
                 rows[i + 1].cells[3].appendChild(bsddImg);
+                rows[i + 1].cells[4].appendChild(idsImg);
 
-                rows[i + 1].cells[7].innerHTML = r["time"];
-                rows[i + 1].cells[7].style.fontWeight = "bold";
-                rows[i + 1].cells[7].style.color = "#d9d9d9";
+                rows[i + 1].cells[8].innerHTML = r["time"];
+                rows[i + 1].cells[8].style.fontWeight = "bold";
+                rows[i + 1].cells[8].style.color = "#d9d9d9";
 
 
             });
@@ -111,26 +117,26 @@
             repText.id ="report"
             repText.style.textDecoration = "none";
             repText.innerHTML = "View report"
-            var fn = rows[i + 1].cells[5].innerHTML;
+            var fn = rows[i + 1].cells[6].innerHTML;
             var st = window.location.href;
 
             var baseUrl = st.split('/')[2];
             var url = "/report/"+ i+"/"+ids + "/" + fn;
             
             repText.href = url;
-            rows[i + 1].cells[6].appendChild(repText)
+            rows[i + 1].cells[7].appendChild(repText)
         
-            rows[i + 1].cells[6].style.color = "#0070C0";
-            rows[i + 1].cells[6].style.fontWeight = "bold";
-            rows[i + 1].cells[6].id = "report"
+            rows[i + 1].cells[7].style.color = "#0070C0";
+            rows[i + 1].cells[7].style.fontWeight = "bold";
+            rows[i + 1].cells[7].id = "report"
 
-            rows[i + 1].cells[8].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Download</a>';
-            rows[i + 1].cells[9].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Delete</a>';
+            rows[i + 1].cells[9].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Download</a>';
+            rows[i + 1].cells[10].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Delete</a>';
 
-            rows[i + 1].cells[8].style.fontWeight = "bold";
             rows[i + 1].cells[9].style.fontWeight = "bold";
-            rows[i + 1].cells[8].style.color = "rgb(105, 125, 239)";
-            rows[i + 1].cells[9].style.color = "rgb(224, 101, 101)";
+            rows[i + 1].cells[10].style.fontWeight = "bold";
+            rows[i + 1].cells[9].style.color = "rgb(105, 125, 239)";
+            rows[i + 1].cells[10].style.color = "rgb(224, 101, 101)";
 
        
             

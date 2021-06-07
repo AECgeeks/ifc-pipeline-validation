@@ -520,6 +520,8 @@ def log_results(i, ids):
     time = time.strftime("%Y-%m-%d %H:%M:%S")
     config["time"] = time
 
+    #import pdb; pdb.set_trace()
+
     return jsonify(config)
     
 

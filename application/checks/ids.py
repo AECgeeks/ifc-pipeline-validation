@@ -1,6 +1,8 @@
 import operator
 import ifcopenshell.util.element
 
+import json
+
 from xml.dom.minidom import parse
 
 
@@ -283,6 +285,20 @@ class ids:
         for spec in self.specifications:
             for elem in ifc_file.by_type("IfcObject"):
                 spec(elem, logger)
+        
+        try:
+            config_path = os.path.join(os.getcwd(), "config.json")
+            with open(config_path) as json_file:
+                config = json.load(json_file)
+            config["results"]["idslog"] = "v"
+            
+            with open(config_path, 'w', encoding='utf-8') as f:
+                    json.dump(config, f, ensure_ascii=False, indent=4)
+        except:
+            pass
+
+
+
                 
 if __name__ == "__main__":
     import sys, os
