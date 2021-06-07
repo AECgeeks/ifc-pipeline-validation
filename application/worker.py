@@ -305,7 +305,7 @@ def do_process(id, validation_config, ids_spec):
 
     tasks = [general_info_task]
 
-    for task, to_validate in validation_config.items():
+    for task, to_validate in validation_config["config"].items():
        
         if int(to_validate):
             if task == 'syntax':

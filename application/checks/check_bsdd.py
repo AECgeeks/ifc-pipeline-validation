@@ -231,8 +231,7 @@ if __name__ == "__main__":
         with open(config_path) as json_file:
             config = json.load(json_file)
 
-
-            config['bsdd_validation'] = 1
+            config["results"]["bsddlog"] = "v"
         
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(config, f, ensure_ascii=False, indent=4)

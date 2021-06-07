@@ -30,6 +30,8 @@ import json
 import threading
 from pathlib import Path
 
+import datetime
+
 from collections import defaultdict, namedtuple
 from flask_dropzone import Dropzone
 
@@ -288,10 +290,12 @@ def put_main():
             if file.filename.endswith('.ifc'):
                 extensions.add('ifc')
            
-    validation_config = request.form.to_dict()
-
-
-
+    val_config = request.form.to_dict()
+    val_results = {k + "log":'n' for (k,v) in val_config.items()}
+    
+    validation_config = {}
+    validation_config["config"] = val_config
+    validation_config["results"] = val_results
 
     if VALIDATION:
         if 'xml' in extensions:
@@ -507,7 +511,10 @@ def log_results(i, ids):
     # todo: add the date in ISO format
 
 
-    return jsonify({'bsddlog': "n",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v", 'idslog':"n"})
+    #import pdb; pdb.set_trace()
+
+    #return jsonify({'bsddlog': "n",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v", 'idslog':"n"})
+    return jsonify(config)
     
 
 

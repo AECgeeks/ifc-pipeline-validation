@@ -81,18 +81,18 @@
         function completeTable(i, results, ids, rows) {
 
             fetch("/reslogs/" + i + "/" + ids).then(function (r) { return r.json(); }).then(function (r) {
-            
+                
                 var syntaxImg = document.createElement("img");
-                syntaxImg.src = "/static/icons/"+ icons[r['schemalog']]+".png";
+                syntaxImg.src = "/static/icons/"+ icons[r["results"]['schemalog']]+".png";
 
                 var schemaImg = document.createElement("img");
-                schemaImg.src = "/static/icons/"+ icons[r['schemalog']]+".png";
+                schemaImg.src = "/static/icons/"+ icons[r["results"]['schemalog']]+".png";
 
                 var MVDImg = document.createElement("img");
-                MVDImg.src = "/static/icons/"+ icons[r['mvdlog']]+".png";
+                MVDImg.src = "/static/icons/"+ icons[r["results"]['mvdlog']]+".png";
 
                 var bsddImg = document.createElement("img");
-                bsddImg.src = "/static/icons/"+ icons[r['bsddlog']]+".png";
+                bsddImg.src = "/static/icons/"+ icons[r["results"]['bsddlog']]+".png";
 
                 rows[i + 1].cells[0].appendChild(syntaxImg);
                 rows[i + 1].cells[1].appendChild(schemaImg);
