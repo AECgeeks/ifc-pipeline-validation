@@ -316,7 +316,7 @@ def do_process(id, validation_config, ids_spec):
                 tasks.append(mvd_validation_task)
             elif task == 'bsdd':
                 tasks.append(bsdd_validation_task)
-            else:
+            elif task =='ids':
                 tasks.append(ids_validation_task)
 
 

@@ -161,7 +161,7 @@ def process_upload_multiple(files, callback_url=None):
 
 def process_upload_validation(files,validation_config, callback_url=None):
     
-    # assert threading.current_thread() is threading.main_thread()
+
     ids = []
     for file in files:
         fn = file.filename
@@ -190,7 +190,7 @@ def process_upload_validation(files,validation_config, callback_url=None):
 
 def process_upload_validation_ids(files,validation_config, ids_spec, callback_url=None):
     
-    # assert threading.current_thread() is threading.main_thread()
+  
     ids = []
     for file in files:
         fn = file.filename
@@ -289,6 +289,9 @@ def put_main():
                 extensions.add('ifc')
            
     validation_config = request.form.to_dict()
+
+
+
 
     if VALIDATION:
         if 'xml' in extensions:
