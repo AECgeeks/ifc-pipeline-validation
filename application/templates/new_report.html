@@ -105,20 +105,14 @@
 
 
         <table>
-            
-           
-
-
-
-
             <tr>
-               <td style="font-style: italic; font-size: 30px;">General information</td>
+               <td style="font-style: italic; font-size: 30px;">General information about the file checked</td>
                <td></td>
             </tr>
 
             <tr>
                 <td>Date</td>
-                <td>18/05/1815</td>
+                <td>{{ config["time"] }}</td>
             </tr>
             <tr>
                 <td>File name</td>
@@ -149,27 +143,90 @@
             </tr>
 
             <tr>
-                <td style="font-style: italic; font-size: 30px;">Overall results</td>
+                <td style="font-style: italic; font-size: 30px;">Overall results of the validation</td>
             </tr>
 
             <tr>
                 <td>Syntax</td>
-                <td style="color:green;">&check;</td>
+
+                {% if config["results"]["syntaxlog"] == 'v'%}
+                    <td style="color:green;">&check;</td>
+                {% endif %}
+
+                {% if config["results"]["syntaxlog"] == 'n'%}
+                    <td>Not validated</td>
+                {% endif %}
+
+                {% if config["results"]["syntaxlog"] == 'i'%}
+                    <td style="color:red">&cross;</td>
+                {% endif %}
+
+
+                
             </tr>
 
             <tr>
                 <td>Schema</td>
-                <td>Not validated</td>
+                {% if config["results"]["schemalog"] == 'v'%}
+                    <td style="color:green;">&check;</td>
+                {% endif %}
+
+                {% if config["results"]["schemalog"] == 'n'%}
+                    <td>Not validated</td>
+                {% endif %}
+
+                {% if config["results"]["schemalog"] == 'i'%}
+                    <td style="color:red">&cross;</td>
+                {% endif %}
+
             </tr>
 
             <tr>
                 <td>MVD</td>
-                <td style="color:green;">&check;</td>
+                {% if config["results"]["mvdlog"] == 'v'%}
+                    <td style="color:green;">&check;</td>
+                {% endif %}
+
+                {% if config["results"]["mvdlog"] == 'n'%}
+                    <td>Not validated</td>
+                {% endif %}
+
+                {% if config["results"]["mvdlog"] == 'i'%}
+                    <td style="color:red">&cross;</td>
+                {% endif %}
+
             </tr>
 
             <tr>
-                <td>bsDD</td>
-                <td style="color:red;">&cross;</td>
+                <td>bSDD</td>
+                {% if config["results"]["bsddlog"] == 'v'%}
+                    <td style="color:green;">&check;</td>
+                {% endif %}
+
+                {% if config["results"]["bsddlog"] == 'n'%}
+                    <td>Not validated</td>
+                {% endif %}
+
+                {% if config["results"]["bsddlog"] == 'i'%}
+                    <td style="color:red">&cross;</td>
+                {% endif %}
+
+            </tr>
+
+            <tr>
+                <td>IDS</td>
+                {% if config["results"]["idslog"] == 'v'%}
+                    <td style="color:green;">&check;</td>
+                {% endif %}
+
+                {% if config["results"]["idslog"] == 'n'%}
+                    <td>Not validated</td>
+                {% endif %}
+
+                {% if config["results"]["idslog"] == 'i'%}
+                    <td style="color:red">&cross;</td>
+                {% endif %}
+
             </tr>
 
             <tr>
@@ -178,7 +235,7 @@
             </tr>
 
             <tr>
-                <td style="font-style: italic; font-size: 30px;">General metrics</tr>
+                <td style="font-style: italic; font-size: 30px;">Metrics</tr>
             </tr>
 
             <tr>

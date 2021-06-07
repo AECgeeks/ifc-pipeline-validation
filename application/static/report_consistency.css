@@ -129,6 +129,16 @@ tr{
   transition: 3s all ease;
 }
 
+h1{
+  font-family: Calibri;
+  font-size:50px;
+
+}
+
+td{
+  width:50%;
+}
+
 table, th, td {
   border: 1px solid rgba(161, 161, 161, 0.24);
   border-collapse: collapse;

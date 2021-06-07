@@ -520,6 +520,11 @@ def log_results(i, ids):
     time = time.strftime("%Y-%m-%d %H:%M:%S")
     config["time"] = time
 
+    
+    with open(config_file, 'w', encoding='utf-8') as f:
+        json.dump(config, f, ensure_ascii=False, indent=4)
+        
+
     #import pdb; pdb.set_trace()
 
     return jsonify(config)
@@ -542,7 +547,7 @@ def view_report(id,ids,fn):
         config = json.load(json_file)
     
 
-    for cfg, val in config.items():
+    for cfg, val in config["config"].items():
         val = int(val)
     
         if cfg == 'syntax':
@@ -591,7 +596,7 @@ def view_report(id,ids,fn):
                 print("%s not validated" % (cfg))
                         
     #import pdb; pdb.set_trace()
-    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass)
+    return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass, config=config)
 
 
 
