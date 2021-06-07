@@ -39,6 +39,11 @@ def get_domains():
     r = requests.get(url)
     return json.loads(r.text) 
 
+
+def get_classifications(domain_uri):
+    return json.loads(requests.get(base_url + "SearchListOpen/v2/", params={'DomainNamespaceUri': domain_uri}).text)
+    
+
 def get_classification(domain_ref, item_ref):
     domain_found = 0
     classification = 0
@@ -220,6 +225,20 @@ if __name__ == "__main__":
     #     bsdd_result = {'mvd':'i'}
 
     bsdd_result = {'mvd':'i'}
+
+    try:
+        config_path = os.path.join(os.getcwd(), "config.json")
+        with open(config_path) as json_file:
+            config = json.load(json_file)
+
+
+            config['bsdd_validation'] = 1
+        
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+    
+    except:
+        pass
 
     with open(results_path, 'w', encoding='utf-8') as f:
         json.dump(bsdd_result, f, ensure_ascii=False, indent=4)

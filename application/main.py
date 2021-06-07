@@ -493,9 +493,17 @@ def get_viewer(id):
 
 @application.route('/reslogs/<i>/<ids>')
 def log_results(i, ids):
- 
+
     all_ids = utils.unconcatenate_ids(ids)
-    
+
+    # The results will be passed with the config file
+    config_file = os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "config.json")
+    with open(config_file) as json_file:
+        config = json.load(json_file)
+
+    # todo: add the date in ISO format
+
+
     return jsonify({'bsddlog': "n",'mvdlog': "i", 'schemalog': "v",'syntaxlog': "v", 'idslog':"n"})
     
 
@@ -509,9 +517,13 @@ def view_report(id,ids,fn):
     with open(f) as json_file:
         info = json.load(json_file)
 
+    
+
     config_file = os.path.join(utils.storage_dir_for_id(all_ids[int(id)]), "config.json")
     with open(config_file) as json_file:
         config = json.load(json_file)
+    
+    #import pdb; pdb.set_trace()
 
     for cfg, val in config.items():
         val = int(val)

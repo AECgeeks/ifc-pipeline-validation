@@ -141,6 +141,8 @@ class bsdd_validation_task(task):
     est_time = 10
 
     def execute(self, directory, id):
+
+        print(directory)
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
         outname = id +"_bsdd.txt"
 
@@ -317,8 +319,6 @@ def do_process(id, validation_config, ids_spec):
             else:
                 tasks.append(ids_validation_task)
 
-
-    # import pdb; pdb.set_trace()
 
     # tasks = [
     #     # syntax_validation_task,

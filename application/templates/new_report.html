@@ -101,6 +101,9 @@
 
     <div id="main">
 
+        <h1>Validation Report</h1>
+
+
         <table>
             
            
@@ -210,6 +213,7 @@
             {% if not "status" in bsdd_result.keys() %}
                 <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)" >
                     <td style="font-size: 27px;"> &emsp; &#x25BC; bSDD consistency</td>
+                    <td></td>
                 </tr>
                 {%for domain, obj in bsdd_result.items()%}
 
@@ -230,6 +234,7 @@
 
                         <tr style="display: none;" data-parent="bsdd/{{domain}}/{{classification}}" data-level=4>
                             <td> &emsp; &emsp; &emsp; &emsp;Requirements</td>
+                            <td></td>
                         </tr>
                         
                         <tr>
