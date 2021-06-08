@@ -222,7 +222,7 @@ def validate_consistency(ifc_file):
                                                     checking["ptype"] = 1
                                                     logging["ptype"] = ptype_spec
                                                 else:
-                                                    import pdb; pdb.set_trace()
+                                                    #import pdb; pdb.set_trace()
                                                     checking["ptype"] = 0
                                                     logging["ptype"] = "incorrect type of %s instead of %s"%(str(type(pvalue_instance)), ptype_spec)
 
