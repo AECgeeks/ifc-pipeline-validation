@@ -15,6 +15,17 @@ from fuzzywuzzy import process
 
 base_url = "https://bs-dd-api-prototype.azurewebsites.net/api/"
 
+simple_type_python_mapping = {
+        # @todo should include unicode for Python2
+        "string": str,
+        "integer": int,
+        "real": float,
+        "number": float,
+        "Boolean": bool,
+        "logical": bool,  # still not implemented in IfcOpenShell
+        "binary": str,  # maps to a str of "0" and "1"
+    }
+
 def pack_classification(classification_props):
     return classification_props['propertySet'], classification_props['name'], classification_props['dataType'], classification_props['predefinedValue']
 
@@ -95,6 +106,7 @@ def control_values(requirements, data):
 def validate_consistency(ifc_file):
     rel_associate_classifications = ifc_file.by_type("IfcRelAssociatesClassification")
     log_to_construct = {}
+    
 
     prog = 0
 
@@ -128,7 +140,6 @@ def validate_consistency(ifc_file):
                 classification_name = "no classification associated to the reference in the file"
                 
             
-            
             if isinstance(domain_name, str):
                 log_to_construct[classification_name] = domain_name
             else:   
@@ -159,41 +170,80 @@ def validate_consistency(ifc_file):
                                 if not e.GlobalId in  json_shortcut['values'].keys():
                                     json_shortcut['values'][e.GlobalId] = []
 
-                                checking = {"pset":0, "pname":0, "ptype":0}
+                                checking = {}
+                                logging = {}
+                                
+                                # bSDD specifications
+                                if 'name' in p.keys():
+                                    pname_spec = p['name']
+                                    checking["pname"] = 0
+                                    logging["pname"] = 0
+                                if 'propertySet' in p.keys():   
+                                    pset_spec = p['propertySet']
+                                    checking["pset"] = 0
+                                    logging["pset"] = 0
+                                if 'dataType' in p.keys():   
+                                    ptype_spec = p['dataType']
+                                    checking["ptype"] = 0
+                                    logging["ptype"] = 0
+                                if 'predefinedValue':
+                                    pvalue_spec =  p['predefinedValue']
+                                    checking["pvalue"] = 0
+                                    logging["pvalue"] = 0
+                                    if pvalue_spec == 'TRUE':
+                                        pvalue_spec = True
+                                    if pvalue_spec == 'FALSE':
+                                        pvalue_spec = False
 
-                                name = p['name']
-                                pset_spec = p['propertySet']
-                                ptype = p['dataType']
-                        
                                 if pset_spec:
                                     props = ifcopenshell.util.element.get_psets(e)
-                                    pset = props.get(pset_spec)
-
-                                    if pset:
+                                    pset_instance = props.get(pset_spec)
+                                   
+                                    if pset_instance:
                                         checking["pset"] = 1
-                                        val = pset.get(name) 
-                                        if val is not None:
-                                            checking["pname"] = 1  
+                                        logging["pset"] = pset_spec
+
+                                        if pname_spec in pset_instance.keys():
+                                            pvalue_instance = pset_instance.get(pname_spec) 
+                                            checking["pname"] = 1
+                                            logging["pname"] = pname_spec
+                                            if pvalue_instance is not None:
+                                               
+                                                if pvalue_instance == pvalue_spec:
+                                                    checking["pvalue"] = 1
+                                                    logging["pvalue"] = pvalue_spec
+                                                    
+                                                else:
+                                                    checking["pvalue"] = 0
+                                                    logging["pvalue"] = "incorrect predefined value of %s instead of %s"%(pvalue_instance, pvalue_spec)
+                                                
+    
+                                                if isinstance(pvalue_instance,simple_type_python_mapping[ptype_spec]):   
+                                                    checking["ptype"] = 1
+                                                    logging["ptype"] = ptype_spec
+                                                else:
+                                                    import pdb; pdb.set_trace()
+                                                    checking["ptype"] = 0
+                                                    logging["ptype"] = "incorrect type of %s instead of %s"%(str(type(pvalue_instance)), ptype_spec)
+
                                         else:
-                                            val = "No property found in the instance property set"     
-                                else:
-                                    pset_spec = "No property set specified in the bSDD."
-                                    name = "NaN"
-
+                                            checking["pname"] = 0
+                                            logging["pname"] = "property %s not found in property set"%(pname_spec)
+                                            
                                 
-                                di = {
-                                    "name": name,
-                                    "propertyset": pset_spec,
-                                    "value": val,
-                                    "type":ptype,
-                                    "result":1
-                                }
+                                else:
+                                    checking["pset"] = 0
+                                    logging["pset"] = "no pset specified in bSDD classification"
 
+
+
+
+                                di = {"checking":checking, "logging":logging, "failing":round(1 - sum(checking.values())/len(checking.keys()),2)}
                                 
                                 json_shortcut['values'][e.GlobalId].append(di)
-            
+
     else:
-        log_to_construct['result'] = "No classification detected in the file."
+        log_to_construct["status"] = "No classification detected in the file."
 
 
     detailed_results_path = os.path.join(os.getcwd(), "dresult_bsdd.json")
@@ -208,16 +258,7 @@ if __name__ == "__main__":
     # mvd_fn= os.path.join(os.path.dirname(__file__), "ifcopenshell/mvd/mvd_examples/xset.mvdxml")
     # rule_tree = get_xset_rule(mvd_fn, "pset")
 
-    simple_type_python_mapping = {
-        # @todo should include unicode for Python2
-        "string": str,
-        "integer": int,
-        "real": float,
-        "number": float,
-        "boolean": bool,
-        "logical": bool,  # still not implemented in IfcOpenShell
-        "binary": str,  # maps to a str of "0" and "1"
-    }
+    
 
     ifc_fn = sys.argv[1]
     ifc_file = ifcopenshell.open(ifc_fn)

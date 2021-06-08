@@ -589,11 +589,15 @@ def view_report(id,ids,fn):
                         if "'" in l:
                             l = l.replace("'", '"')
                             l = l.replace("[classification_eval_todo]", "classification_eval_todo")
+                            ids_to_pass.append(l)
+
                         else:
                             ids_to_pass.append(l)
             else:
                 ids_to_pass = {'status':0}
                 print("%s not validated" % (cfg))
+
+
                         
     #import pdb; pdb.set_trace()
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass, config=config)
