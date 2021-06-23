@@ -79,7 +79,6 @@ class general_info_task(task):
     
     est_time = 1
     
-    #import pdb; pdb.set_trace()
     def execute(self, directory, id):
         info_program = os.path.join(os.getcwd() + "/checks", "info.py")
         subprocess.call([sys.executable, info_program, id + ".ifc"], cwd=directory)
