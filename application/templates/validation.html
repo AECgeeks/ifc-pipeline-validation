@@ -40,6 +40,15 @@
                 <th>bSDD</th>
                 <th>IDS</th>
                 <th>File format</th>
+
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>License</th>
+                <th>Production hours</th>
+                <th>Additional details</th>
  
             </tr>
             {% for i in range(0, n_files) %}
@@ -130,41 +139,7 @@
             rows[i + 1].cells[7].style.fontWeight = "bold";
             rows[i + 1].cells[7].id = "report"
 
-
-
-
-
-
             rows[i + 1].cells[9].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Download</a>';
-            // var repText = document.createElement("a");
-            // repText.id ="report"
-            // repText.style.textDecoration = "none";
-            // repText.innerHTML = "View report"
-            // var fn = rows[i + 1].cells[6].innerHTML;
-            // var st = window.location.href;
-
-            // var baseUrl = st.split('/')[2];
-            // var url = "/report/"+ i+"/"+ids + "/" + fn;
-            
-            // repText.href = url;
-            // rows[i + 1].cells[7].appendChild(repText)
-        
-            // rows[i + 1].cells[7].style.color = "#0070C0";
-            // rows[i + 1].cells[7].style.fontWeight = "bold";
-            // rows[i + 1].cells[7].id = "report"
-
-
-
-
-
-
-
-
-
-
-
-
-
             rows[i + 1].cells[10].innerHTML = '<a href="{{ url_for("get_main") }}" style ="text-decoration:none;">Delete</a>';
 
             rows[i + 1].cells[9].style.fontWeight = "bold";
@@ -172,8 +147,72 @@
             rows[i + 1].cells[9].style.color = "rgb(105, 125, 239)";
             rows[i + 1].cells[10].style.color = "rgb(224, 101, 101)";
 
-       
+
+            //License
+            var values = ["private","CC", "MIT",  "GPL"];
+
+            var select = document.createElement("select");
+            select.name = "licenses";
+            select.id = "licenses"
+
+            for (const val of values)
+            {
+                var option = document.createElement("option");
+                option.value = val;
+                option.text = val.charAt(0).toUpperCase() + val.slice(1);
+                select.appendChild(option);
+            }
+        
+            var licenseCell = rows[i + 1].insertCell(-1);
+            licenseCell.appendChild(select)
+            select.addEventListener("change", sendInfo);
+
+            //Production hours
+            var hoursInputBox = document.createElement("INPUT");
+            hoursInputBox.id = "hours";
+            hoursInputBox.setAttribute("type", "text");
+            hoursInputBox.style.width = "20%"; 
+            var hoursCell = rows[i + 1].insertCell(-1);
+            hoursCell.style.textAlign = "center";
+            hoursCell.appendChild(hoursInputBox);
+            hoursInputBox.addEventListener("change", sendInfo);
             
+
+            //Additional details
+            var detailsInputBox = document.createElement("INPUT");
+            detailsInputBox.id = "details"
+            detailsInputBox.setAttribute("type", "text");
+            var detailsCell = rows[i + 1].insertCell(-1);
+            detailsCell.appendChild(detailsInputBox);
+            detailsInputBox.addEventListener("change", sendInfo);
+
+            function sendInfo(){
+                console.log(this)
+                var data; 
+                
+                if(this.id == "licenses"){
+                    data = {license: this.value};
+                }
+                else if(this.id == "hours"){
+                    data = {hours: this.value};
+                }
+                else{
+                    data = {details: this.value};
+                }
+
+                
+                fetch("/processinfo/{{id}}/"+ i.toString(), {
+                    method: "POST", 
+                    body: JSON.stringify(data)
+                }).then(function (r) { return r.json(); }).then(function (r) {
+                    console.log(r);
+                })
+            
+
+
+            }
+           
+
         }
 
         var n = {{ n_files }};
@@ -183,8 +222,6 @@
         function poll() {
             fetch("/valprog/{{ id }}").then(function (r) { return r.json(); }).then(function (r) {
                 var ids = '{{id}}';
-
-  
 
                 for (var i = 0; i < n; i++) {
                     var bar = document.getElementById("bar" + i.toString())

@@ -33,6 +33,8 @@ from pathlib import Path
 import datetime
 
 from collections import defaultdict, namedtuple
+
+from werkzeug import datastructures
 from flask_dropzone import Dropzone
 
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -439,6 +441,14 @@ def get_validation_progress(id):
         session.close()
 
     return jsonify({"progress": model_progresses,"filename":model.filename})
+
+
+@application.route('/processinfo/<ids>/<number>', methods=['POST'])
+def register_info_input(ids, number):
+    data =  request.get_data()
+    #import pdb; pdb.set_trace()
+    return jsonify({"progress":data.decode("utf-8")})
+    
 
 
 @application.route('/pp/<id>', methods=['GET'])
