@@ -29,6 +29,7 @@ services:
       - TESTING=${TESTING}
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
+      - CRYPTOGRAPHY_DONT_BUILD_RUST=1
       
     expose:
       - "5000"
