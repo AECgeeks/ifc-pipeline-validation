@@ -501,9 +501,9 @@ authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsma
 token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
 
 redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/'
-redirect_uri = redirect(url_for('callback'))
 
-bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
+
+bs = OAuth2Session(client_id, redirect_uri=redirect_uri + "/callback", scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
 
 
 @application.route("/login")
