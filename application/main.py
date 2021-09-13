@@ -102,10 +102,50 @@ application.config['BASIC_AUTH_PASSWORD'] = 'bim'
 application.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(application)
 
-@application.route('/', methods=['GET'])
-def get_main():
+
+
+
+# LOGIN
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
+# Credentials you get from registering a new application
+client_id = os.environ['CLIENT_ID']
+client_secret = os.environ['CLIENT_SECRET']
+authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsmartservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/authorize'
+token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
+
+redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/'
+
+bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
+
+
+@application.route("/")
+def index():
+    if bs.authorized:
+        return redirect(url_for('tester')) 
+    else:
+        return redirect(url_for('login')) 
+        # authorization_url, state = bs.authorization_url(authorization_base_url)
+        # return redirect(authorization_url) 
+
+
+
+@application.route('/login', methods=['GET'])
+def login():
+    authorization_url, state = bs.authorization_url(authorization_base_url)
+    return redirect(authorization_url)
     return render_template('index.html')
     #return send_file("bsddlog.json", mimetype='text/plain')
+
+ 
+@application.route("/callback")
+def callback():
+    t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
+    return redirect(url_for('tester'))
+
+@application.route("/tester")
+def tester():  
+    return "Test ok"
 
 
 
@@ -488,37 +528,6 @@ def get_log(id, ext):
         return render_template('log.html', id=id, log=log)
     else:
         return send_file(logfn, mimetype='text/plain')
-
-
-
-# LOGIN
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
-# Credentials you get from registering a new application
-client_id = os.environ['CLIENT_ID']
-client_secret = os.environ['CLIENT_SECRET']
-authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsmartservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/authorize'
-token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
-
-redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/'
-
-
-bs = OAuth2Session(client_id, redirect_uri=redirect_uri + "/callback", scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
-
-
-@application.route("/login")
-def login():  
-    authorization_url, state = bs.authorization_url(authorization_base_url)
-    return redirect(authorization_url) 
- 
-@application.route("/callback")
-def callback():
-    t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
-    return redirect(url_for('tester'))
-
-@application.route("/tester")
-def tester():  
-    return "Test ok"
 
 
 @application.route('/v/<id>', methods=['GET'])
