@@ -507,14 +507,9 @@ bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile"
 
 @application.route("/login")
 def login():  
-    request_uri = bs.prepare_request_uri(
-        authorization_base_url,
-        redirect_uri=redirect_uri,
-        scope=["openid", "email", "profile"],
-    )
-    return request_uri 
+    authorization_url, state = bs.authorization_url(authorization_base_url)
+    return redirect(authorization_url) 
  
-
 @application.route("/callback")
 def callback():
 
