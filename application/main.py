@@ -485,6 +485,11 @@ def get_log(id, ext):
         return send_file(logfn, mimetype='text/plain')
 
 
+@application.route("/callback")
+def callback():
+    return str(os.environ['TESTING']) 
+
+
 @application.route('/v/<id>', methods=['GET'])
 def get_viewer(id):
     if not utils.validate_id(id):

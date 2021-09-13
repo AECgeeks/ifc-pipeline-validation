@@ -26,6 +26,8 @@ services:
       - MODEL_DIR=/data
       - REDIS_HOST=redis
       - POSTGRES_HOST=db
+      - TESTING=TESTING
+      
     expose:
       - "5000"
     depends_on:
