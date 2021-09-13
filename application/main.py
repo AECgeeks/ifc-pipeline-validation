@@ -513,7 +513,7 @@ def login():
 @application.route("/callback")
 def callback():
     t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
-    return redirect(url_for('.tester'))
+    return redirect(url_for('tester'))
 
 @application.route("/tester")
 def tester():  
