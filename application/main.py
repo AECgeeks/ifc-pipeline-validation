@@ -500,7 +500,7 @@ client_secret = os.environ['CLIENT_SECRET']
 authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsmartservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/authorize'
 token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
 
-redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/callback'
+redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/'
 
 bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
 
@@ -512,9 +512,12 @@ def login():
  
 @application.route("/callback")
 def callback():
-
     t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
-    return str(os.environ['TESTING']) 
+    return redirect(url_for('.tester'))
+
+@application.route("/tester")
+def tester():  
+    return "Test ok"
 
 
 @application.route('/v/<id>', methods=['GET'])
