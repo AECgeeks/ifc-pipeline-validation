@@ -122,7 +122,7 @@ bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile"
 @application.route("/")
 def index():
     if bs.authorized:
-        return redirect(url_for('tester')) 
+        return "test"
     else:
         return redirect(url_for('login')) 
         # authorization_url, state = bs.authorization_url(authorization_base_url)
