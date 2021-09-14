@@ -138,7 +138,9 @@ def menu():
         if bs.authorized:
             return render_template('test.html')
         else:
-            pass #throw error
+            return render_template('test_error.html')
+            
+            
 
 
 # @application.route('/ids', methods=['GET'])
