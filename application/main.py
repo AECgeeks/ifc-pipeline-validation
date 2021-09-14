@@ -134,7 +134,7 @@ def callback():
 
 @application.route("/tester")
 def tester():
-    render_template('test.html')
+    return render_template('test.html')
     # if bs.authorized:
     #     return "Test ok"
 
