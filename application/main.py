@@ -134,8 +134,9 @@ def callback():
 
 @application.route("/tester")
 def tester():
-    if bs.authorized:
-        return "Test ok"
+    return "test"
+    # if bs.authorized:
+    #     return "Test ok"
 
 
 
