@@ -118,34 +118,24 @@ redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/'
 
 bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
 
-
 @application.route("/")
 def index():
-    if bs.authorized:
-        return "test"
-    else:
-        return redirect(url_for('login')) 
-        # authorization_url, state = bs.authorization_url(authorization_base_url)
-        # return redirect(authorization_url) 
-
-
-
+    return redirect(url_for('login')) 
+        
 @application.route('/login', methods=['GET'])
 def login():
     authorization_url, state = bs.authorization_url(authorization_base_url)
     return redirect(authorization_url)
-    return render_template('index.html')
-    #return send_file("bsddlog.json", mimetype='text/plain')
-
- 
+    
 @application.route("/callback")
 def callback():
     t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
     return redirect(url_for('tester'))
 
 @application.route("/tester")
-def tester():  
-    return "Test ok"
+def tester():
+    if bs.authorized:
+        return "Test ok"
 
 
 
