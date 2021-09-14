@@ -97,10 +97,10 @@ if not DEVELOPMENT:
     q = Queue(connection=Redis(host=os.environ.get("REDIS_HOST", "localhost")), default_timeout=3600)
 
 
-application.config['BASIC_AUTH_USERNAME'] = 'admin'
-application.config['BASIC_AUTH_PASSWORD'] = 'bim'
-application.config['BASIC_AUTH_FORCE'] = True
-basic_auth = BasicAuth(application)
+# application.config['BASIC_AUTH_USERNAME'] = 'admin'
+# application.config['BASIC_AUTH_PASSWORD'] = 'bim'
+# application.config['BASIC_AUTH_FORCE'] = True
+# basic_auth = BasicAuth(application)
 
 
 
@@ -114,7 +114,7 @@ client_secret = os.environ['CLIENT_SECRET']
 authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsmartservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/authorize'
 token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
 
-redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/'
+redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/callback'
 
 bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
 
