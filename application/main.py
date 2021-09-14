@@ -33,6 +33,7 @@ from pathlib import Path
 import datetime
 
 from collections import defaultdict, namedtuple
+from redis.client import parse_client_list
 
 from werkzeug import datastructures
 from flask_dropzone import Dropzone
@@ -130,14 +131,14 @@ def login():
 @application.route("/callback")
 def callback():
     t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
-    return redirect(url_for('tester'))
+    return redirect(url_for('menu'))
 
-@application.route("/tester")
-def tester():
-    return render_template('test.html')
-    # if bs.authorized:
-    #     return "Test ok"
-
+@application.route("/menu")
+def menu():
+        if bs.authorized:
+            return render_template('test.html')
+        else:
+            pass #throw error
 
 
 # @application.route('/ids', methods=['GET'])
