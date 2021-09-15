@@ -146,11 +146,11 @@ def menu():
             id_token = bs.token['id_token']
             decoded = jwt.decode(id_token, key=key)
 
-            return render_template('test.html', decoded=decoded)
+            return render_template('test.html', decoded=decoded["email"])
         else:
             return render_template('test_error.html')
             
-            
+
 # @application.route('/ids', methods=['GET'])
 # def get_main():
 #     return render_template('index.html')
