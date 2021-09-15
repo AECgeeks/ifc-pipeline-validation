@@ -141,7 +141,7 @@ def callback():
     id_token = t['id_token']
     decoded = jwt.decode(id_token, key=key)
 
-    return render_template('test.html', decoded=decoded)
+    return render_template('index.html', decoded=decoded)
     #return redirect(url_for('menu'))
 
 # @application.route("/menu")
