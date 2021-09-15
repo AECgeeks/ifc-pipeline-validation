@@ -136,13 +136,21 @@ def callback():
 @application.route("/menu")
 def menu():
         if bs.authorized:
-            return render_template('test.html')
+            BS_DISCOVERY_URL = (
+                "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
+            )
+            discovery_response = requests.get(BS_DISCOVERY_URL).json()
+
+            # Get claims thanks to openid
+            key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
+            id_token = bs.token['id_token']
+            decoded = jwt.decode(id_token, key=key)
+
+            return render_template('test.html', decoded=decoded)
         else:
             return render_template('test_error.html')
             
             
-
-
 # @application.route('/ids', methods=['GET'])
 # def get_main():
 #     return render_template('index.html')
