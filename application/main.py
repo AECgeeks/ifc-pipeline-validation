@@ -131,24 +131,35 @@ def login():
 @application.route("/callback")
 def callback():
     t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
-    return redirect(url_for('menu'))
+    BS_DISCOVERY_URL = (
+    "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
+    )
+    discovery_response = requests.get(BS_DISCOVERY_URL).json()
 
-@application.route("/menu")
-def menu():
-        if bs.authorized:
-            BS_DISCOVERY_URL = (
-                "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
-            )
-            discovery_response = requests.get(BS_DISCOVERY_URL).json()
+    # Get claims thanks to openid
+    key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
+    id_token = t['id_token']
+    decoded = jwt.decode(id_token, key=key)
 
-            # Get claims thanks to openid
-            key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
-            id_token = bs.token['id_token']
-            decoded = jwt.decode(id_token, key=key)
+    return render_template('test.html', decoded=decoded["email"])
+    #return redirect(url_for('menu'))
 
-            return render_template('test.html', decoded=decoded["email"])
-        else:
-            return render_template('test_error.html')
+# @application.route("/menu")
+# def menu():
+#         if bs.authorized:
+#             BS_DISCOVERY_URL = (
+#                 "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
+#             )
+#             discovery_response = requests.get(BS_DISCOVERY_URL).json()
+
+#             # Get claims thanks to openid
+#             key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
+#             id_token = bs.token['id_token']
+#             decoded = jwt.decode(id_token, key=key)
+
+#             return render_template('test.html', decoded=decoded["email"])
+#         else:
+#             return render_template('test_error.html')
             
 
 # @application.route('/ids', methods=['GET'])
