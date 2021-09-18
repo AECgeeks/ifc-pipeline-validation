@@ -60,6 +60,10 @@ dropzone = Dropzone(application)
 # application.config['DROPZONE_UPLOAD_MULTIPLE'] = True
 # application.config['DROPZONE_PARALLEL_UPLOADS'] = 3
 
+# Trying to fix the secret key issue
+application.config['SESSION_TYPE'] = 'filesystem'
+application.config['SECRET_KEY'] = 'super secret key'
+
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
 VALIDATION = 1
