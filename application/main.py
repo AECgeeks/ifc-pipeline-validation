@@ -139,7 +139,7 @@ def login():
 @application.route("/callback")
 def callback():
     bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
-    t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token", state=bs.state())
+    t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
     BS_DISCOVERY_URL = (
     "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
     )
