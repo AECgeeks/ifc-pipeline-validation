@@ -62,7 +62,7 @@ dropzone = Dropzone(application)
 
 # Trying to fix the secret key issue
 application.config['SESSION_TYPE'] = 'filesystem'
-application.config['SECRET_KEY'] = 'super secret key'
+application.config['SECRET_KEY'] = 'O5vB0ishUSFmXhyOGGk0zZJgcXhVnc2M6dZLHXzBoxo'
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
