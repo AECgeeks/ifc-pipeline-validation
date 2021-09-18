@@ -39,7 +39,7 @@ from werkzeug import datastructures
 from flask_dropzone import Dropzone
 
 from werkzeug.middleware.proxy_fix import ProxyFix
-from flask import Flask, request, send_file, render_template, abort, jsonify, redirect, url_for, make_response
+from flask import Flask, request, session, send_file, render_template, abort, jsonify, redirect, url_for, make_response
 from flask_cors import CORS
 from flask_basicauth import BasicAuth
 
@@ -120,7 +120,6 @@ redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/callback'
 refresh_url = token_url
 extra = {'client_id':client_id, 'client_secret':client_secret}
 
-bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
 
 @application.route("/")
 def index():
@@ -128,18 +127,23 @@ def index():
         
 @application.route('/login', methods=['GET'])
 def login():
+    bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
     authorization_url, state = bs.authorization_url(authorization_base_url)
+    session['oauth_state'] = state
     return redirect(authorization_url)
     
 @application.route("/callback")
 def callback():
+    bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=["openid profile","https://buildingSMARTservices.onmicrosoft.com/api/read"])
     t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token", state=bs.state())
     BS_DISCOVERY_URL = (
     "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
     )
-    discovery_response = requests.get(BS_DISCOVERY_URL).json()
 
+    session['oauth_token'] = t
+    
     # Get claims thanks to openid
+    discovery_response = requests.get(BS_DISCOVERY_URL).json()
     key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
     id_token = t['id_token']
     decoded = jwt.decode(id_token, key=key)
