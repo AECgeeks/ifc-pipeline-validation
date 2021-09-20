@@ -109,25 +109,40 @@ if not DEVELOPMENT:
 
 
 
+if not DEVELOPMENT:
+    # LOGIN
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
+    # Credentials you get from registering a new application
+    client_id = os.environ['CLIENT_ID']
+    client_secret = os.environ['CLIENT_SECRET']
+    authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsmartservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/authorize'
+    token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
 
-# LOGIN
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
-# Credentials you get from registering a new application
-client_id = os.environ['CLIENT_ID']
-client_secret = os.environ['CLIENT_SECRET']
-authorization_base_url = 'https://buildingsmartservices.b2clogin.com/buildingsmartservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/authorize'
-token_url = 'https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/token'
-
-redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/callback'
-
-refresh_url = token_url
-extra = {'client_id':client_id, 'client_secret':client_secret}
+    redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/callback'
 
 
 @application.route("/")
 def index():
-    return redirect(url_for('login')) 
+    if not DEVELOPMENT:
+        return redirect(url_for('login')) 
+    else:
+
+        
+        with open('decoded.json') as json_file:
+            decoded = json.load(json_file)
+
+        session = database.Session()
+        user = session.query(database.user).filter(database.user.id == decoded["aud"]).all()
+        if len(user) == 0:
+            session.add(database.user(str(decoded["aud"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
+            session.commit()
+            session.close()
+        else:
+            print(user)
+            #todo: query database to send information JSON
+
+        return render_template('index.html', decoded=decoded) 
         
 @application.route('/login', methods=['GET'])
 def login():
@@ -150,7 +165,18 @@ def callback():
     discovery_response = requests.get(BS_DISCOVERY_URL).json()
     key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
     id_token = t['id_token']
+
     decoded = jwt.decode(id_token, key=key)
+    
+    session = database.Session()
+    user = session.query(database.user).filter(database.user.id == decoded["aud"]).all()
+    if len(user) == 0:
+        session.add(database.user(str(decoded["aud"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
+        session.commit()
+        session.close()
+    else:
+        print(user)
+        #todo: query database to send information JSON
 
     return render_template('index.html', decoded=decoded)
     #return redirect(url_for('menu'))

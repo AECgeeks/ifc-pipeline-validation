@@ -65,8 +65,6 @@ class model(Base, Serializable):
         self.filename = filename
 
 
-
-
 class file(Base, Serializable):
     __tablename__ = 'files'
 
@@ -79,12 +77,81 @@ class file(Base, Serializable):
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
+    authoring_application = Column(String)
+    schema = Column(String)
+    production_hours = Column(String)
+    license = Column(String)
+    number_of_geometries = Column(String)
+    number_of_properties = Column(String)
+    owner = Column(String)
+    
+
     def __init__(self, code, filename):
         self.code = code
         self.filename = filename
         
         self.model_id = Column(Integer, ForeignKey('models.id'))
 
+
+class bssd_result(Base, Serializable):
+    __tablename__ = 'bSDD results'
+
+    id = Column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey('files.id'))
+    instance_id = Column(Integer, ForeignKey('instances.id'))
+    bsDD_classification_uri = Column(String)
+    bsDD_property_uri = Column(String)
+    bsDD_property_constraint = Column(String)
+    ifc_property_id = Column(String)
+    ifc_property_set = Column(String)
+    ifc_property_type = Column(String)
+    ifc_property_value = Column(String)
+
+    def __init__(self):
+        self.file_id = Column(Integer, ForeignKey('files.id'))
+        self.instance_id = Column(Integer, ForeignKey('instances.id'))
+       
+
+class bsdd_validation_task(Base, Serializable):
+    __tablename__ = 'bSDD validation tasks'
+
+    id = Column(Integer, primary_key=True)
+    validated_file = Column(Integer, ForeignKey('files.id'))
+    validation_start_time = Column(DateTime)
+    validation_end_time = Column(DateTime)
+
+    def __init__(self):
+        self.file_id = Column(Integer, ForeignKey('files.id'))
+        
+
+class ifc_instance(Base, Serializable):
+    __tablename__ = 'instances'
+
+    id = Column(Integer, primary_key=True)
+    global_id = Column(String)
+    file = Column(Integer, ForeignKey('files.id'))
+    ifc_type = Column(String)
+    
+    def __init__(self):
+        self.file_id = Column(Integer, ForeignKey('files.id'))
+
+
+class user(Base, Serializable):
+    __tablename__ = 'users'
+
+    id = Column(String, primary_key=True)
+    email = Column(String)
+    family_name = Column(String)
+    given_name = Column(String)
+    name = Column(String) 
+
+    def __init__(self, id, email, family_name, given_name, name):
+        self.id = id
+        self.email = email
+        self.family_name = family_name
+        self.given_name = given_name
+        self.name = name
+        
 
 def initialize():
     if not database_exists(engine.url):
