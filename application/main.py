@@ -168,12 +168,12 @@ def callback():
 
     decoded = jwt.decode(id_token, key=key)
     
-    session = database.Session()
-    user = session.query(database.user).filter(database.user.id == decoded["aud"]).all()
+    db_session = database.Session()
+    user = db_session.query(database.user).filter(database.user.id == decoded["aud"]).all()
     if len(user) == 0:
-        session.add(database.user(str(decoded["aud"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
-        session.commit()
-        session.close()
+        db_session.add(database.user(str(decoded["aud"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
+        db_session.commit()
+        db_session.close()
     else:
         print(user)
         #todo: query database to send information JSON
