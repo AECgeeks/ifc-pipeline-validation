@@ -181,28 +181,6 @@ def callback():
     return render_template('index.html', decoded=decoded)
     #return redirect(url_for('menu'))
 
-# @application.route("/menu")
-# def menu():
-#         if bs.authorized:
-#             BS_DISCOVERY_URL = (
-#                 "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
-#             )
-#             discovery_response = requests.get(BS_DISCOVERY_URL).json()
-
-#             # Get claims thanks to openid
-#             key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
-#             id_token = bs.token['id_token']
-#             decoded = jwt.decode(id_token, key=key)
-
-#             return render_template('test.html', decoded=decoded["email"])
-#         else:
-#             return render_template('test_error.html')
-            
-
-# @application.route('/ids', methods=['GET'])
-# def get_main():
-#     return render_template('index.html')
-#     #return send_file("bsddlog.json", mimetype='text/plain')
 
 
 def process_upload(filewriter, callback_url=None):
@@ -260,7 +238,6 @@ def process_upload_multiple(files, callback_url=None):
 
 def process_upload_validation(files,validation_config, callback_url=None):
     
-
     ids = []
     for file in files:
         fn = file.filename
@@ -289,7 +266,6 @@ def process_upload_validation(files,validation_config, callback_url=None):
 
 def process_upload_validation_ids(files,validation_config, ids_spec, callback_url=None):
     
-  
     ids = []
     for file in files:
         fn = file.filename
@@ -314,7 +290,6 @@ def process_upload_validation_ids(files,validation_config, ids_spec, callback_ur
 
     
     return ids
-
 
 
 def upload_ids(files,validation_config, callback_url=None):
@@ -375,6 +350,8 @@ def put_main():
     files = []
 
     extensions = set()
+
+    
 
     for key, f in request.files.items():
         

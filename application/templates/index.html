@@ -196,6 +196,11 @@
 
                 myDropzone = this;
 
+                myDropzone.on("sending", function(file, xhr, data) {
+                        data.append("user", decoded["aud"]);});
+
+
+
                 var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd', 'ids'];
 
                 for (var i = 0; i < validationTypes.length; i++) {
@@ -243,19 +248,17 @@
 
                     }
 
+
+
                     myDropzone.processQueue();
 
                 });
 
 
-                
-
             
-
-
                 this.on("success", function (file, response) {
 
-                    
+                    debugger;
 
                     var submitAreas = document.getElementsByClassName("submit-area");
 
