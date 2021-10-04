@@ -27,6 +27,7 @@ from __future__ import print_function
 
 import os
 import json
+import ast
 import threading
 from pathlib import Path
 
@@ -34,6 +35,7 @@ import datetime
 
 from collections import defaultdict, namedtuple
 from redis.client import parse_client_list
+from sqlalchemy.ext import declarative
 
 from werkzeug import datastructures
 from flask_dropzone import Dropzone
@@ -140,7 +142,9 @@ def index():
             session.close()
         else:
             print(user)
-            #todo: query database to send information JSON
+        #todo: query database to send information JSON
+
+
 
         return render_template('index.html', decoded=decoded) 
         
@@ -236,7 +240,7 @@ def process_upload_multiple(files, callback_url=None):
     return id
 
 
-def process_upload_validation(files,validation_config, callback_url=None):
+def process_upload_validation(files,validation_config,user_id, callback_url=None):
     
     ids = []
     for file in files:
@@ -248,7 +252,13 @@ def process_upload_validation(files,validation_config, callback_url=None):
         os.makedirs(d)
         filewriter(os.path.join(d, id+".ifc"))
         session = database.Session()
-        session.add(database.model(id, fn))
+        session.add(database.model(id, fn, user_id))
+
+        # import pdb; pdb.set_trace()
+        # file-user relationship
+
+        # session.add(database.file(id, fn, user_id))
+
         session.commit()
         session.close()
     
@@ -349,9 +359,9 @@ def put_main():
     ids = []
     files = []
 
-    extensions = set()
+    user_id = request.form.to_dict()["user"]
 
-    
+    extensions = set()
 
     for key, f in request.files.items():
         
@@ -365,17 +375,20 @@ def put_main():
                 extensions.add('ifc')
            
     val_config = request.form.to_dict()
-    val_results = {k + "log":'n' for (k,v) in val_config.items()}
+    val_results = {k + "log":'n' for (k,v) in val_config.items() if k != "user"}
     
     validation_config = {}
     validation_config["config"] = val_config
+    del val_config["user"]
     validation_config["results"] = val_results
+
+    # import pdb; pdb.set_trace()
 
     if VALIDATION:
         if 'xml' in extensions:
             ids = upload_ids(files, validation_config)
         else:
-            ids = process_upload_validation(files, validation_config)
+            ids = process_upload_validation(files, validation_config, user_id)
 
     elif VIEWER:
         ids = process_upload_multiple(files)
@@ -388,7 +401,7 @@ def put_main():
         if 'xml' in extensions:
             url = url_for('ids_front', id=idstr)
         else:
-            url = url_for('validate_files', id=idstr) 
+            url = url_for('validate_files', id=idstr, user_id=user_id) 
     
     elif VIEWER:
         url = url_for('check_viewer', id=idstr) 
@@ -442,7 +455,7 @@ def put_main2(test):
         if 'xml' in extensions:
             url = url_for('ids_front', id=idstr)
         else:
-            url = url_for('validate_files', id=idstr) 
+            url = url_for('validate_files', id=idstr, user_id=request.form.to_dict()["user"]) 
     
     elif VIEWER:
         url = url_for('check_viewer', id=idstr) 
@@ -477,8 +490,8 @@ def check_viewer(id):
     
 
 
-@application.route('/val/<id>', methods=['GET'])
-def validate_files(id):
+@application.route('/val/<id>/<user_id>', methods=['GET'])
+def validate_files(id, user_id):
     # if not utils.validate_id(id):
     #     abort(404)
 
@@ -494,7 +507,7 @@ def validate_files(id):
         filenames.append(model.filename)
         session.close()
 
-    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames)     
+    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id =user_id )     
     
     
 @application.route('/valprog/<id>', methods=['GET'])
@@ -515,10 +528,31 @@ def get_validation_progress(id):
     return jsonify({"progress": model_progresses,"filename":model.filename})
 
 
-@application.route('/processinfo/<ids>/<number>', methods=['POST'])
-def register_info_input(ids, number):
+@application.route('/update_info/<ids>/<number>/<user_id>', methods=['POST'])
+def register_info_input(ids, number, user_id):
     data =  request.get_data()
-    #import pdb; pdb.set_trace()
+    decoded_data = ast.literal_eval(data.decode("utf-8"))
+    i = decoded_data['n']
+    # license = decoded_data['license']    
+    all_ids = utils.unconcatenate_ids(ids)
+
+    session = database.Session()
+    model = session.query(database.model).filter(database.model.code == all_ids[i]).all()[0]
+    
+    #import pdb;pdb.set_trace()
+
+    if decoded_data["type"] == "licenses":
+        model.license = decoded_data['license']
+
+    if decoded_data["type"] == "hours":
+        model.hours = decoded_data['hours']
+
+    if decoded_data["type"] == "details":
+        model.details = decoded_data['details']
+
+    session.commit()
+    session.close()
+
     return jsonify({"progress":data.decode("utf-8")})
     
 

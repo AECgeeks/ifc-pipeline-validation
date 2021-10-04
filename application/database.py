@@ -49,20 +49,54 @@ class Serializable(object):
         return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
 
 
+class user(Base, Serializable):
+    __tablename__ = 'users'
+
+    id = Column(String, primary_key=True)
+    email = Column(String)
+    family_name = Column(String)
+    given_name = Column(String)
+    name = Column(String)
+    # files = relationship("file") 
+    models = relationship("model") 
+
+    def __init__(self, id, email, family_name, given_name, name):
+        self.id = id
+        self.email = email
+        self.family_name = family_name
+        self.given_name = given_name
+        self.name = name
+        
+
 class model(Base, Serializable):
     __tablename__ = 'models'
 
     id = Column(Integer, primary_key=True)
     code = Column(String)
     filename = Column(String)
-    files = relationship("file")
-    
+    #files = relationship("file")
+    user_id = Column(String, ForeignKey('users.id'))
+
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
-    def __init__(self, code, filename):
+    license = Column(String, default="private")
+    hours = Column(String)
+    details = Column(String)
+
+    number_of_geometries = Column(String)
+    number_of_properties = Column(String)
+
+    authoring_application = Column(String)
+    schema = Column(String)
+    size = Column(String)
+    app = Column(String)
+    mvd = Column(String)
+
+    def __init__(self, code, filename, user_id):
         self.code = code
         self.filename = filename
+        self.user_id = user_id
 
 
 class file(Base, Serializable):
@@ -72,27 +106,47 @@ class file(Base, Serializable):
     code = Column(String)
     filename = Column(String)
  
-    model_id = Column(Integer, ForeignKey('models.id'))
+    #model_id = Column(Integer, ForeignKey('models.id'))
+    # user_id = Column(String, ForeignKey('users.id'))
 
-    progress = Column(Integer, default=-1)
-    date = Column(DateTime, server_default=func.now())
-
-    authoring_application = Column(String)
-    schema = Column(String)
-    production_hours = Column(String)
-    license = Column(String)
-    number_of_geometries = Column(String)
-    number_of_properties = Column(String)
-    owner = Column(String)
+    # progress = Column(Integer, default=-1)
+    # date = Column(DateTime, server_default=func.now())
+    # authoring_application = Column(String)
+    # schema = Column(String)
+    # production_hours = Column(String)
+    # license = Column(String)
+    # number_of_geometries = Column(String)
+    # number_of_properties = Column(String)
+    
+    # size = Column(String)
+    # app = Column(String)
+    # mvd = Column(String)
     
 
     def __init__(self, code, filename):
         self.code = code
         self.filename = filename
+
+        # self.user_id = user_id
+      
+        # self.model_id = Column(Integer, ForeignKey('models.id'))
+        # self.user_id =  Column(Integer, ForeignKey('users.id'))
+
+class bsdd_validation_task(Base, Serializable):
+    __tablename__ = 'bSDD validation tasks'
+
+    id = Column(Integer, primary_key=True)
+    validated_file = Column(Integer, ForeignKey('files.id'))
+    validation_start_time = Column(DateTime)
+    validation_end_time = Column(DateTime)
+
+    # results = relationship("bsdd_result")
+
+    def __init__(self):
+        self.file_id = Column(Integer, ForeignKey('files.id'))
+
+
         
-        self.model_id = Column(Integer, ForeignKey('models.id'))
-
-
 class bssd_result(Base, Serializable):
     __tablename__ = 'bSDD results'
 
@@ -112,17 +166,7 @@ class bssd_result(Base, Serializable):
         self.instance_id = Column(Integer, ForeignKey('instances.id'))
        
 
-class bsdd_validation_task(Base, Serializable):
-    __tablename__ = 'bSDD validation tasks'
 
-    id = Column(Integer, primary_key=True)
-    validated_file = Column(Integer, ForeignKey('files.id'))
-    validation_start_time = Column(DateTime)
-    validation_end_time = Column(DateTime)
-
-    def __init__(self):
-        self.file_id = Column(Integer, ForeignKey('files.id'))
-        
 
 class ifc_instance(Base, Serializable):
     __tablename__ = 'instances'
@@ -136,21 +180,6 @@ class ifc_instance(Base, Serializable):
         self.file_id = Column(Integer, ForeignKey('files.id'))
 
 
-class user(Base, Serializable):
-    __tablename__ = 'users'
-
-    id = Column(String, primary_key=True)
-    email = Column(String)
-    family_name = Column(String)
-    given_name = Column(String)
-    name = Column(String) 
-
-    def __init__(self, id, email, family_name, given_name, name):
-        self.id = id
-        self.email = email
-        self.family_name = family_name
-        self.given_name = given_name
-        self.name = name
         
 
 def initialize():

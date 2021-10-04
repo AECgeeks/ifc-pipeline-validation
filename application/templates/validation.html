@@ -191,17 +191,17 @@
                 var data; 
                 
                 if(this.id == "licenses"){
-                    data = {license: this.value};
+                    data = {type:"licenses", license: this.value, n:i};
                 }
-                else if(this.id == "hours"){
-                    data = {hours: this.value};
+                if (this.id == "hours"){
+                    data = {type:"hours", hours: this.value, n:i};
                 }
-                else{
-                    data = {details: this.value};
+                if(this.id =="details"){
+                    data = {type:"details", details: this.value, n:i};
                 }
 
                 
-                fetch("/processinfo/{{id}}/"+ i.toString(), {
+                fetch("/update_info/{{id}}/"+ i.toString() + "/{{user_id}}", {
                     method: "POST", 
                     body: JSON.stringify(data)
                 }).then(function (r) { return r.json(); }).then(function (r) {
