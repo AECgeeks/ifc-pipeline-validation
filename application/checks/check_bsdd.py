@@ -87,12 +87,12 @@ def get_classification(domain_ref, item_ref):
                 return 'No classification found for this domain.'
         
     if domain_found == 0:
-        print(domain_ref)
+        #print(domain_ref)
         print("The domain", domain_ref,"has not been found in the bSDD.")
         return 'This domain has not been found in the bSDD.'
    
 def get_classification_object(uri):
-    url = "https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v2"
+    url = "https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v3"
     base_url = "https://bs-dd-api-prototype.azurewebsites.net/api/"
 
     r = requests.get(url, {'namespaceUri':uri})
@@ -118,6 +118,7 @@ def validate_consistency(ifc_file):
         rnd_array = np.random.multinomial(100, np.ones(n)/n, size=1)[0]
 
         for idx, rel in enumerate(rel_associate_classifications):
+            #import pdb; pdb.set_trace()
             sys.stdout.write(rnd_array[idx] * ".")
             sys.stdout.flush()
             #import pdb; pdb.set_trace()
@@ -167,6 +168,7 @@ def validate_consistency(ifc_file):
                         
                     
                         for e in rel.RelatedObjects:
+                            #print(json_shortcut)
 
                             for p in json_shortcut['requirements']:
                                 if not e.GlobalId in  json_shortcut['values'].keys():
