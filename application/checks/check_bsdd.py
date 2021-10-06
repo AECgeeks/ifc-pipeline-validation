@@ -13,6 +13,8 @@ from Levenshtein import distance
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
+from helper import database
+
 base_url = "https://bs-dd-api-prototype.azurewebsites.net/api/"
 
 simple_type_python_mapping = {

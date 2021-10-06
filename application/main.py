@@ -51,12 +51,9 @@ import requests
 from requests_oauthlib import OAuth2Session
 from authlib.jose import jwt
 
-from . import utils
-from . import database
-from . import worker
-# import utils
-# import worker
-# import database
+import utils
+import database
+import worker
 
 application = Flask(__name__)
 dropzone = Dropzone(application)
