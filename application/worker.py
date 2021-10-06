@@ -45,10 +45,8 @@ if not os.path.exists(IFCCONVERT):
     IFCCONVERT = "IfcConvert"
 
 
-from . import utils
-from . import database
-# import utils
-# import database
+import utils
+import database
 
 
 def set_progress(id, progress):
