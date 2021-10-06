@@ -94,6 +94,9 @@ class model(Base, Serializable):
     size = Column(String)
     mvd = Column(String)
 
+    instances = relationship("ifc_instance")
+
+
     # state_syntax = Column(String, default="n")
     # state_schema = Column(String, default="n")
     # state_mvd = Column(String, default="n")
@@ -137,25 +140,26 @@ class file(Base, Serializable):
 
 
 class bsdd_validation_task(Base, Serializable):
-    __tablename__ = 'bSDD validation tasks'
+    __tablename__ = 'bSDD_validation_tasks'
 
     id = Column(Integer, primary_key=True)
-    validated_file = Column(Integer, ForeignKey('files.id'))
+    validated_file = Column(Integer, ForeignKey('models.id'))
     validation_start_time = Column(DateTime)
     validation_end_time = Column(DateTime)
 
-    # results = relationship("bsdd_result")
+    results = relationship("bsdd_result")
 
-    def __init__(self):
-        self.file_id = Column(Integer, ForeignKey('files.id'))
+    def __init__(self, id, validated_file):
+        self.id = id
+        self.validated_file = validated_file
+        #self.file_id = Column(Integer, ForeignKey('files.id'))
 
 
-        
-class bssd_result(Base, Serializable):
-    __tablename__ = 'bSDD results'
+class bsdd_result(Base, Serializable):
+    __tablename__ = 'bSDD_results'
 
     id = Column(Integer, primary_key=True)
-    file_id = Column(Integer, ForeignKey('files.id'))
+    task_id = Column(String, ForeignKey('bSDD_validation_tasks.id'))
     instance_id = Column(Integer, ForeignKey('instances.id'))
     bsDD_classification_uri = Column(String)
     bsDD_property_uri = Column(String)
@@ -165,19 +169,21 @@ class bssd_result(Base, Serializable):
     ifc_property_type = Column(String)
     ifc_property_value = Column(String)
 
-    def __init__(self):
-        self.file_id = Column(Integer, ForeignKey('files.id'))
-        self.instance_id = Column(Integer, ForeignKey('instances.id'))
+    
+
+    def __init__(self, id, task_id ):
+        self.id = id
+        self.task_id = task_id
+
        
-
-
+    
 
 class ifc_instance(Base, Serializable):
     __tablename__ = 'instances'
 
     id = Column(Integer, primary_key=True)
     global_id = Column(String)
-    file = Column(Integer, ForeignKey('files.id'))
+    file = Column(Integer, ForeignKey('models.id'))
     ifc_type = Column(String)
     
     def __init__(self):
