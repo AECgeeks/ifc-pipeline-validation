@@ -21,7 +21,7 @@ try:
     detected_mvd = ifc_file.header.file_description.description[0].split(" ", 1)[1]
     detected_mvd = detected_mvd[1:]
     detected_mvd = detected_mvd[:-1]
-    detected_mvd = detected_mvd.split(",")
+    # detected_mvd = detected_mvd.split(",")
 except:
     detected_mvd = "no MVD detected"
 
@@ -34,7 +34,9 @@ file_info = {
     'size':str(round(os.path.getsize(sys.argv[1])*10**-6)) + "MB",
     'schema':ifc_file.schema,
     'app': authoring_app,
-    'mvd': detected_mvd
+    'mvd': detected_mvd,
+    'num_geom':len(ifc_file.by_type("IfcShapeRepresentation")), 
+    'num_props':len(ifc_file.by_type("IfcProperty"))
     }
 
 # Register info to DB
@@ -43,10 +45,17 @@ sys.path.append(db_path)
 import database
 
 session = database.Session()
+
 model = session.query(database.model).filter(database.model.code == ifc_fn[:-4]).all()[0]
 model.size = file_info['size']
 model.schema = file_info['schema']
 model.app = file_info['app']
+model.mvd = file_info['mvd']
+model.authoring_application = file_info['app']
+model.mvd = file_info['mvd']
+model.number_of_geometries = file_info['num_geom']
+model.number_of_properties = file_info['num_props']
+
 session.commit()
 session.close()
 

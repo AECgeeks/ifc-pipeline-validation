@@ -86,13 +86,12 @@ class model(Base, Serializable):
     hours = Column(String)
     details = Column(String)
 
-    number_of_geometries = Column(String)
-    number_of_properties = Column(String)
+    number_of_geometries = Column(Integer)
+    number_of_properties = Column(Integer)
 
     authoring_application = Column(String)
     schema = Column(String)
     size = Column(String)
-    app = Column(String)
     mvd = Column(String)
 
     # state_syntax = Column(String, default="n")
@@ -115,6 +114,23 @@ class file(Base, Serializable):
     code = Column(String)
     filename = Column(String)
  
+    #model_id = Column(Integer, ForeignKey('models.id'))
+    # user_id = Column(String, ForeignKey('users.id'))
+
+    # progress = Column(Integer, default=-1)
+    # date = Column(DateTime, server_default=func.now())
+    # authoring_application = Column(String)
+    # schema = Column(String)
+    # production_hours = Column(String)
+    # license = Column(String)
+    # number_of_geometries = Column(String)
+    # number_of_properties = Column(String)
+    
+    # size = Column(String)
+    # app = Column(String)
+    # mvd = Column(String)
+    
+
     def __init__(self, code, filename):
         self.code = code
         self.filename = filename
