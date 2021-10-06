@@ -20,4 +20,5 @@ application/checks/__pycache__
 application/checks/.pytest_cache
 application/checks/tests/test_files
 application/decoded.json
+application/test_send.py
 *.txt
