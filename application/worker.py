@@ -139,7 +139,13 @@ class bsdd_validation_task(task):
     est_time = 10
 
     def execute(self, directory, id):
+        print('test')
 
+        session = database.Session()
+        session.add(database.bsdd_validation_task(id))
+        session.commit()
+        session.close()
+        
         print(directory)
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
         outname = id +"_bsdd.txt"
@@ -301,11 +307,11 @@ def do_process(id, validation_config, ids_spec):
             for ids_file in os.listdir(ids_folder):
                 shutil.copy(os.path.join(ids_folder, ids_file), d )
         
-    input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
-
+    input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name)) and os.path.join(d, name).endswith("ifc")]
+    #import pdb; pdb.set_trace()
     tasks = [general_info_task]
 
-    # import pdb; pdb.set_trace()
+    
 
     for task, to_validate in validation_config["config"].items():
        
@@ -321,6 +327,7 @@ def do_process(id, validation_config, ids_spec):
             elif task =='ids':
                 tasks.append(ids_validation_task)
 
+    print("TASKS", tasks)
 
     # tasks = [
     #     # syntax_validation_task,
@@ -355,6 +362,8 @@ def do_process(id, validation_config, ids_spec):
             print("Executing task 'print' on ", id, ' in ', directory, file=sys.stderr)
     """
     
+    # import pdb; pdb.set_trace()
+
     for fn in glob.glob("task_*.py"):
         mdl = importlib.import_module(fn.split('.')[0])
         if getattr(mdl.task, 'aggregate_model', False):
@@ -368,7 +377,7 @@ def do_process(id, validation_config, ids_spec):
     elapsed = 0
     set_progress(id, elapsed)
     
-    n_files = len([name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))])
+    n_files = len([name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name)) and os.path.join(d, name).endswith("ifc")])
     
     total_est_time = \
         sum(map(operator.attrgetter('est_time'), tasks)) * n_files + \
@@ -388,7 +397,7 @@ def do_process(id, validation_config, ids_spec):
             return False
         elapsed += t.est_time
         return True
-    
+    # import pdb; pdb.set_trace()
     for i in range(n_files):
         for t in tasks:
             if not run_task(t, ["%s_%d" % (id, i) if is_multiple else id]):
@@ -396,7 +405,8 @@ def do_process(id, validation_config, ids_spec):
         # to break out of nested loop
         else: continue
         break
-            
+    
+   
     for t in tasks_on_aggregate:
         run_task(t, [id, input_files], aggregate_model=True)
 
@@ -405,6 +415,8 @@ def do_process(id, validation_config, ids_spec):
 
 
 def process(ids, validation_config, ids_spec = None , callback_url=None):
+
+    print("PROCESS")
     try:
         do_process(ids, validation_config, ids_spec)
         status = "success"

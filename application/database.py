@@ -149,8 +149,7 @@ class bsdd_validation_task(Base, Serializable):
 
     results = relationship("bsdd_result")
 
-    def __init__(self, id, validated_file):
-        self.id = id
+    def __init__(self, validated_file):
         self.validated_file = validated_file
         #self.file_id = Column(Integer, ForeignKey('files.id'))
 
@@ -191,7 +190,6 @@ class ifc_instance(Base, Serializable):
 
 
         
-
 def initialize():
     if not database_exists(engine.url):
         create_database(engine.url)
