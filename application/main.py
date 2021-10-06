@@ -51,10 +51,12 @@ import requests
 from requests_oauthlib import OAuth2Session
 from authlib.jose import jwt
 
-
-import utils
-import worker
-import database
+from . import utils
+from . import database
+from . import worker
+# import utils
+# import worker
+# import database
 
 application = Flask(__name__)
 dropzone = Dropzone(application)
@@ -253,11 +255,6 @@ def process_upload_validation(files,validation_config,user_id, callback_url=None
         filewriter(os.path.join(d, id+".ifc"))
         session = database.Session()
         session.add(database.model(id, fn, user_id))
-
-        # import pdb; pdb.set_trace()
-        # file-user relationship
-
-        # session.add(database.file(id, fn, user_id))
 
         session.commit()
         session.close()

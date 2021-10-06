@@ -31,14 +31,16 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
 import os
+from sqlalchemy.pool import StaticPool
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
 if DEVELOPMENT:
-    engine = create_engine('sqlite:///ifc-pipeline.db', connect_args={'check_same_thread': False})
+    file_path = os.path.dirname(__file__)+  "/ifc-pipeline.db"
+    engine = create_engine('sqlite:///'+file_path, connect_args={'check_same_thread': False})
 else:
     engine = create_engine('postgresql://postgres:postgres@%s:5432/bimsurfer2' % os.environ.get('POSTGRES_HOST', 'localhost'))
-    
+  
 Session = sessionmaker(bind=engine)
 
 Base = declarative_base()
@@ -93,6 +95,13 @@ class model(Base, Serializable):
     app = Column(String)
     mvd = Column(String)
 
+    # state_syntax = Column(String, default="n")
+    # state_schema = Column(String, default="n")
+    # state_mvd = Column(String, default="n")
+    # state_bsdd = Column(String, default="n")
+    # state_ids = Column(String, default="n")
+
+
     def __init__(self, code, filename, user_id):
         self.code = code
         self.filename = filename
@@ -127,10 +136,6 @@ class file(Base, Serializable):
         self.code = code
         self.filename = filename
 
-        # self.user_id = user_id
-      
-        # self.model_id = Column(Integer, ForeignKey('models.id'))
-        # self.user_id =  Column(Integer, ForeignKey('users.id'))
 
 class bsdd_validation_task(Base, Serializable):
     __tablename__ = 'bSDD validation tasks'

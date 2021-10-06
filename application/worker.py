@@ -45,8 +45,10 @@ if not os.path.exists(IFCCONVERT):
     IFCCONVERT = "IfcConvert"
 
 
-import utils
-import database
+from . import utils
+from . import database
+# import utils
+# import database
 
 
 def set_progress(id, progress):
@@ -81,7 +83,7 @@ class general_info_task(task):
     
     def execute(self, directory, id):
         info_program = os.path.join(os.getcwd() + "/checks", "info.py")
-        subprocess.call([sys.executable, info_program, id + ".ifc"], cwd=directory)
+        subprocess.call([sys.executable, info_program, id + ".ifc", os.path.join(os.getcwd())], cwd=directory)
 
 
 class syntax_validation_task(task):
@@ -111,7 +113,6 @@ class ifc_validation_task(task):
     def execute(self, directory, id):
         f = open(os.path.join(directory, "dresult_schema.json"), "w")
         check_program = os.path.join(os.getcwd() + "/checks", "validate.py")
-        #subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
         proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=subprocess.PIPE)
         i = 0
         while True:
@@ -147,6 +148,8 @@ class bsdd_validation_task(task):
 
         # with open(os.path.join(directory, outname), "w") as f:
         #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
+
+        # import pdb; pdb.set_trace()
 
         proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
         i = 0
@@ -304,7 +307,7 @@ def do_process(id, validation_config, ids_spec):
 
     tasks = [general_info_task]
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
     for task, to_validate in validation_config["config"].items():
        
