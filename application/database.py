@@ -39,7 +39,9 @@ if DEVELOPMENT:
     file_path = os.path.dirname(__file__)+  "/ifc-pipeline.db"
     engine = create_engine('sqlite:///'+file_path, connect_args={'check_same_thread': False})
 else:
-    engine = create_engine('postgresql://postgres:postgres@%s:5432/bimsurfer2' % os.environ.get('POSTGRES_HOST', 'localhost'))
+    host = os.environ.get('POSTGRES_HOST', 'localhost')
+    password = os.environ['POSTGRES_PASSWORD']
+    engine = create_engine(f"postgresql://postgres:%{password}@{host}:5432/bimsurfer2")
   
 Session = sessionmaker(bind=engine)
 

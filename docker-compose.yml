@@ -10,7 +10,7 @@ services:
     volumes:
       - ./docker-volumes/db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   redis:
     image: redis:5.0.7-alpine
@@ -28,6 +28,7 @@ services:
       - MODEL_DIR=/data
       - REDIS_HOST=redis
       - POSTGRES_HOST=db
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - TESTING=${TESTING}
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
