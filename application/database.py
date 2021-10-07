@@ -181,19 +181,18 @@ class bsdd_result(Base, Serializable):
     bsDD_classification_uri = Column(String)
     bsDD_property_uri = Column(String)
     bsDD_property_constraint = Column(String)
-    ifc_property_id = Column(String)
+    ifc_property_name = Column(String)
     ifc_property_set = Column(String)
     ifc_property_type = Column(String)
     ifc_property_value = Column(String)
 
     
-
-    def __init__(self, task_id,instance_id ):
+    def __init__(self, task_id,instance_id,bsDD_classification_uri,bsDD_property_uri, bsDD_property_constraint ):
         self.task_id = task_id
         self.instance_id = instance_id
-
-       
-
+        self.bsDD_classification_uri = bsDD_classification_uri
+        self.bsDD_property_uri = bsDD_property_uri
+        self.bsDD_property_constraint = bsDD_property_constraint
 
         
 def initialize():
