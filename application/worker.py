@@ -142,7 +142,9 @@ class bsdd_validation_task(task):
         
         session = database.Session()
 
-        validation_task = database.bsdd_validation_task(id)
+        model = session.query(database.model).filter(database.model.code == id).all()[0]
+
+        validation_task = database.bsdd_validation_task(model.id)
 
         session.add(validation_task)
         session.commit()
