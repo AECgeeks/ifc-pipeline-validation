@@ -139,12 +139,16 @@ class bsdd_validation_task(task):
     est_time = 10
 
     def execute(self, directory, id):
-        print('test')
-
+        
         session = database.Session()
-        session.add(database.bsdd_validation_task(id))
+
+        validation_task = database.bsdd_validation_task(id)
+
+        session.add(validation_task)
         session.commit()
+        validation_task_id = str(validation_task.id)
         session.close()
+
         
         print(directory)
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
@@ -154,8 +158,8 @@ class bsdd_validation_task(task):
         #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
 
         # import pdb; pdb.set_trace()
-
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
+        
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", validation_task_id], cwd=directory, stdout=subprocess.PIPE)
         i = 0
         while True:
             ch = proc.stdout.read(1)
@@ -327,8 +331,7 @@ def do_process(id, validation_config, ids_spec):
             elif task =='ids':
                 tasks.append(ids_validation_task)
 
-    print("TASKS", tasks)
-
+    
     # tasks = [
     #     # syntax_validation_task,
     #     # ifc_validation_task,
@@ -416,7 +419,6 @@ def do_process(id, validation_config, ids_spec):
 
 def process(ids, validation_config, ids_spec = None , callback_url=None):
 
-    print("PROCESS")
     try:
         do_process(ids, validation_config, ids_spec)
         status = "success"

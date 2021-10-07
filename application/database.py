@@ -154,6 +154,24 @@ class bsdd_validation_task(Base, Serializable):
         #self.file_id = Column(Integer, ForeignKey('files.id'))
 
 
+
+    
+class ifc_instance(Base, Serializable):
+    __tablename__ = 'instances'
+
+    id = Column(Integer, primary_key=True)
+    global_id = Column(String)
+    file = Column(Integer, ForeignKey('models.id'))
+    ifc_type = Column(String)
+    bsdd_results = relationship("bsdd_result")
+    
+    def __init__(self, global_id, ifc_type, file):
+        self.global_id = global_id
+        self.ifc_type = ifc_type
+        self.file = file
+
+
+       
 class bsdd_result(Base, Serializable):
     __tablename__ = 'bSDD_results'
 
@@ -170,23 +188,11 @@ class bsdd_result(Base, Serializable):
 
     
 
-    def __init__(self, id, task_id ):
-        self.id = id
+    def __init__(self, task_id,instance_id ):
         self.task_id = task_id
+        self.instance_id = instance_id
 
        
-    
-
-class ifc_instance(Base, Serializable):
-    __tablename__ = 'instances'
-
-    id = Column(Integer, primary_key=True)
-    global_id = Column(String)
-    file = Column(Integer, ForeignKey('models.id'))
-    ifc_type = Column(String)
-    
-    def __init__(self):
-        self.file_id = Column(Integer, ForeignKey('files.id'))
 
 
         

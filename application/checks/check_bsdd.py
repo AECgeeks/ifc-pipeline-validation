@@ -104,8 +104,23 @@ def control_values(requirements, data):
     print(requirements)
 
 
+def validate_consistency(ifc_file, validation_task_id):
 
-def validate_consistency(ifc_file):
+    # import pdb; pdb.set_trace()
+    validation_task_id = int(validation_task_id)
+
+    # DB handling
+    # session = database.Session()
+    # validation_task = session.query(database.bsdd_validation_task).all()[0]
+    # validation_task = session.query(database.bsdd_validation_task).filter(database.bsdd_validation_task.id == validation_task_id).all()[0]
+    
+    # session = database.Session()
+    # bsdd_result = database.bsdd_result(validation_task_id)
+    # session.add(bsdd_result)
+    # session.commit()
+    # session.close()
+
+
     rel_associate_classifications = ifc_file.by_type("IfcRelAssociatesClassification")
     log_to_construct = {}
     
@@ -169,13 +184,36 @@ def validate_consistency(ifc_file):
                     
                         for e in rel.RelatedObjects:
                             #print(json_shortcut)
+                            #Save in DB
+                            session = database.Session()
+
+                            bsdd_validation_task = session.query(database.bsdd_validation_task).filter(database.bsdd_validation_task.id == validation_task_id).all()[0]
+
+                            instance = database.ifc_instance(e.GlobalId, e.is_a(), bsdd_validation_task.validated_file,)
+                            session.add(instance)
+                            session.flush()
+                            instance_id = instance.id
+                            # print(instance_id)
+                            bsdd_result = database.bsdd_result(validation_task_id, instance_id )
+                            session.add(bsdd_result)
+                            session.commit()
+                            session.close()
 
                             for p in json_shortcut['requirements']:
+
+                                import pdb; pdb.set_trace()
+
+
+
+
+
+
                                 if not e.GlobalId in  json_shortcut['values'].keys():
                                     json_shortcut['values'][e.GlobalId] = []
 
                                 checking = {}
                                 logging = {}
+
                                 
                                 # bSDD specifications
                                 if 'name' in p.keys():
@@ -266,8 +304,11 @@ if __name__ == "__main__":
 
     ifc_fn = sys.argv[1]
     ifc_file = ifcopenshell.open(ifc_fn)
+    
+    if sys.argv[2]:
+        validation_task_id = sys.argv[2]
 
-    validate_consistency(ifc_file)
+    validate_consistency(ifc_file, validation_task_id)
     # print("--- %s seconds ---" % (time.time() - start_time))
 
     results_path = os.path.join(os.getcwd(), "result_bsdd.json")
