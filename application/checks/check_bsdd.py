@@ -313,6 +313,8 @@ def validate_consistency(ifc_file, validation_task_id):
 
     detailed_results_path = os.path.join(os.getcwd(), "dresult_bsdd.json")
 
+    #TODO register result into model table
+
     with open(detailed_results_path, 'w', encoding='utf-8') as f:
         json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
         

@@ -176,7 +176,7 @@ class bsdd_result(Base, Serializable):
     __tablename__ = 'bSDD_results'
 
     id = Column(Integer, primary_key=True)
-    task_id = Column(String, ForeignKey('bSDD_validation_tasks.id'))
+    task_id = Column(Integer, ForeignKey('bSDD_validation_tasks.id'))
     instance_id = Column(Integer, ForeignKey('instances.id'))
     bsDD_classification_uri = Column(String)
     bsDD_property_uri = Column(String)
