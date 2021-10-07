@@ -41,7 +41,7 @@ if DEVELOPMENT:
 else:
     host = os.environ.get('POSTGRES_HOST', 'localhost')
     password = os.environ['POSTGRES_PASSWORD']
-    engine = create_engine(f"postgresql://postgres:%{password}@{host}:5432/bimsurfer2")
+    engine = create_engine(f"postgresql://postgres:{password}@{host}:5432/bimsurfer2")
   
 Session = sessionmaker(bind=engine)
 
