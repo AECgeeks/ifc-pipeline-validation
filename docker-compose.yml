@@ -74,6 +74,7 @@ services:
       - REDIS_HOST=redis
       - POSTGRES_HOST=db
       - NUM_WORKERS=2
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       - redis
       - db
