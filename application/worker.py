@@ -159,7 +159,6 @@ class bsdd_validation_task(task):
         # with open(os.path.join(directory, outname), "w") as f:
         #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
 
-        # import pdb; pdb.set_trace()
         
         proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", validation_task_id], cwd=directory, stdout=subprocess.PIPE)
         i = 0
@@ -314,7 +313,7 @@ def do_process(id, validation_config, ids_spec):
                 shutil.copy(os.path.join(ids_folder, ids_file), d )
         
     input_files = [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name)) and os.path.join(d, name).endswith("ifc")]
-    #import pdb; pdb.set_trace()
+    
     tasks = [general_info_task]
 
     
@@ -367,7 +366,6 @@ def do_process(id, validation_config, ids_spec):
             print("Executing task 'print' on ", id, ' in ', directory, file=sys.stderr)
     """
     
-    # import pdb; pdb.set_trace()
 
     for fn in glob.glob("task_*.py"):
         mdl = importlib.import_module(fn.split('.')[0])
@@ -402,7 +400,7 @@ def do_process(id, validation_config, ids_spec):
             return False
         elapsed += t.est_time
         return True
-    # import pdb; pdb.set_trace()
+    
     for i in range(n_files):
         for t in tasks:
             if not run_task(t, ["%s_%d" % (id, i) if is_multiple else id]):

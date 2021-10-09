@@ -376,8 +376,7 @@ def put_main():
     del val_config["user"]
     validation_config["results"] = val_results
 
-    # import pdb; pdb.set_trace()
-
+    
     if VALIDATION:
         if 'xml' in extensions:
             ids = upload_ids(files, validation_config)
@@ -527,14 +526,12 @@ def register_info_input(ids, number, user_id):
     data =  request.get_data()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
     i = decoded_data['n']
-    # license = decoded_data['license']    
+    
     all_ids = utils.unconcatenate_ids(ids)
 
     session = database.Session()
     model = session.query(database.model).filter(database.model.code == all_ids[i]).all()[0]
     
-    #import pdb;pdb.set_trace()
-
     if decoded_data["type"] == "licenses":
         model.license = decoded_data['license']
 
@@ -634,9 +631,6 @@ def log_results(i, ids):
     with open(config_file, 'w', encoding='utf-8') as f:
         json.dump(config, f, ensure_ascii=False, indent=4)
         
-
-    #import pdb; pdb.set_trace()
-
     return jsonify(config)
     
 
