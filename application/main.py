@@ -531,8 +531,8 @@ def get_validation_progress(id):
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
 
-        if model.number_of_geometries and model.number_of_properties:
-            file_info.append({"number_of_geometries":model.number_of_geometries,"number_of_properties":model.number_of_properties})
+        #if model.number_of_geometries and model.number_of_properties:
+        file_info.append({"number_of_geometries":model.number_of_geometries,"number_of_properties":model.number_of_properties})
 
         model_progresses.append(model.progress)
         session.close()

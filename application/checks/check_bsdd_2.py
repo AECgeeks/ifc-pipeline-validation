@@ -31,7 +31,7 @@ def validate_instance(bsdd_response_content, instance):
     return 0
 
 
-for  rel in  ifc_file.by_type("IfcRelAssociatesClassification"):
+for  rel in ifc_file.by_type("IfcRelAssociatesClassification"):
     #print(rel)
     related_objects = rel.RelatedObjects
     relating_classification = rel.RelatingClassification

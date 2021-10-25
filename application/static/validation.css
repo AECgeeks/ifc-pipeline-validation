@@ -88,6 +88,7 @@ table, th, td {
   font-family: 'Calibri';
   border-left: none;
   border-right: none;
+  width: 80%;
 }
 
 td {
