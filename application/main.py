@@ -504,13 +504,17 @@ def validate_files(id, user_id):
             
     filenames = []
 
+    #This enable to display the value already entered by the user when the validation dashboard is refreshed
+    previous_file_input = []
+
     for i in all_ids:
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
         filenames.append(model.filename)
+        previous_file_input.append({"license":model.license,"hours":model.hours,"details":model.details })
         session.close()
 
-    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models )     
+    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models, previous_file_input=previous_file_input )     
     
     
 @application.route('/valprog/<id>', methods=['GET'])

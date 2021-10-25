@@ -84,7 +84,7 @@ class model(Base, Serializable):
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
-    license = Column(String, default="private")
+    license = Column(String)
     hours = Column(String)
     details = Column(String)
 

@@ -80,19 +80,50 @@
                     </td>
                     <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
                     <td>
-                    <select name="licenses" id="licenses">
-                        <option value="private">private</option>
-                        <option value="CC">CC</option>
-                        <option value="MIT">MIT</option>
-                        <option value="GPL">GPL</option>
-                    </select>
+
+
+                    {% if previous_file_input[i].license != None%}
+                        <select name="licenses" id="licenses">
+                            <option value="private" >private</option>
+                            <option value="CC">CC</option>
+                            <option value="MIT">MIT</option>
+                            <option value="GPL">GPL</option>
+                        </select>
+                        <script>
+                            let selectElement = document.getElementById("licenses");
+                            selectElement.value ="{{previous_file_input[i].license}}";
+                            
+                        </script>
+                
+                    {% else %}
+
+
+                        <select name="licenses" id="licenses">
+                            <option value="private"selected>private</option>
+                            <option value="CC" >CC</option>
+                            <option value="MIT">MIT</option>
+                            <option value="GPL">GPL</option>
+                        </select>
+
+                      
+                    {% endif %} 
 
                     </td>
                     <td>
-                        <input type="text" id="hours">
+                        {% if previous_file_input[i].hours!= None %}
+                            <input type="text" id="hours" value={{previous_file_input[i].hours}}>
+                        
+                        {% else %}
+                            <input type="text" id="hours">
+                        {% endif %} 
                     </td>
                     <td>
-                        <input type="text" id="details">
+                        {% if previous_file_input[i].details != None %}
+                        <input type="text" id="details" value={{previous_file_input[i].details}}>
+                        {% else %}
+                            <input type="text" id="details">
+                        {% endif %} 
+                        
                     </td>
                 </tr>
             {% endfor %}
