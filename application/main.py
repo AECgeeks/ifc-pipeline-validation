@@ -525,14 +525,20 @@ def get_validation_progress(id):
     all_ids = utils.unconcatenate_ids(id)
         
     model_progresses = []
+    file_info = []
 
     for i in all_ids:
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == i).all()[0]
+
+        if model.number_of_geometries and model.number_of_properties:
+            file_info.append({"number_of_geometries":model.number_of_geometries,"number_of_properties":model.number_of_properties})
+
         model_progresses.append(model.progress)
         session.close()
 
-    return jsonify({"progress": model_progresses,"filename":model.filename})
+    
+    return jsonify({"progress": model_progresses,"filename":model.filename, "file_info":file_info})
 
 
 @application.route('/update_info/<ids>/<number>/<user_id>', methods=['POST'])

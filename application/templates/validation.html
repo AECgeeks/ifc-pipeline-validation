@@ -46,6 +46,9 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th># geometries</th>
+                <th># properties</th>
+                
                 <th>License</th>
                 <th>Production hours</th>
                 <th>Additional details</th>
@@ -79,9 +82,11 @@
                         <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
                     </td>
                     <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
+
+                    <td>Test</td>
+                    <td>Test</td>
+
                     <td>
-
-
                     {% if previous_file_input[i].license != None%}
                         <select name="licenses" id="licenses">
                             <option value="private" >private</option>
@@ -146,6 +151,8 @@
                     <td>{{model.date}}</td>
                     <td style="color:rgb(105, 125, 239); font-weight: bold;">Download</td>
                     <td style="color:rgb(224, 101, 101); font-weight: bold;">Delete</td>
+                    <td>{{model.number_of_geometries}}</td>
+                    <td>{{model.number_of_properties}}</td>
                     <td>{{model.license}}</td>
                     <td>{{model.hours}}</td>
                     <td>{{model.details}}</td>
@@ -307,6 +314,9 @@
                     var percentage = document.getElementById("percentage" + i.toString())
 
                     var fn = r.filename;
+
+                    
+
 
                     if (r.progress[i] === 100) {
 
