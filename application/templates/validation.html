@@ -58,7 +58,7 @@
                 
                 {% set format = filenames[i][-3::]|string %}
 
-                <tr>
+                <tr style="background-color:#ffffe6">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -79,8 +79,51 @@
                         <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
                     </td>
                     <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
+                    <td>
+                    <select name="licenses" id="licenses">
+                        <option value="private">private</option>
+                        <option value="CC">CC</option>
+                        <option value="MIT">MIT</option>
+                        <option value="GPL">GPL</option>
+                    </select>
+
+                    </td>
+                    <td>
+                        <input type="text" id="hours">
+                    </td>
+                    <td>
+                        <input type="text" id="details">
+                    </td>
                 </tr>
             {% endfor %}
+
+
+
+            {% for model in saved_models %}
+
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><img src="/static/icons/ifc.png" /></td>
+
+                    <td style="color:royalblue;font-weight: bold;">{{model.filename}}</td>
+                    <td></td>
+                    <td>{{model.date}}</td>
+                    <td style="color:rgb(105, 125, 239); font-weight: bold;">Download</td>
+                    <td style="color:rgb(224, 101, 101); font-weight: bold;">Delete</td>
+                    <td>{{model.license}}</td>
+                    <td>{{model.hours}}</td>
+                    <td>{{model.details}}</td>
+
+
+                </tr>
+
+            {% endfor %}
+
         </table>
     </div>
 
@@ -151,39 +194,44 @@
             //License
             var values = ["private","CC", "MIT",  "GPL"];
 
-            var select = document.createElement("select");
-            select.name = "licenses";
-            select.id = "licenses"
+            // var select = document.createElement("select");
+            // select.name = "licenses";
+            // select.id = "licenses"
+            var select = document.getElementById("licenses");
 
-            for (const val of values)
-            {
-                var option = document.createElement("option");
-                option.value = val;
-                option.text = val.charAt(0).toUpperCase() + val.slice(1);
-                select.appendChild(option);
-            }
+            // for (const val of values)
+            // {
+            //     var option = document.createElement("option");
+            //     option.value = val;
+            //     option.text = val.charAt(0).toUpperCase() + val.slice(1);
+            //     select.appendChild(option);
+            // }
         
-            var licenseCell = rows[i + 1].insertCell(-1);
-            licenseCell.appendChild(select)
+            // var licenseCell = rows[i + 1].insertCell(-1);
+            // licenseCell.appendChild(select);
             select.addEventListener("change", sendInfo);
 
             //Production hours
-            var hoursInputBox = document.createElement("INPUT");
-            hoursInputBox.id = "hours";
-            hoursInputBox.setAttribute("type", "text");
-            hoursInputBox.style.width = "20%"; 
-            var hoursCell = rows[i + 1].insertCell(-1);
-            hoursCell.style.textAlign = "center";
-            hoursCell.appendChild(hoursInputBox);
+            // var hoursInputBox = document.createElement("INPUT");
+            // hoursInputBox.id = "hours";
+            // hoursInputBox.setAttribute("type", "text");
+            // hoursInputBox.style.width = "20%"; 
+            var hoursInputBox = document.getElementById("hours");
+
+            // var hoursCell = rows[i + 1].insertCell(-1);
+            // hoursCell.style.textAlign = "center";
+            // hoursCell.appendChild(hoursInputBox);
             hoursInputBox.addEventListener("change", sendInfo);
             
 
             //Additional details
-            var detailsInputBox = document.createElement("INPUT");
-            detailsInputBox.id = "details"
-            detailsInputBox.setAttribute("type", "text");
-            var detailsCell = rows[i + 1].insertCell(-1);
-            detailsCell.appendChild(detailsInputBox);
+            // var detailsInputBox = document.createElement("INPUT");
+            // detailsInputBox.id = "details"
+            // detailsInputBox.setAttribute("type", "text");
+            var detailsInputBox = document.getElementById("details");
+
+            // var detailsCell = rows[i + 1].insertCell(-1);
+            // detailsCell.appendChild(detailsInputBox);
             detailsInputBox.addEventListener("change", sendInfo);
 
             function sendInfo(){

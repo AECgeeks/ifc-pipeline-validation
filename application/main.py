@@ -491,6 +491,16 @@ def validate_files(id, user_id):
     all_ids = utils.unconcatenate_ids(id)
 
     n_files = int(len(id)/32)
+
+
+    #Retrieve user data 
+    session = database.Session()
+    saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
+    saved_models = saved_models[:len(saved_models)-n_files][::-1]
+
+    # import pdb;pdb.set_trace()
+
+  
             
     filenames = []
 
@@ -500,7 +510,7 @@ def validate_files(id, user_id):
         filenames.append(model.filename)
         session.close()
 
-    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id =user_id )     
+    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models )     
     
     
 @application.route('/valprog/<id>', methods=['GET'])
