@@ -49,10 +49,10 @@
                     data = {type:"licenses", license: element.value, n:i,from:"saved"};
                 }
                 if (boxtype == "hours"){
-                    data = {type:"hours", hours: element.value, n:i};
+                    data = {type:"hours", hours: element.value, n:i,from:"saved"};
                 }
                 if(boxtype =="details"){
-                    data = {type:"details", details: element.value, n:i};
+                    data = {type:"details", details: element.value, n:i,from:"saved"};
                 }
 
                 
@@ -90,7 +90,7 @@
                 <th># properties</th>
                 
                 <th>License</th>
-                <th style = "text-align: left;">Production hours</th>
+                <th style = "text-align: center;">Production hours</th>
                 <th>Additional details</th>
  
             </tr>
@@ -169,7 +169,7 @@
                     {% endif %} 
 
                     </td>
-                    <td>
+                    <td style ="text-align:center;">
                         {% if previous_file_input[i].hours!= None %}
                             <input type="text" id="hours" value={{previous_file_input[i].hours}} style="width:20%;" onchange="sendInfo()">
                         
@@ -260,12 +260,25 @@
                     </td>
 
 
-                    <td>
-                        <input type="text" id="hours" value= {{model.hours}} style="width:20%;" onchange="sendInfo2('hours','{{loop.index0}}')">
+                  
+
+
+                    <td style ="text-align:center;">
+                        {% if model.hours != None %}
+                            <input type="text" id="details" style="width: 20%; " value= "{{model.hours}}"  onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
+                        {% else %}
+                            <input type="text" id="details" style="width: 20%; text-align: center;" value="" onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
+                        {% endif %}
                     </td>
-                   
+
+
+                    
                     <td>
-                        <input type="text" id="details" value= {{model.details}} onchange="sendInfo2('details', '{{loop.index0}}')">
+                        {% if model.details != None %}
+                            <input type="text" id="details" value= "{{model.details}}" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
+                        {% else %}
+                            <input type="text" id="details" value="" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
+                        {% endif %}
                     </td>
 
 
