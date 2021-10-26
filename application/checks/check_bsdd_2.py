@@ -29,8 +29,7 @@ def has_specifications(bsdd_response_content):
 
 def validate_instance(bsdd_response_content,ifc_file, instance):
 
-    result = {}
-
+    result = {"pset_name":"pset not found","property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
     constraint = {
         "specified_pset_name":bsdd_response_content["propertySet"],
         "specified_property_name" : bsdd_response_content["name"],
@@ -45,25 +44,14 @@ def validate_instance(bsdd_response_content,ifc_file, instance):
                 if property.Name == constraint["specified_property_name"]:
                     result["property_name"] = property.Name
                     result["value"] = property.NominalValue
-                    result["datatype"] = type(str(property))
-                break
+                    result["value"] = type(str(property))
+                else:
+                    result["property_name"] = "property not found"
+                    result["value"] = "property not found"
+                    result["datatype"] = "property not found"
             break
-    
-    # import pdb;pdb.set_trace()
-    return {
-        "constraint":{
-            "specified_pset_name":bsdd_response_content["propertySet"],
-            "specified_property_name" : bsdd_response_content["name"],
-            "specified_datatype" : bsdd_response_content["dataType"],
-            "specified_predefined_value" : bsdd_response_content["predefinedValue"]
-        },
-        "result":{
-            "pset_name":bsdd_response_content["propertySet"],
-            "property_name" : bsdd_response_content["name"],
-            "datatype" : bsdd_response_content["dataType"],
-            "value" : bsdd_response_content["predefinedValue"]
-        }
-    }
+
+    return {"constraint":constraint,"result":result}
 
 
 for  rel in ifc_file.by_type("IfcRelAssociatesClassification"):
@@ -117,9 +105,7 @@ for  rel in ifc_file.by_type("IfcRelAssociatesClassification"):
             # Record NULL everywhere in bsdd_result
             pass
 
-        # Add an if-else statement depending on 
-        # whether we're online or not
-        
+
         
 
 
