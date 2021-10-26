@@ -188,7 +188,7 @@ def validate_consistency(ifc_file, validation_task_id):
                             session = database.Session()
 
                             bsdd_validation_task = session.query(database.bsdd_validation_task).filter(database.bsdd_validation_task.id == validation_task_id).all()[0]
-
+                    
                             instance = database.ifc_instance(e.GlobalId, e.is_a(), bsdd_validation_task.validated_file,)
                             session.add(instance)
                             session.flush()
@@ -214,7 +214,12 @@ def validate_consistency(ifc_file, validation_task_id):
                                 session.add(bsdd_result)
                                 session.flush()
                                 bsdd_result_id = bsdd_result.id
-                            
+
+
+                             
+
+                                # import pdb;pdb.set_trace()
+                                                        
                                 session.commit()
                                 session.close()
                          
@@ -295,6 +300,8 @@ def validate_consistency(ifc_file, validation_task_id):
                                 di = {"checking":checking, "logging":logging, "failing":round(1 - sum(checking.values())/len(checking.keys()),2)}
                                 
                                 session = database.Session()
+
+
                                 bsdd_result = session.query(database.bsdd_result).filter(database.bsdd_result.id == bsdd_result_id).all()[0]
                                 bsdd_result.ifc_property_name = di['logging']['pname']
                                 bsdd_result.ifc_property_set = di['logging']['pset']
@@ -313,10 +320,20 @@ def validate_consistency(ifc_file, validation_task_id):
 
     detailed_results_path = os.path.join(os.getcwd(), "dresult_bsdd.json")
 
-    #TODO register result into model table
+    
 
     with open(detailed_results_path, 'w', encoding='utf-8') as f:
         json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
+
+
+    # RESULT REGISTRATION TO DATABASE
+    session = database.Session()             
+    bsdd_validation_task = session.query(database.bsdd_validation_task).filter(database.bsdd_validation_task.id == validation_task_id).all()[0]
+    validated_file_id = bsdd_validation_task.validated_file
+    validated_file = session.query(database.model).filter(database.model.id == validated_file_id).all()[0]
+    validated_file.status_bsdd = "i"
+    session.commit()
+    session.close()
         
 
 if __name__ == "__main__":

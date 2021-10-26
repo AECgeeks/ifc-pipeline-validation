@@ -79,8 +79,16 @@ a:visited {
 }
 
 th{
-  padding: 10px;
+  /* text-align: left; */
+  vertical-align: middle;
+  padding-left: 15px;
+  padding-bottom:10px;
+  padding-top:10px ;
 }
+
+/* table {
+  width:50%;
+} */
 
 table, th, td {
   border: 1px solid rgba(161, 161, 161, 0.24);
@@ -88,13 +96,13 @@ table, th, td {
   font-family: 'Calibri';
   border-left: none;
   border-right: none;
-  width: 80%;
+
 }
 
 td {
   text-align: left;
   vertical-align: middle;
-  padding: 25px;
+  padding-left: 20px;
 }
 
 .progress {
@@ -136,7 +144,7 @@ td {
   border-collapse: collapse;
   border-radius: 16px;
   overflow: hidden;
-  width: 100%;
+  /* width: 100%; */
   border: 0;
 }
 

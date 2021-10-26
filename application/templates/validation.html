@@ -106,7 +106,7 @@
 
 
                         <select name="licenses" id="licenses">
-                            <option value="private"selected>private</option>
+                            <option value="private" selected>private</option>
                             <option value="CC" >CC</option>
                             <option value="MIT">MIT</option>
                             <option value="GPL">GPL</option>
@@ -139,13 +139,33 @@
 
             {% for model in saved_models %}
 
-
+                <!-- <script> 
+             
+                    syntaxImg.src = "/static/icons/"+ icons[r["results"]['syntaxlog']]+".png";
+                    schemaImg.src = "/static/icons/"+ icons[r["results"]['schemalog']]+".png";
+                    MVDImg.src = "/static/icons/"+ icons[r["results"]['mvdlog']]+".png";
+                    bsddImg.src = "/static/icons/"+ icons[r["results"]['bsddlog']]+".png";
+                    idsImg.src = "/static/icons/"+ icons[r["results"]['idslog']]+".png";
+                </script> -->
+                {% set icons = {'v':'valid', 'w':'warning', 'i':'invalid', 'n':'not'} %} 
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>
+                        <img src="/static/icons/{{icons[model.status_syntax]}}.png">
+                    </td>
+                    <td>
+                        <img src="/static/icons/{{icons[model.status_schema]}}.png">
+                    </td>
+                    <td>
+                        <img src="/static/icons/{{icons[model.status_mvd]}}.png">
+                    </td>
+                    <td>
+                        <img src="/static/icons/{{icons[model.status_bsdd]}}.png">
+                    </td>
+                    <td>
+                        <img src="/static/icons/{{icons[model.status_ids]}}.png">
+                    </td>
+                    
+
                     <td><img src="/static/icons/ifc.png" /></td>
 
                     <td style="color:royalblue;font-weight: bold;">{{model.filename}}</td>
@@ -158,6 +178,7 @@
                     <td>{{model.license}}</td>
                     <td>{{model.hours}}</td>
                     <td>{{model.details}}</td>
+
 
 
                 </tr>
@@ -191,6 +212,10 @@
         function completeTable(i, results, ids, rows) {
 
             fetch("/reslogs/" + i + "/" + ids).then(function (r) { return r.json(); }).then(function (r) {
+
+                // debugger; 
+
+                console.log(r["results"]['bsddlog']);
                 
                 var syntaxImg = document.createElement("img");
                 syntaxImg.src = "/static/icons/"+ icons[r["results"]['syntaxlog']]+".png";
@@ -336,10 +361,12 @@
                     var rows = document.getElementsByTagName("table")[0].rows;
                     var file_info = r.file_info[i]
                     
-                    console.log(file_info["number_of_geometries"])
-                    // debugger;
+                   
+
                     document.getElementsByTagName("table")[0].rows[i+1].cells[11].innerHTML = file_info["number_of_geometries"];
                     document.getElementsByTagName("table")[0].rows[i+1].cells[12].innerHTML = file_info["number_of_properties"];
+
+
 
 
                     if (r.progress[i] === 100) {

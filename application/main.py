@@ -641,17 +641,40 @@ def log_results(i, ids):
     config_file = os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "config.json")
     with open(config_file) as json_file:
         config = json.load(json_file)
+    
+ 
+    session = database.Session()
+    model = session.query(database.model).filter(database.model.code == all_ids[int(i)]).all()[0]
 
+
+    response = {"results":{}, "time":None}
+
+    response["results"]["syntaxlog"] = model.status_syntax
+    response["results"]["schemalog"] = model.status_schema
+    response["results"]["mvdlog"] = model.status_mvd
+    response["results"]["bsddlog"] = model.status_bsdd
+    response["results"]["idslog"] = model.status_ids
+
+
+    #import pdb;pdb.set_trace()
+
+    session.close()
+
+    
 
     time = datetime.datetime.now()
     time = time.strftime("%Y-%m-%d %H:%M:%S")
     config["time"] = time
 
+    response["time"] = time
+
     
     with open(config_file, 'w', encoding='utf-8') as f:
         json.dump(config, f, ensure_ascii=False, indent=4)
         
-    return jsonify(config)
+    
+    
+    return jsonify(response)
     
 
 

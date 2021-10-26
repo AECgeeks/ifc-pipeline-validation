@@ -84,7 +84,7 @@ class model(Base, Serializable):
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
-    license = Column(String)
+    license = Column(String,default="private")
     hours = Column(String)
     details = Column(String)
 
@@ -96,6 +96,12 @@ class model(Base, Serializable):
     size = Column(String)
     mvd = Column(String)
 
+    status_syntax = Column(String, default='w')
+    status_schema = Column(String, default='n')
+    status_bsdd = Column(String, default='v')
+    status_mvd = Column(String, default='i')
+    status_ids= Column(String, default='n')
+    
     instances = relationship("ifc_instance")
 
 
