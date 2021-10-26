@@ -27,34 +27,89 @@ def has_specifications(bsdd_response_content):
     else:
         return 0
 
-def validate_instance(bsdd_response_content, instance):
-    return 0
+def validate_instance(bsdd_response_content,ifc_file, instance):
+
+    result = {}
+
+    constraint = {
+        "specified_pset_name":bsdd_response_content["propertySet"],
+        "specified_property_name" : bsdd_response_content["name"],
+        "specified_datatype" : bsdd_response_content["dataType"],
+        "specified_predefined_value" : bsdd_response_content["predefinedValue"]
+    }
+
+    for pset in ifc_file.by_type("IfcPropertySet"):
+        if pset.Name == constraint["specified_pset_name"]:
+            result["pset_name"] = pset.Name
+            for property in pset.HasProperties:
+                if property.Name == constraint["specified_property_name"]:
+                    result["property_name"] = property.Name
+                    result["value"] = property.NominalValue
+                    result["datatype"] = type(str(property))
+                break
+            break
+    
+    # import pdb;pdb.set_trace()
+    return {
+        "constraint":{
+            "specified_pset_name":bsdd_response_content["propertySet"],
+            "specified_property_name" : bsdd_response_content["name"],
+            "specified_datatype" : bsdd_response_content["dataType"],
+            "specified_predefined_value" : bsdd_response_content["predefinedValue"]
+        },
+        "result":{
+            "pset_name":bsdd_response_content["propertySet"],
+            "property_name" : bsdd_response_content["name"],
+            "datatype" : bsdd_response_content["dataType"],
+            "value" : bsdd_response_content["predefinedValue"]
+        }
+    }
 
 
 for  rel in ifc_file.by_type("IfcRelAssociatesClassification"):
-    #print(rel)
     related_objects = rel.RelatedObjects
     relating_classification = rel.RelatingClassification
 
     bsdd_response = validate_ifc_classification_reference(relating_classification)
-    import pdb;pdb.set_trace()
-
+    
     for instance in related_objects:
 
         # This variable will contain all the information 
         # about the validation result of an entity instance
-        validation_results = {"task_id":0,"instance_id":0,"bsDD_classification_uri":0,"bsDD_property_uri":0, "bsDD_property_constraint":0}
+        validation_results = {"task_id":0,
+                            "instance_id":0,
+                            "bsDD_classification_uri":0,
+                            "bsDD_property_uri":0,
+                            "bsDD_property_constraint":0,
+                            "bsDD_type_constraint":0,
+                            "ifc_property_name":0,
+                            "ifc_property_set":0,
+                            "ifc_property_type":0,
+                            "ifc_property_value":0
+                            }
 
         if bsdd_response:
             if has_specifications(json.loads(bsdd_response.text)):
-                # Record in the field (the constraints and other)
-                
-                # validation_results["bsDD_classification_uri"]
+                specifications = json.loads(bsdd_response.text)["classificationProperties"]
 
-                # Validation of the instance
-                results = validate_instance(bsdd_response, instance)
-                # Store results in DB
-                pass
+                for constraint in specifications:
+                    # Validation of the instance
+                    results = validate_instance(constraint, ifc_file, instance)
+
+                    # Store everything in DB
+                    validation_results["task_id"]
+                    validation_results["instance_id"]
+                    validation_results["bsDD_classification_uri"]
+                    validation_results["bsDD_classification_uri"]
+                    validation_results["bsDD_type_constraint"] = json.loads(bsdd_response.text)["relatedIfcEntityNames"]
+                    validation_results["bsDD_property_constraint"]
+                    validation_results["ifc_property_name"]
+                    validation_results["ifc_property_set"] 
+                    validation_results["ifc_property_type"] 
+                    validation_results["ifc_property_value"]
+
+                    #import pdb;pdb.set_trace()
+                    pass
             else:
                 # Record NULL in other fields
                 pass
