@@ -544,7 +544,7 @@ def get_validation_progress(id):
 @application.route('/update_info/<ids>/<number>/<user_id>', methods=['POST'])
 def register_info_input(ids, number, user_id):
 
-    import pdb;pdb.set_trace()
+  
 
     data =  request.get_data()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
@@ -554,11 +554,11 @@ def register_info_input(ids, number, user_id):
 
     session = database.Session()
 
-    # if data["from"] == "saved":
-    #     models = session.query(database.model).all()
-   
-
-    model = session.query(database.model).filter(database.model.code == all_ids[i]).all()[0]
+    if decoded_data["from"] == "saved":
+        models = session.query(database.model).all()
+        model = models[-(i+2)]
+    else:
+        model = session.query(database.model).filter(database.model.code == all_ids[i]).all()[0]
     
     if decoded_data["type"] == "licenses":
         model.license = decoded_data['license']
@@ -568,6 +568,8 @@ def register_info_input(ids, number, user_id):
 
     if decoded_data["type"] == "details":
         model.details = decoded_data['details']
+
+    #import pdb;pdb.set_trace()
 
     session.commit()
     session.close()
