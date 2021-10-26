@@ -30,6 +30,44 @@
     
     </div>
 
+
+    <script>
+              function sendInfo2(box, boxtype, index){
+
+                //debugger;
+                //event.srcElement.value
+
+                var element = event.srcElement;
+
+                // console.log("THIS", this)
+
+                var data; 
+                var i = parseInt(index);
+
+
+                if(boxtype == "licenses"){
+                    data = {type:"licenses", license: element.value, n:i};
+                }
+                if (boxtype == "hours"){
+                    data = {type:"hours", hours: element.value, n:i};
+                }
+                if(boxtype =="details"){
+                    data = {type:"details", details: element.value, n:i};
+                }
+
+                
+                fetch("/update_info/{{id}}/"+ i.toString() + "/{{user_id}}", {
+                    method: "POST", 
+                    body: JSON.stringify(data)
+                }).then(function (r) { return r.json(); }).then(function (r) {
+                    console.log(r);
+                })
+            
+
+
+            }
+    </script>
+
    
 
     <div id="main">
@@ -52,7 +90,7 @@
                 <th># properties</th>
                 
                 <th>License</th>
-                <th>Production hours</th>
+                <th style = "text-align: left;">Production hours</th>
                 <th>Additional details</th>
  
             </tr>
@@ -90,27 +128,42 @@
 
                     <td>
                     {% if previous_file_input[i].license != None%}
-                        <select name="licenses" id="licenses">
+                        <select name="licenses" id="licenses" onchange="sendInfo()">
                             <option value="private" >private</option>
                             <option value="CC">CC</option>
                             <option value="MIT">MIT</option>
                             <option value="GPL">GPL</option>
                         </select>
-                        <script>
-                            let selectElement = document.getElementById("licenses");
-                            selectElement.value ="{{previous_file_input[i].license}}";
-                            
-                        </script>
+                       
+                    
                 
                     {% else %}
 
+                    <select name="licenses" id="licenses" onchange="sendInfo()">
+                        {% if model.license == "private" %}
+                            <option value="private" selected >private</option>
+                        {% else %}
+                            <option value="private" >private</option>
+                        {% endif %}
 
-                        <select name="licenses" id="licenses">
-                            <option value="private" selected>private</option>
-                            <option value="CC" >CC</option>
-                            <option value="MIT">MIT</option>
-                            <option value="GPL">GPL</option>
-                        </select>
+                        {% if model.license == "CC" %}
+                            <option value="CC" selected >CC</option>
+                        {% else %}
+                            <option value="CC">CC</option>
+                        {% endif %}
+
+                        {% if model.license == "MIT" %}
+                            <option value="MIT" selected >MIT</option>
+                        {% else %}
+                            <option value="MIT" >MIT</option>
+                        {% endif %}
+
+                        {% if model.license == "GPL" %}
+                            <option value="GPL" selected >GPL</option>
+                        {% else %}
+                            <option value="GPL" >GPL</option>
+                        {% endif %}
+                    </select>
 
                       
                     {% endif %} 
@@ -118,17 +171,17 @@
                     </td>
                     <td>
                         {% if previous_file_input[i].hours!= None %}
-                            <input type="text" id="hours" value={{previous_file_input[i].hours}}>
+                            <input type="text" id="hours" value={{previous_file_input[i].hours}} style="width:20%;" onchange="sendInfo()">
                         
                         {% else %}
-                            <input type="text" id="hours">
+                            <input type="text" id="hours" style="width:20%;" onchange="sendInfo()">
                         {% endif %} 
                     </td>
                     <td>
                         {% if previous_file_input[i].details != None %}
-                        <input type="text" id="details" value={{previous_file_input[i].details}}>
+                        <input type="text" id="details" value={{previous_file_input[i].details}} onchange="sendInfo()">
                         {% else %}
-                            <input type="text" id="details">
+                            <input type="text" id="details" onchange="sendInfo()">
                         {% endif %} 
                         
                     </td>
@@ -175,10 +228,45 @@
                     <td style="color:rgb(224, 101, 101); font-weight: bold;">Delete</td>
                     <td>{{model.number_of_geometries}}</td>
                     <td>{{model.number_of_properties}}</td>
-                    <td>{{model.license}}</td>
-                    <td>{{model.hours}}</td>
-                    <td>{{model.details}}</td>
 
+                    
+                    <td>
+                        <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
+                            {% if model.license == "private" %}
+                                <option value="private" selected >private</option>
+                            {% else %}
+                                <option value="private" >private</option>
+                            {% endif %}
+
+                            {% if model.license == "CC" %}
+                                <option value="CC" selected >CC</option>
+                            {% else %}
+                                <option value="CC">CC</option>
+                            {% endif %}
+
+                            {% if model.license == "MIT" %}
+                                <option value="MIT" selected >MIT</option>
+                            {% else %}
+                                <option value="MIT" >MIT</option>
+                            {% endif %}
+
+                            {% if model.license == "GPL" %}
+                                <option value="GPL" selected >GPL</option>
+                            {% else %}
+                                <option value="GPL" >GPL</option>
+                            {% endif %}
+                        </select>
+        
+                    </td>
+
+
+                    <td>
+                        <input type="text" id="hours" value= {{model.hours}} style="width:20%;" onchange="sendInfo2('hours','{{loop.index0}}')">
+                    </td>
+                   
+                    <td>
+                        <input type="text" id="details" value= {{model.details}} onchange="sendInfo2('details', '{{loop.index0}}')">
+                    </td>
 
 
                 </tr>
@@ -315,10 +403,14 @@
             // detailsCell.appendChild(detailsInputBox);
             detailsInputBox.addEventListener("change", sendInfo);
 
-            function sendInfo(){
+            function sendInfo(index=null){
                 console.log(this)
                 var data; 
                 
+                if(index != null){
+                    i = index;
+                }
+
                 if(this.id == "licenses"){
                     data = {type:"licenses", license: this.value, n:i};
                 }
