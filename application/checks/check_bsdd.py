@@ -183,6 +183,9 @@ def validate_consistency(ifc_file, validation_task_id):
                         
                     
                         for e in rel.RelatedObjects:
+
+                            RESULTS = []
+
                             #print(json_shortcut)
                             #Save in DB
                             session = database.Session()
@@ -314,6 +317,9 @@ def validate_consistency(ifc_file, validation_task_id):
 
                                 json_shortcut['values'][e.GlobalId].append(di)
 
+
+
+
     else:
         log_to_construct["status"] = "No classification detected in the file."
 
@@ -324,6 +330,9 @@ def validate_consistency(ifc_file, validation_task_id):
 
     with open(detailed_results_path, 'w', encoding='utf-8') as f:
         json.dump(log_to_construct, f, ensure_ascii=False, indent=4)
+
+
+
 
 
     # RESULT REGISTRATION TO DATABASE
