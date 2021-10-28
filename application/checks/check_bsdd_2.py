@@ -83,13 +83,14 @@ for  rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                 for constraint in specifications:
                     # Validation of the instance
                     results = validate_instance(constraint, ifc_file, instance)
+                    
+                    constraint_content = json.loads(bsdd_response.text)
 
                     # Store everything in DB
                     validation_results["task_id"]
                     validation_results["instance_id"]
                     validation_results["bsDD_classification_uri"]
-                    validation_results["bsDD_classification_uri"]
-                    validation_results["bsDD_type_constraint"] = json.loads(bsdd_response.text)["relatedIfcEntityNames"]
+                    validation_results["bsDD_type_constraint"] = constraint_content["relatedIfcEntityNames"]
                     validation_results["bsDD_property_constraint"]
                     validation_results["ifc_property_name"]
                     validation_results["ifc_property_set"] 
