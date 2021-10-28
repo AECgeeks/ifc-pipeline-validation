@@ -4,6 +4,9 @@ import requests
 import json
 
 
+from helper import database
+
+
 
 ifc_fn = sys.argv[1]
 ifc_file = ifcopenshell.open(ifc_fn)
@@ -48,12 +51,18 @@ def validate_instance(constraint,ifc_file, instance):
             result["value"] = "property not found"
             result["datatype"] = "property not found"
 
-            result = {"pset_name":"pset not found","property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
+            result = {"pset_name":pset.Name,"property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
             for property in pset.HasProperties:
                 if property.Name == constraint["specified_property_name"]:
                     print('property found')
                     result["property_name"] = property.Name
-                    result["value"] = property.NominalValue
+
+                    if isinstance(property.NominalValue, ifcopenshell.entity_instance):
+                        result["value"] = property.NominalValue[0]
+                    else:
+                        result["value"] = property.NominalValue
+
+
                     result["datatype"] = type(str(property))
 
 
@@ -72,14 +81,14 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
 
         # This variable will contain all the information 
         # about the validation result of an entity instance
-        validation_results = {"task_id":0,
+        bsdd_result = {"task_id":0,
                             "instance_id":0,
-                            "bsDD_classification_uri":0,
-                            "bsDD_property_uri":0,
-                            "bsDD_property_constraint":0,
-                            "bsDD_type_constraint":0,
-                            "ifc_property_name":0,
+                            "bsdd_classification_uri":0,
+                            "bsdd_property_uri":0,
+                            "bsdd_property_constraint":0,
+                            "bsdd_type_constraint":0,
                             "ifc_property_set":0,
+                            "ifc_property_name":0,
                             "ifc_property_type":0,
                             "ifc_property_value":0
                             }
@@ -95,29 +104,36 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                     constraint_content = json.loads(bsdd_response.text)
 
                     # Store everything in DB
-                    validation_results["task_id"] = task_id
+                    bsdd_result["task_id"] = task_id
                     
                     # Should create instance entry
-                    validation_results["instance_id"] = 0
+                    bsdd_result["instance_id"] = 0
 
-                    validation_results["bsDD_classification_uri"] = constraint_content["namespaceUri"]
-                    validation_results["bsDD_type_constraint"] = constraint_content["relatedIfcEntityNames"]
-                    validation_results["bsDD_property_constraint"] = constraint
-                    validation_results["bsDD_property_uri"] = constraint["propertyNamespaceUri"]
+                    bsdd_result["bsdd_classification_uri"] = constraint_content["namespaceUri"]
+                    bsdd_result["bsdd_type_constraint"] = ";".join(constraint_content["relatedIfcEntityNames"])
+                    bsdd_result["bsdd_property_constraint"] = json.dumps(constraint)
+                    bsdd_result["bsdd_property_uri"] = constraint["propertyNamespaceUri"]
 
                     results = validate_instance(constraint, ifc_file, instance)
-                    validation_results["ifc_property_set"] = results["result"]["pset_name"]
-                    validation_results["ifc_property_name"] = results["result"]["property_name"]
-                    validation_results["ifc_property_type"] = results["result"]["datatype"]
-                    validation_results["ifc_property_value"] = results["result"]["value"]
+                    bsdd_result["ifc_property_set"] = results["result"]["pset_name"]
+                    bsdd_result["ifc_property_name"] = results["result"]["property_name"]
+                    bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
+                    bsdd_result["ifc_property_value"] = results["result"]["value"]
 
-                    print(validation_results)
+                    for k,v in bsdd_result.items():
+                        print(k,v)
+                    print()
+                    
+                    #import pdb;pdb.set_trace()
+
                     pass
             else:
                 # Record NULL in other fields
+                bsdd_result["bsdd_property_constraint"] = "no constraint"
                 pass
         else:
             # Record NULL everywhere in bsdd_result
+            bsdd_result["bsdd_classification_uri"] = "classification not found"
             pass
 
 

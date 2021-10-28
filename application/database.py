@@ -189,8 +189,9 @@ class bsdd_result(Base, Serializable):
     bsDD_classification_uri = Column(String)
     bsDD_property_uri = Column(String)
     bsDD_property_constraint = Column(String)
-    ifc_property_name = Column(String)
+    bsDD_type_constraint = Column(String)
     ifc_property_set = Column(String)
+    ifc_property_name = Column(String)
     ifc_property_type = Column(String)
     ifc_property_value = Column(String)
 
