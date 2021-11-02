@@ -186,24 +186,19 @@ class bsdd_result(Base, Serializable):
     id = Column(Integer, primary_key=True)
     task_id = Column(Integer, ForeignKey('bSDD_validation_tasks.id'))
     instance_id = Column(Integer, ForeignKey('instances.id'))
-    bsDD_classification_uri = Column(String)
-    bsDD_property_uri = Column(String)
-    bsDD_property_constraint = Column(String)
-    bsDD_type_constraint = Column(String)
+    bsdd_classification_uri = Column(String)
+    bsdd_property_uri = Column(String)
+    bsdd_property_constraint = Column(String)
+    bsdd_type_constraint = Column(String)
     ifc_property_set = Column(String)
     ifc_property_name = Column(String)
     ifc_property_type = Column(String)
     ifc_property_value = Column(String)
 
     
-    def __init__(self, task_id,instance_id,bsDD_classification_uri,bsDD_property_uri, bsDD_property_constraint ):
+    def __init__(self, task_id):
         self.task_id = task_id
-        self.instance_id = instance_id
-        self.bsDD_classification_uri = bsDD_classification_uri
-        self.bsDD_property_uri = bsDD_property_uri
-        self.bsDD_property_constraint = bsDD_property_constraint
-
-        
+     
 def initialize():
     if not database_exists(engine.url):
         create_database(engine.url)

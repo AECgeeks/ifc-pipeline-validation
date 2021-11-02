@@ -124,7 +124,23 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                         print(k,v)
                     print()
                     
-                    #import pdb;pdb.set_trace()
+                    # import pdb;pdb.set_trace()
+
+                            
+                    print("RESULT", bsdd_result)
+                    session = database.Session()
+                    db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
+
+                    for key, value in bsdd_result.items():
+                        print("KEY VAL", key, value)
+                        setattr(db_bsdd_result, key, value) 
+
+                    session.add(db_bsdd_result)
+                    session.commit()
+                    session.close()
+
+        
+
 
                     pass
             else:
@@ -136,7 +152,9 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
             bsdd_result["bsdd_classification_uri"] = "classification not found"
             pass
 
-    import pdb; pdb.set_trace()
+    
+
+   
         
 
 
