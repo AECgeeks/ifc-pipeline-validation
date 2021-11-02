@@ -136,7 +136,7 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
             bsdd_result["bsdd_classification_uri"] = "classification not found"
             pass
 
-
+    import pdb; pdb.set_trace()
         
 
 
