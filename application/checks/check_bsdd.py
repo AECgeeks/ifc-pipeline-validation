@@ -302,16 +302,16 @@ def validate_consistency(ifc_file, validation_task_id):
 
                                 di = {"checking":checking, "logging":logging, "failing":round(1 - sum(checking.values())/len(checking.keys()),2)}
                                 
-                                session = database.Session()
+                                #session = database.Session()
 
 
-                                bsdd_result = session.query(database.bsdd_result).filter(database.bsdd_result.id == bsdd_result_id).all()[0]
-                                bsdd_result.ifc_property_name = di['logging']['pname']
-                                bsdd_result.ifc_property_set = di['logging']['pset']
-                                bsdd_result.ifc_property_type = di['logging']['ptype']
-                                bsdd_result.ifc_property_value = di['logging']['pvalue']
-                                session.commit()
-                                session.close()
+                                # bsdd_result = session.query(database.bsdd_result).filter(database.bsdd_result.id == bsdd_result_id).all()[0]
+                                # bsdd_result.ifc_property_name = di['logging']['pname']
+                                # bsdd_result.ifc_property_set = di['logging']['pset']
+                                # bsdd_result.ifc_property_type = di['logging']['ptype']
+                                # bsdd_result.ifc_property_value = di['logging']['pvalue']
+                                # session.commit()
+                                # session.close()
 
                                 #print(di)
 

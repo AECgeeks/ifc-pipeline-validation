@@ -14,6 +14,17 @@
         }
     </script>
 
+<script>
+    function goToIndex(){
+        var st = window.location.href;
+
+        var baseUrl = st.split('/')[2];
+        var url = "/";
+        console.log(url)
+        window.location = url;
+}
+</script>
+
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='validation.css') }}">
 
 <body>
@@ -48,7 +59,7 @@
                 var data; 
                 var i = parseInt(index);
                 
-                console.log(i)
+                
 
                 if(boxtype == "licenses"){
                     data = {type:"licenses", license: element.value, n:i,from:"saved"};
