@@ -14,6 +14,17 @@
         }
     </script>
 
+    <script>
+            function goToIndex(){
+                var st = window.location.href;
+
+                var baseUrl = st.split('/')[2];
+                var url = "/";
+                console.log(url)
+                window.location = url;
+        }
+    </script>
+
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='validation.css') }}">
 
 <body>
@@ -25,12 +36,12 @@
                 src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
         </a>
         <div id="logo" style="margin-right:10px; display: flex;flex-direction: row; align-items: center;
-        justify-content: center; align-content: space-between; gap: 12px;">
+            justify-content: center; align-content: space-between; gap: 12px;">
 
-            <button onclick= "goToIndex();" style="height: 40px;width: 150px;">VALIDATION >></button>
-            <button style="height: 50px;width: 50px;border-radius: 50%;background-image: url(/static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
-            <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
-    </div>
+                <button onclick= "goToIndex();" style="height: 40px;width: 150px;">VALIDATION >></button>
+                <button style="height: 50px;width: 50px;border-radius: 50%;background-image: url(../static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
+                <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
+        </div>
     
     </div>
 
@@ -41,14 +52,14 @@
                 //debugger;
                 //event.srcElement.value
 
+                
                 var element = event.srcElement;
 
                 // console.log("THIS", this)
 
                 var data; 
                 var i = parseInt(index);
-                
-                console.log(i)
+
 
                 if(boxtype == "licenses"){
                     data = {type:"licenses", license: element.value, n:i,from:"saved"};
@@ -61,7 +72,7 @@
                 }
 
                 
-                fetch("/update_info/{{id}}/"+ i.toString() + "/{{user_id}}", {
+                fetch("/update_info_saved/"+ i.toString() + "/{{user_id}}", {
                     method: "POST", 
                     body: JSON.stringify(data)
                 }).then(function (r) { return r.json(); }).then(function (r) {
@@ -99,99 +110,6 @@
                 <th>Additional details</th>
  
             </tr>
-            {% for i in range(0, n_files) %}
-                {% set percentageid = "percentage" + i|string %}
-                {% set barid = "bar" + i|string %}
-                {% set fn = filenames[i]|string %}
-                
-                {% set format = filenames[i][-3::]|string %}
-
-                <tr style="background-color:#ffffe6">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><img src="/static/icons/ifc.png" /></td>
-
-                    <td id ="filename" style="color:royalblue;font-weight: bold;">{{fn}}</td>
-                    <td></td>
-                    <td>
-
-                        <div class='progress'>
-                            <div id={{barid}} class='bar'></div>
-                        </div>
-
-                    </td>
-                    <td>
-                        <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
-                    </td>
-                    <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
-
-                    <td>Test</td>
-                    <td>Test</td>
-
-                    <td>
-                    {% if previous_file_input[i].license != None%}
-                        <select name="licenses" id="licenses" onchange="sendInfo()">
-                            <option value="private" >private</option>
-                            <option value="CC">CC</option>
-                            <option value="MIT">MIT</option>
-                            <option value="GPL">GPL</option>
-                        </select>
-                       
-                    
-                
-                    {% else %}
-
-                    <select name="licenses" id="licenses" onchange="sendInfo()">
-                        {% if model.license == "private" %}
-                            <option value="private" selected >private</option>
-                        {% else %}
-                            <option value="private" >private</option>
-                        {% endif %}
-
-                        {% if model.license == "CC" %}
-                            <option value="CC" selected >CC</option>
-                        {% else %}
-                            <option value="CC">CC</option>
-                        {% endif %}
-
-                        {% if model.license == "MIT" %}
-                            <option value="MIT" selected >MIT</option>
-                        {% else %}
-                            <option value="MIT" >MIT</option>
-                        {% endif %}
-
-                        {% if model.license == "GPL" %}
-                            <option value="GPL" selected >GPL</option>
-                        {% else %}
-                            <option value="GPL" >GPL</option>
-                        {% endif %}
-                    </select>
-
-                      
-                    {% endif %} 
-
-                    </td>
-                    <td style ="text-align:center;">
-                        {% if previous_file_input[i].hours!= None %}
-                            <input type="text" id="hours" value={{previous_file_input[i].hours}} style="width:20%;" onchange="sendInfo()">
-                        
-                        {% else %}
-                            <input type="text" id="hours" style="width:20%;" onchange="sendInfo()">
-                        {% endif %} 
-                    </td>
-                    <td>
-                        {% if previous_file_input[i].details != None %}
-                        <input type="text" id="details" value={{previous_file_input[i].details}} onchange="sendInfo()">
-                        {% else %}
-                            <input type="text" id="details" onchange="sendInfo()">
-                        {% endif %} 
-                        
-                    </td>
-                </tr>
-            {% endfor %}
 
 
 
@@ -425,8 +343,9 @@
 
         }
 
-        var n = {{ n_files }};
-
+        var n = "{{ saved_models|length }}";
+        n = parseInt(n);
+        
         const registered = new Set();
 
         function poll() {
@@ -483,7 +402,7 @@
             });
         }
 
-        poll();
+        //poll();
 
     </script>
 

@@ -16,6 +16,17 @@
     <script>
         var decoded = {{decoded|tojson}}
         console.log(decoded);
+
+
+        function goToDashboard(){
+            var st = window.location.href;
+
+            var baseUrl = st.split('/')[2];
+            var url = "/dashboard/"+ decoded['aud'];
+            console.log(url)
+            window.location = url;
+        }
+
     </script>
 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='index.css') }}">
@@ -73,10 +84,11 @@
                     src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
             </a>
 
-            <div id="logo" style="margin-right:10px;">
+            <div id="logo" style="margin-right:10px; display: flex;flex-direction: row; align-items: center;
+            justify-content: center; align-content: space-between; gap: 12px;">
 
-                <button></button>
-                <button></button>
+            <button onclick= "goToDashboard();" style="height: 40px;width: 150px;">DASHBOARD >></button>
+                <button style="height: 50px;width: 50px;border-radius: 50%;background-image: url(static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
                 <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
             </div>
 

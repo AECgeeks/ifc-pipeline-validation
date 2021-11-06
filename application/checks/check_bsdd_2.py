@@ -11,7 +11,6 @@ from helper import database
 ifc_fn = sys.argv[1]
 ifc_file = ifcopenshell.open(ifc_fn)
 
-
 task_id = 0
 
 
@@ -79,6 +78,14 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
     
     for instance in related_objects:
 
+        session = database.Session()
+        instance = database.ifc_instance(instance.GlobalId, instance.is_a(), 1)
+        session.add(instance)
+        session.flush()
+        instance_id = instance.id
+        session.commit()
+        session.close()
+
         # This variable will contain all the information 
         # about the validation result of an entity instance
         bsdd_result = {"task_id":0,
@@ -107,7 +114,7 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                     bsdd_result["task_id"] = task_id
                     
                     # Should create instance entry
-                    bsdd_result["instance_id"] = 0
+                    bsdd_result["instance_id"] = instance_id
 
                     bsdd_result["bsdd_classification_uri"] = constraint_content["namespaceUri"]
                     bsdd_result["bsdd_type_constraint"] = ";".join(constraint_content["relatedIfcEntityNames"])
@@ -120,19 +127,17 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                     bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
                     bsdd_result["ifc_property_value"] = results["result"]["value"]
 
-                    for k,v in bsdd_result.items():
-                        print(k,v)
-                    print()
+              
                     
                     # import pdb;pdb.set_trace()
 
                             
-                    print("RESULT", bsdd_result)
+                    #print("RESULT", bsdd_result)
                     session = database.Session()
                     db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
                     for key, value in bsdd_result.items():
-                        print("KEY VAL", key, value)
+                        #print("KEY VAL", key, value)
                         setattr(db_bsdd_result, key, value) 
 
                     session.add(db_bsdd_result)
@@ -146,10 +151,36 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
             else:
                 # Record NULL in other fields
                 bsdd_result["bsdd_property_constraint"] = "no constraint"
+                                   
+                #print("RESULT", bsdd_result)
+                session = database.Session()
+                db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
+
+                for key, value in bsdd_result.items():
+                    #print("KEY VAL", key, value)
+                    setattr(db_bsdd_result, key, value) 
+
+                session.add(db_bsdd_result)
+                session.commit()
+                session.close()
+
                 pass
         else:
             # Record NULL everywhere in bsdd_result
             bsdd_result["bsdd_classification_uri"] = "classification not found"
+                               
+            #print("RESULT", bsdd_result)
+            session = database.Session()
+            db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
+
+            for key, value in bsdd_result.items():
+                #print("KEY VAL", key, value)
+                setattr(db_bsdd_result, key, value) 
+
+            session.add(db_bsdd_result)
+            session.commit()
+            session.close()
+
             pass
 
     

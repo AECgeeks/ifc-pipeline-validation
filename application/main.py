@@ -516,6 +516,18 @@ def validate_files(id, user_id):
 
     return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models, previous_file_input=previous_file_input )     
     
+@application.route('/dashboard/<user_id>', methods=['GET'])
+def dashboard(user_id):
+    #Retrieve user data 
+    session = database.Session()
+    saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
+    saved_models = saved_models[::-1]
+    return render_template('dashboard.html',user_id=user_id, saved_models=saved_models)
+
+
+
+
+
     
 @application.route('/valprog/<id>', methods=['GET'])
 def get_validation_progress(id):
@@ -543,8 +555,6 @@ def get_validation_progress(id):
 
 @application.route('/update_info/<ids>/<number>/<user_id>', methods=['POST'])
 def register_info_input(ids, number, user_id):
-
-  
 
     data =  request.get_data()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
@@ -576,6 +586,37 @@ def register_info_input(ids, number, user_id):
 
     return jsonify({"progress":data.decode("utf-8")})
     
+
+
+@application.route('/update_info_saved/<number>/<user_id>', methods=['POST'])
+def update_info_input(number, user_id):
+
+    data =  request.get_data()
+    decoded_data = ast.literal_eval(data.decode("utf-8"))
+    i = decoded_data['n']
+    
+    
+    session = database.Session()
+
+   
+    models = session.query(database.model).all()
+    model = models[-(i+1)]
+   
+    if decoded_data["type"] == "licenses":
+        model.license = decoded_data['license']
+
+    if decoded_data["type"] == "hours":
+        model.hours = decoded_data['hours']
+
+    if decoded_data["type"] == "details":
+        model.details = decoded_data['details']
+
+    #import pdb;pdb.set_trace()
+
+    session.commit()
+    session.close()
+
+    return jsonify({"progress":data.decode("utf-8")})
 
 
 @application.route('/pp/<id>', methods=['GET'])
