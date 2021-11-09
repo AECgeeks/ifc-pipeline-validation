@@ -127,17 +127,10 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                     bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
                     bsdd_result["ifc_property_value"] = results["result"]["value"]
 
-              
-                    
-                    # import pdb;pdb.set_trace()
-
-                            
-                    #print("RESULT", bsdd_result)
                     session = database.Session()
                     db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
                     for key, value in bsdd_result.items():
-                        #print("KEY VAL", key, value)
                         setattr(db_bsdd_result, key, value) 
 
                     session.add(db_bsdd_result)
@@ -152,12 +145,10 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                 # Record NULL in other fields
                 bsdd_result["bsdd_property_constraint"] = "no constraint"
                                    
-                #print("RESULT", bsdd_result)
                 session = database.Session()
                 db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
                 for key, value in bsdd_result.items():
-                    #print("KEY VAL", key, value)
                     setattr(db_bsdd_result, key, value) 
 
                 session.add(db_bsdd_result)
@@ -169,12 +160,10 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
             # Record NULL everywhere in bsdd_result
             bsdd_result["bsdd_classification_uri"] = "classification not found"
                                
-            #print("RESULT", bsdd_result)
             session = database.Session()
             db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
             for key, value in bsdd_result.items():
-                #print("KEY VAL", key, value)
                 setattr(db_bsdd_result, key, value) 
 
             session.add(db_bsdd_result)

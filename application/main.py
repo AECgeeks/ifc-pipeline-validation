@@ -525,10 +525,6 @@ def dashboard(user_id):
     return render_template('dashboard.html',user_id=user_id, saved_models=saved_models)
 
 
-
-
-
-    
 @application.route('/valprog/<id>', methods=['GET'])
 def get_validation_progress(id):
     if not utils.validate_id(id):
@@ -557,6 +553,8 @@ def get_validation_progress(id):
 def register_info_input(ids, number, user_id):
 
     data =  request.get_data()
+
+    #import pdb;pdb.set_trace()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
     i = decoded_data['n']
     

@@ -47,41 +47,39 @@
 
 
     <script>
-              function sendInfo2(box, boxtype, index){
+        function sendInfo2(box, boxtype, index){
 
-                //debugger;
-                //event.srcElement.value
-
-                var element = event.srcElement;
-
-                // console.log("THIS", this)
-
-                var data; 
-                var i = parseInt(index);
-                
-                
-
-                if(boxtype == "licenses"){
-                    data = {type:"licenses", license: element.value, n:i,from:"saved"};
-                }
-                if (boxtype == "hours"){
-                    data = {type:"hours", hours: element.value, n:i,from:"saved"};
-                }
-                if(boxtype =="details"){
-                    data = {type:"details", details: element.value, n:i,from:"saved"};
-                }
-
-                
-                fetch("/update_info/{{id}}/"+ i.toString() + "/{{user_id}}", {
-                    method: "POST", 
-                    body: JSON.stringify(data)
-                }).then(function (r) { return r.json(); }).then(function (r) {
-                    console.log(r);
-                })
-            
+            //debugger;
+            //event.srcElement.value
 
 
+            var element = event.srcElement;
+
+            // console.log("THIS", this)
+
+            var data; 
+            var i = parseInt(index);
+
+
+            if(boxtype == "licenses"){
+                data = {type:"licenses", license: element.value, n:i,from:"saved"};
             }
+            if (boxtype == "hours"){
+                data = {type:"hours", hours: element.value, n:i,from:"saved"};
+            }
+            if(boxtype =="details"){
+                data = {type:"details", details: element.value, n:i,from:"saved"};
+            }
+
+
+            fetch("/update_info_saved/"+ i.toString() + "/{{user_id}}", {
+                method: "POST", 
+                body: JSON.stringify(data)
+            }).then(function (r) { return r.json(); }).then(function (r) {
+                console.log(r);
+            })
+
+        }
     </script>
 
    
@@ -144,7 +142,7 @@
 
                     <td>
                     {% if previous_file_input[i].license != None%}
-                        <select name="licenses" id="licenses" onchange="sendInfo()">
+                        <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
                             <option value="private" >private</option>
                             <option value="CC">CC</option>
                             <option value="MIT">MIT</option>
@@ -155,7 +153,7 @@
                 
                     {% else %}
 
-                    <select name="licenses" id="licenses" onchange="sendInfo()">
+                    <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
                         {% if model.license == "private" %}
                             <option value="private" selected >private</option>
                         {% else %}
@@ -404,6 +402,8 @@
             detailsInputBox.addEventListener("change", sendInfo);
 
             function sendInfo(index=null){
+
+
                 console.log(this)
                 var data; 
                 
