@@ -514,7 +514,9 @@ def validate_files(id, user_id):
         previous_file_input.append({"license":model.license,"hours":model.hours,"details":model.details })
         session.close()
 
-    return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models, previous_file_input=previous_file_input )     
+    saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
+    return render_template('dashboard.html',user_id=user_id, saved_models=saved_models)
+    #return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models, previous_file_input=previous_file_input )     
     
 @application.route('/dashboard/<user_id>', methods=['GET'])
 def dashboard(user_id):
