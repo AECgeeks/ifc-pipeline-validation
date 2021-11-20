@@ -116,39 +116,51 @@
             {% for model in saved_models %}
 
                 {% set icons = {'v':'valid', 'w':'warning', 'i':'invalid', 'n':'not'} %} 
-                <tr>
-                    <td>
-                        <img src="/static/icons/{{icons[model.status_syntax]}}.png">
-                    </td>
-                    <td>
-                        <img src="/static/icons/{{icons[model.status_schema]}}.png">
-                    </td>
-                    <td>
-                        <img src="/static/icons/{{icons[model.status_mvd]}}.png">
-                    </td>
-                    <td>
-                        <img src="/static/icons/{{icons[model.status_bsdd]}}.png">
-                    </td>
-                    <td>
-                        <img src="/static/icons/{{icons[model.status_ids]}}.png">
-                    </td>
+                {% if loop.index0 < n_files %}
+                    {% set percentageid = "percentage" + i|string %}
+                    {% set barid = "bar" + i|string %}
+                    {% set fn = filenames[i]|string %}
                     
+                    {% set format = filenames[i][-3::]|string %}
 
-                    <td><img src="/static/icons/ifc.png" /></td>
+                    <tr style="background-color:#ffffe6">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><img src="/static/icons/ifc.png" /></td>
 
-                    <td style="color:royalblue;font-weight: bold;">{{model.filename}}</td>
+                        <td id ="filename" style="color:royalblue;font-weight: bold;">{{fn}}</td>
+                        <td></td>
+                        <td>
+
+                            <div class='progress'>
+                                <div id={{barid}} class='bar'></div>
+                            </div>
+
+                        </td>
+                        <td>
+                            <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
+                        </td>
+                        <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
+
+                        <td>Test</td>
+                        <td>Test</td>
+
+                        <td>
+                        {% if previous_file_input[i].license != None%}
+                            <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
+                                <option value="private" >private</option>
+                                <option value="CC">CC</option>
+                                <option value="MIT">MIT</option>
+                                <option value="GPL">GPL</option>
+                            </select>
+                        
+                        
                     
-                    <td>
-                        <a id="report" style="color: rgb(0, 112, 192); font-weight: bold;text-decoration: none;">View report</a>
-                    </td>
-                    <td>{{model.date}}</td>
-                    <td style="color:rgb(105, 125, 239); font-weight: bold;">Download</td>
-                    <td style="color:rgb(224, 101, 101); font-weight: bold;">Delete</td>
-                    <td>{{model.number_of_geometries}}</td>
-                    <td>{{model.number_of_properties}}</td>
+                        {% else %}
 
-                    
-                    <td>
                         <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
                             {% if model.license == "private" %}
                                 <option value="private" selected >private</option>
@@ -174,33 +186,119 @@
                                 <option value="GPL" >GPL</option>
                             {% endif %}
                         </select>
-        
-                    </td>
 
+                        
+                        {% endif %} 
 
-                  
+                        </td>
+                        <td style ="text-align:center;">
+                            {% if previous_file_input[i].hours!= None %}
+                                <input type="text" id="hours" value={{previous_file_input[i].hours}} style="width:20%;" onchange="sendInfo()">
+                            
+                            {% else %}
+                                <input type="text" id="hours" style="width:20%;" onchange="sendInfo()">
+                            {% endif %} 
+                        </td>
+                        <td>
+                            {% if previous_file_input[i].details != None %}
+                            <input type="text" id="details" value={{previous_file_input[i].details}} onchange="sendInfo()">
+                            {% else %}
+                                <input type="text" id="details" onchange="sendInfo()">
+                            {% endif %} 
+                            
+                        </td>
+                    </tr>
 
+                {% else %}
 
-                    <td style ="text-align:center;">
-                        {% if model.hours != None %}
-                            <input type="text" id="details" style="width: 20%; " value= "{{model.hours}}"  onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
-                        {% else %}
-                            <input type="text" id="details" style="width: 20%; text-align: center;" value="" onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
-                        {% endif %}
-                    </td>
+                    <tr>
+                        <td>
+                            <img src="/static/icons/{{icons[model.status_syntax]}}.png">
+                        </td>
+                        <td>
+                            <img src="/static/icons/{{icons[model.status_schema]}}.png">
+                        </td>
+                        <td>
+                            <img src="/static/icons/{{icons[model.status_mvd]}}.png">
+                        </td>
+                        <td>
+                            <img src="/static/icons/{{icons[model.status_bsdd]}}.png">
+                        </td>
+                        <td>
+                            <img src="/static/icons/{{icons[model.status_ids]}}.png">
+                        </td>
+                        
+
+                        <td><img src="/static/icons/ifc.png" /></td>
+
+                        <td style="color:royalblue;font-weight: bold;">{{model.filename}}</td>
+                        
+                        <td>
+                            <a id="report" style="color: rgb(0, 112, 192); font-weight: bold;text-decoration: none;">View report</a>
+                        </td>
+                        <td>{{model.date}}</td>
+                        <td style="color:rgb(105, 125, 239); font-weight: bold;">Download</td>
+                        <td style="color:rgb(224, 101, 101); font-weight: bold;">Delete</td>
+                        <td>{{model.number_of_geometries}}</td>
+                        <td>{{model.number_of_properties}}</td>
+
+                        
+                        <td>
+                            <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
+                                {% if model.license == "private" %}
+                                    <option value="private" selected >private</option>
+                                {% else %}
+                                    <option value="private" >private</option>
+                                {% endif %}
+
+                                {% if model.license == "CC" %}
+                                    <option value="CC" selected >CC</option>
+                                {% else %}
+                                    <option value="CC">CC</option>
+                                {% endif %}
+
+                                {% if model.license == "MIT" %}
+                                    <option value="MIT" selected >MIT</option>
+                                {% else %}
+                                    <option value="MIT" >MIT</option>
+                                {% endif %}
+
+                                {% if model.license == "GPL" %}
+                                    <option value="GPL" selected >GPL</option>
+                                {% else %}
+                                    <option value="GPL" >GPL</option>
+                                {% endif %}
+                            </select>
+            
+                        </td>
 
 
                     
-                    <td>
-                        {% if model.details != None %}
-                            <input type="text" id="details" value= "{{model.details}}" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
-                        {% else %}
-                            <input type="text" id="details" value="" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
-                        {% endif %}
-                    </td>
 
 
-                </tr>
+                        <td style ="text-align:center;">
+                            {% if model.hours != None %}
+                                <input type="text" id="details" style="width: 20%; " value= "{{model.hours}}"  onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
+                            {% else %}
+                                <input type="text" id="details" style="width: 20%; text-align: center;" value="" onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
+                            {% endif %}
+                        </td>
+
+
+                        
+                        <td>
+                            {% if model.details != None %}
+                                <input type="text" id="details" value= "{{model.details}}" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
+                            {% else %}
+                                <input type="text" id="details" value="" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
+                            {% endif %}
+                        </td>
+
+
+                    </tr>
+
+                {% endif %}
+
 
             {% endfor %}
 

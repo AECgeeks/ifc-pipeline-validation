@@ -207,6 +207,9 @@
             {% for model in saved_models %}
 
                 {% set icons = {'v':'valid', 'w':'warning', 'i':'invalid', 'n':'not'} %} 
+
+               
+
                 <tr>
                     <td>
                         <img src="/static/icons/{{icons[model.status_syntax]}}.png">
