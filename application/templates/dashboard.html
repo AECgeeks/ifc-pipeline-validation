@@ -39,7 +39,7 @@
             justify-content: center; align-content: space-between; gap: 12px;">
 
                 <button onclick= "goToIndex();" style="height: 40px;width: 150px;">VALIDATION >></button>
-                <button style="height: 50px;width: 50px;border-radius: 50%;background-image: url(../static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
+                <button style="height: 50px;width: 50px;border-radius: 50%;background-image: url(/static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
                 <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
         </div>
     
@@ -145,7 +145,7 @@
                         </td>
                         <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
 
-                        <td>Test</td>
+                        <td>{{model.geometries}}</td>
                         <td>Test</td>
 
                         <td>
@@ -465,8 +465,8 @@
                     
                    
 
-                    // document.getElementsByTagName("table")[0].rows[i+1].cells[11].innerHTML = file_info["number_of_geometries"];
-                    // document.getElementsByTagName("table")[0].rows[i+1].cells[12].innerHTML = file_info["number_of_properties"];
+                    document.getElementsByTagName("table")[0].rows[i+1].cells[11].innerHTML = file_info["number_of_geometries"];
+                    document.getElementsByTagName("table")[0].rows[i+1].cells[12].innerHTML = file_info["number_of_properties"];
 
 
 
