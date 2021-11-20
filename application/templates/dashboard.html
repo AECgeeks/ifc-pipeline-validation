@@ -116,12 +116,12 @@
             {% for model in saved_models %}
 
                 {% set icons = {'v':'valid', 'w':'warning', 'i':'invalid', 'n':'not'} %} 
-                {% if loop.index0 < n_files %}
-                    {% set percentageid = "percentage" + i|string %}
-                    {% set barid = "bar" + i|string %}
-                    {% set fn = filenames[i]|string %}
+                {% if model.progress < 100 %}
+                    {% set percentageid = "percentage" + loop.index0|string %}
+                    {% set barid = "bar" + loop.index0|string %}
+                    {% set fn = model.filename %}
                     
-                    {% set format = filenames[i][-3::]|string %}
+                   
 
                     <tr style="background-color:#ffffe6">
                         <td></td>
@@ -149,7 +149,7 @@
                         <td>Test</td>
 
                         <td>
-                        {% if previous_file_input[i].license != None%}
+                        {% if model.license != None%}
                             <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
                                 <option value="private" >private</option>
                                 <option value="CC">CC</option>
@@ -192,16 +192,16 @@
 
                         </td>
                         <td style ="text-align:center;">
-                            {% if previous_file_input[i].hours!= None %}
-                                <input type="text" id="hours" value={{previous_file_input[i].hours}} style="width:20%;" onchange="sendInfo()">
+                            {% if model.hours!= None %}
+                                <input type="text" id="hours" value={{model.hours}} style="width:20%;" onchange="sendInfo()">
                             
                             {% else %}
                                 <input type="text" id="hours" style="width:20%;" onchange="sendInfo()">
                             {% endif %} 
                         </td>
                         <td>
-                            {% if previous_file_input[i].details != None %}
-                            <input type="text" id="details" value={{previous_file_input[i].details}} onchange="sendInfo()">
+                            {% if model.details != None %}
+                            <input type="text" id="details" value={{model.details}} onchange="sendInfo()">
                             {% else %}
                                 <input type="text" id="details" onchange="sendInfo()">
                             {% endif %} 
@@ -443,11 +443,15 @@
 
         var n = "{{ saved_models|length }}";
         n = parseInt(n);
+        n = {{n_files}}
         
         const registered = new Set();
 
         function poll() {
             fetch("/valprog/{{ id }}").then(function (r) { return r.json(); }).then(function (r) {
+
+                console.log(r);
+
                 var ids = '{{id}}';
 
                 for (var i = 0; i < n; i++) {
@@ -461,8 +465,8 @@
                     
                    
 
-                    document.getElementsByTagName("table")[0].rows[i+1].cells[11].innerHTML = file_info["number_of_geometries"];
-                    document.getElementsByTagName("table")[0].rows[i+1].cells[12].innerHTML = file_info["number_of_properties"];
+                    // document.getElementsByTagName("table")[0].rows[i+1].cells[11].innerHTML = file_info["number_of_geometries"];
+                    // document.getElementsByTagName("table")[0].rows[i+1].cells[12].innerHTML = file_info["number_of_properties"];
 
 
 
@@ -483,6 +487,7 @@
 
                     } else {
                         var p = r.progress[i];
+                        console.log("P", p);
                         if (p < 0) {
                             percentage.innerHTML = "<i>in queue</i>";
                             p = 0
@@ -500,7 +505,7 @@
             });
         }
 
-        //poll();
+        poll();
 
     </script>
 
