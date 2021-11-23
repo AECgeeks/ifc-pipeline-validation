@@ -394,7 +394,8 @@ def put_main():
         if 'xml' in extensions:
             url = url_for('ids_front', id=idstr)
         else:
-            url = url_for('validate_files', id=idstr, user_id=user_id) 
+            # url = url_for('validate_files', id=idstr, user_id=user_id) 
+            url = url_for('dashboard', user_id=user_id) 
     
     elif VIEWER:
         url = url_for('check_viewer', id=idstr) 

@@ -27,9 +27,9 @@
                         "ids":4,
                         "file_format":5,
                         "file_name":6,
-                        "progress":7,
-                        "advancement":8,
-                        "download":9,
+                        "report":7,
+                        "progress":8,
+                        "advancement":9,
                         "delete":10,
                         "geoms":11,
                         "props":12,
@@ -152,9 +152,9 @@
 
             <script>
 
-
                 var table = document.getElementById("saved_models");
                 var nCols = Object.keys(toColumnComplete).length;
+                var unsavedConcat=""; 
 
                 for(var i=0;i<savedModels.length;i++){
 
@@ -167,11 +167,14 @@
                     }
                     var ifcLogo = document.createElement("IMG");
                     ifcLogo.src = "/static/icons/ifc.png";
-                    row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo); 
+                    row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
+
+                    row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
+                    row.cells[toColumnComplete["file_name"]].innerHTML = savedModels[i].filename; 
                     
                     if(savedModels[i].progress == 100){
-                        row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo); 
-                        row.cells[toColumnComplete["file_name"]].innerHTML = savedModels[i].filename;
+                        
+                       
                         row.cells[toColumnComplete["report"]].innerHTML = "View report";
                         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date;
                         row.cells[toColumnComplete["download"]].innerHTML = "Download";
@@ -199,11 +202,18 @@
 
                     else{
                         console.log("unsaved");
+                        unsavedConcat += savedModels[i].code;
+                        row.cells[toColumnComplete["stop"]].innerHTML = "Stop";
+
+
 
                     }
 
                 }
 
+                console.log(unsavedConcat);
+
+                
 
             </script>
 
