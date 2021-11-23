@@ -514,7 +514,7 @@ def validate_files(id, user_id):
     saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()[::-1]
     #import pdb;pdb.set_trace()
 
-    return render_template('dashboard.html',user_id=user_id, saved_models=saved_models, n_files=n_files, id=id)
+    return render_template('dashboard_new.html',user_id=user_id, saved_models=saved_models, n_files=n_files, id=id)
     #return render_template('validation.html', id=id, n_files=n_files, filenames=filenames, user_id=user_id, saved_models=saved_models, previous_file_input=previous_file_input )     
     
 @application.route('/dashboard/<user_id>', methods=['GET'])
@@ -523,7 +523,10 @@ def dashboard(user_id):
     session = database.Session()
     saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
     saved_models = saved_models[::-1]
-    return render_template('dashboard.html',user_id=user_id, saved_models=saved_models)
+
+    saved_models = [model.serialize() for model in saved_models]
+    #import pdb;pdb.set_trace()
+    return render_template('dashboard_new.html',user_id=user_id, saved_models=saved_models)
 
 
 @application.route('/valprog/<id>', methods=['GET'])
