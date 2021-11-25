@@ -22,3 +22,4 @@ application/checks/tests/test_files
 application/decoded.json
 application/test_send.py
 *.txt
+application/ifcopenshell
