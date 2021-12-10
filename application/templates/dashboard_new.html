@@ -155,6 +155,9 @@
                 var table = document.getElementById("saved_models");
                 var nCols = Object.keys(toColumnComplete).length;
                 var unsavedConcat=""; 
+                var modelIds = [];
+                var codeToId = {};
+              
 
                 for(var i=0;i<savedModels.length;i++){
 
@@ -203,23 +206,89 @@
                     else{
                         console.log("unsaved");
                         unsavedConcat += savedModels[i].code;
+                        modelIds.push(savedModels[i].id);
+
+
                         row.cells[toColumnUncomplete["stop"]].innerHTML = "Stop";
 
+                        
+                        const newDiv = document.createElement("div");
+                        newDiv.className = "progress"
+                        const barDiv = document.createElement("div");
+                        barDiv.id = "bar"+ savedModels[i].id;
+                        barDiv.className = "bar";
+                        newDiv.appendChild(barDiv)
+                        row.cells[toColumnUncomplete["progress"]].appendChild(newDiv);
 
+                        row.cells[toColumnUncomplete["advancement"]].innerHTML = savedModels[i].progress;
+                        row.cells[toColumnUncomplete["advancement"]].id = "percentage" + savedModels[i].id ;
+                        codeToId[savedModels[i].code] = savedModels[i].id;
 
                     }
 
                 }
+                
 
-               
+
+                function final(progress){
+                    console.log("final prog", progress);
+                    //Visually complete one last time every bar and progress
+                    //TODO clean 
+                    for(var j=0;j<progress.length;j++){
+                        var str2 = unsavedConcat;
+                        var modelCode2 = str2.match(/.{1,32}/g)
+                        var id2 = codeToId[modelCode2[j]]
+                        var percentage2 = document.getElementById("percentage" + id2)
+                        var bar2 = document.getElementById("bar" + id2);
+                        percentage2.innerHTML = "100" + "%";
+                        bar2.style.width = 100 * 2 + 'px';
+                        
+                    }
+                
+                }
+
+
+        
                 function poll(unsavedConcat){
+
+                
                     fetch("/valprog/"+unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
-                        setTimeout(poll, 1000);
+                        for(var i=0;i<r.progress.length;i++){
+                            var str = unsavedConcat;
+                            var modelCode = str.match(/.{1,32}/g)
+                            var id = codeToId[modelCode[i]]
+                            var percentage = document.getElementById("percentage" + id)
+                            var bar = document.getElementById("bar" + id)
+
+                            if(r.progress[i] < 100 ){
+                                percentage.innerHTML = r.progress[i] + "%";
+
+                            }
+
+                            else{
+                                
+                                percentage.innerHTML = "100" + "%";
+                                bar.style.width = 100 * 2 + 'px';
+                                var table = document.getElementById("saved_models");
+                                // table.rows[id].cells[0].innerHTML = "test";
+
+                                if(r.progress.reduce((a, b) => a + b, 0) == r.progress.length*100){
+                                    return final(r.progress);
+                                }
+                            }
+
+                            bar.style.width = r.progress[i] * 2 + 'px';
+
+                        }
+
+
+                        setTimeout(poll(unsavedConcat), 1000);
 
                         });
 
                 }
-                
+
+
                 if(unsavedConcat){
                     console.log("/valprog/"+unsavedConcat);
                     poll(unsavedConcat);
@@ -229,195 +298,6 @@
             </script>
 
 
-
-            {% for model in saved_models %}
-
-                {% set icons = {'v':'valid', 'w':'warning', 'i':'invalid', 'n':'not'} %} 
-                {% if model.progress < 100 %}
-                    {% set percentageid = "percentage" + loop.index0|string %}
-                    {% set barid = "bar" + loop.index0|string %}
-                    {% set fn = model.filename %}
-                    
-                   
-
-                    <tr style="background-color:#ffffe6">
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><img src="/static/icons/ifc.png" /></td>
-
-                        <td id ="filename" style="color:royalblue;font-weight: bold;">{{fn}}</td>
-                        <td></td>
-                        <td>
-
-                            <div class='progress'>
-                                <div id={{barid}} class='bar'></div>
-                            </div>
-
-                        </td>
-                        <td>
-                            <div id={{percentageid}} class='percentage' style="color:rgb(105, 125, 239);"></div>
-                        </td>
-                        <td style="color:rgb(224, 101, 101); font-weight: bold;">Stop</td>
-
-                        <td>{{model.geometries}}</td>
-                        <td>Test</td>
-
-                        <td>
-                        {% if model.license != None%}
-                            <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
-                                <option value="private" >private</option>
-                                <option value="CC">CC</option>
-                                <option value="MIT">MIT</option>
-                                <option value="GPL">GPL</option>
-                            </select>
-                        
-                        
-                    
-                        {% else %}
-
-                        <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
-                            {% if model.license == "private" %}
-                                <option value="private" selected >private</option>
-                            {% else %}
-                                <option value="private" >private</option>
-                            {% endif %}
-
-                            {% if model.license == "CC" %}
-                                <option value="CC" selected >CC</option>
-                            {% else %}
-                                <option value="CC">CC</option>
-                            {% endif %}
-
-                            {% if model.license == "MIT" %}
-                                <option value="MIT" selected >MIT</option>
-                            {% else %}
-                                <option value="MIT" >MIT</option>
-                            {% endif %}
-
-                            {% if model.license == "GPL" %}
-                                <option value="GPL" selected >GPL</option>
-                            {% else %}
-                                <option value="GPL" >GPL</option>
-                            {% endif %}
-                        </select>
-
-                        
-                        {% endif %} 
-
-                        </td>
-                        <td style ="text-align:center;">
-                            {% if model.hours!= None %}
-                                <input type="text" id="hours" value={{model.hours}} style="width:20%;" onchange="sendInfo()">
-                            
-                            {% else %}
-                                <input type="text" id="hours" style="width:20%;" onchange="sendInfo()">
-                            {% endif %} 
-                        </td>
-                        <td>
-                            {% if model.details != None %}
-                            <input type="text" id="details" value={{model.details}} onchange="sendInfo()">
-                            {% else %}
-                                <input type="text" id="details" onchange="sendInfo()">
-                            {% endif %} 
-                            
-                        </td>
-                    </tr>
-
-                {% else %}
-
-                    <tr>
-                        <td>
-                            <img src="/static/icons/{{icons[model.status_syntax]}}.png">
-                        </td>
-                        <td>
-                            <img src="/static/icons/{{icons[model.status_schema]}}.png">
-                        </td>
-                        <td>
-                            <img src="/static/icons/{{icons[model.status_mvd]}}.png">
-                        </td>
-                        <td>
-                            <img src="/static/icons/{{icons[model.status_bsdd]}}.png">
-                        </td>
-                        <td>
-                            <img src="/static/icons/{{icons[model.status_ids]}}.png">
-                        </td>
-                        
-
-                        <td><img src="/static/icons/ifc.png" /></td>
-
-                        <td style="color:royalblue;font-weight: bold;">{{model.filename}}</td>
-                        
-                        <td>
-                            <a id="report" style="color: rgb(0, 112, 192); font-weight: bold;text-decoration: none;">View report</a>
-                        </td>
-                        <td>{{model.date}}</td>
-                        <td style="color:rgb(105, 125, 239); font-weight: bold;">Download</td>
-                        <td style="color:rgb(224, 101, 101); font-weight: bold;">Delete</td>
-                        <td>{{model.number_of_geometries}}</td>
-                        <td>{{model.number_of_properties}}</td>
-
-                        
-                        <td>
-                            <select name="licenses" id="licenses" onchange="sendInfo2(this,'licenses','{{loop.index0}}')">
-                                {% if model.license == "private" %}
-                                    <option value="private" selected >private</option>
-                                {% else %}
-                                    <option value="private" >private</option>
-                                {% endif %}
-
-                                {% if model.license == "CC" %}
-                                    <option value="CC" selected >CC</option>
-                                {% else %}
-                                    <option value="CC">CC</option>
-                                {% endif %}
-
-                                {% if model.license == "MIT" %}
-                                    <option value="MIT" selected >MIT</option>
-                                {% else %}
-                                    <option value="MIT" >MIT</option>
-                                {% endif %}
-
-                                {% if model.license == "GPL" %}
-                                    <option value="GPL" selected >GPL</option>
-                                {% else %}
-                                    <option value="GPL" >GPL</option>
-                                {% endif %}
-                            </select>
-            
-                        </td>
-
-
-                    
-
-
-                        <td style ="text-align:center;">
-                            {% if model.hours != None %}
-                                <input type="text" id="details" style="width: 20%; " value= "{{model.hours}}"  onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
-                            {% else %}
-                                <input type="text" id="details" style="width: 20%; text-align: center;" value="" onchange="sendInfo2(this,'hours', '{{loop.index0}}')">
-                            {% endif %}
-                        </td>
-
-
-                        
-                        <td>
-                            {% if model.details != None %}
-                                <input type="text" id="details" value= "{{model.details}}" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
-                            {% else %}
-                                <input type="text" id="details" value="" onchange="sendInfo2(this,'details', '{{loop.index0}}')">
-                            {% endif %}
-                        </td>
-
-
-                    </tr>
-
-                {% endif %}
-
-
-            {% endfor %}
 
         </table>
     </div>
