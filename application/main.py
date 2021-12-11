@@ -591,6 +591,23 @@ def register_info_input(ids, number, user_id):
     
 
 
+@application.route('/updateinfo2/<code>', methods=['POST'])
+def updateinfo2(code):
+    print('updating info')
+    session = database.Session()
+    model = session.query(database.model).filter(database.model.code == code).all()[0]
+
+    data =  request.get_data()
+
+    #import pdb;pdb.set_trace()
+    decoded_data = ast.literal_eval(data.decode("utf-8"))
+    model.hours = decoded_data["hours"]
+    session.commit()
+    session.close()
+    return jsonify({"progress":data.decode("utf-8")})
+
+
+
 @application.route('/update_info_saved/<number>/<user_id>', methods=['POST'])
 def update_info_input(number, user_id):
 
