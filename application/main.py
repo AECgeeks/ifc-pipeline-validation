@@ -826,6 +826,16 @@ def view_report(id,ids,fn):
     return render_template('new_report.html', info=info, fn=fn, bsdd_result=bsdd_result, ids_result = ids_to_pass, config=config)
 
 
+@application.route('/download/<id>', methods=['GET'])
+def download_model(id):
+    session = database.Session()
+    model = session.query(database.model).filter(database.model.id == id).all()[0]
+    code = model.code
+    path = utils.storage_file_for_id(code, "ifc")
+
+    return send_file(path,attachment_filename=model.filename, as_attachment=True)
+
+
 
 @application.route('/m/<fn>', methods=['GET'])
 def get_model(fn):

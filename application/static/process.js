@@ -170,38 +170,25 @@ for (var i = 0; i < savedModels.length; i++) {
         row.cells[toColumnComplete["report"]].innerHTML = "View report";
         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
 
-        row.cells[toColumnComplete["download"]].innerHTML = "Download";
+        
+        
+
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Download");
+        a.appendChild(linkText);
+        a.title = "Download";
+
+        var splittedLocation = window.location.href.split("/");
+        var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
+        a.href = "/download/" +  savedModels[i].id.toString();
+        row.cells[toColumnComplete["download"]].appendChild(a);
+
+        
         row.cells[toColumnComplete["delete"]].innerHTML = "Delete";
 
         row.cells[toColumnComplete["geoms"]].innerHTML = savedModels[i].number_of_geometries;
         row.cells[toColumnComplete["props"]].innerHTML = savedModels[i].number_of_properties;
 
-        // var licenseSelect = document.createElement("SELECT");
-        
-
-        // var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-        // for (const license of licensTypes) {
-        //     var option = document.createElement("option");
-        //     option.text = license;
-        //     licenseSelect.add(option);
-        // }
-
-        // licenseSelect.id = "license_"+savedModels[i].code;
-        // licenseSelect.addEventListener("change", sendInfo);
-        // licenseSelect.value = savedModels[i].license
-        // row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
-
-        // var hoursInput = document.createElement("INPUT");
-        // hoursInput.id = "hours_"+savedModels[i].code
-        // hoursInput.addEventListener("change", sendInfo);
-        // hoursInput.value = savedModels[i].hours;
-        // row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
-
-        // var detailsInput = document.createElement("INPUT");
-        // detailsInput.id = "details_"+savedModels[i].code
-        // detailsInput.addEventListener("change", sendInfo);
-        // detailsInput.value = savedModels[i].details        
-        // row.cells[toColumnComplete["details"]].appendChild(detailsInput);
 
     }
 
@@ -225,27 +212,6 @@ for (var i = 0; i < savedModels.length; i++) {
         row.cells[toColumnUncomplete["advancement"]].innerHTML = savedModels[i].progress;
         row.cells[toColumnUncomplete["advancement"]].id = "percentage" + savedModels[i].id;
         codeToId[savedModels[i].code] = savedModels[i].id;
-
-
-        // var licenseSelect = document.createElement("SELECT");
-        // row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
-
-        // var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-        // for (const license of licensTypes) {
-        //     var option = document.createElement("option");
-        //     option.text = license;
-        //     licenseSelect.add(option);
-        // }
-
-        // var hoursInput = document.createElement("INPUT");
-        // var detailsInput = document.createElement("INPUT");
-      
-        // row.cells[toColumnComplete["details"]].appendChild(detailsInput);
-
-        // hoursInput.id = "hours_"+savedModels[i].code
-        // hoursInput.addEventListener("change", sendInfo);
-        // row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
-
 
 
     }
