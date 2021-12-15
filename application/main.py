@@ -601,7 +601,12 @@ def updateinfo2(code):
 
     #import pdb;pdb.set_trace()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
-    model.hours = decoded_data["hours"]
+
+    property = decoded_data["type"]
+    #model.hours = decoded_data[property]
+    setattr(model, property, decoded_data["val"])
+
+
     session.commit()
     session.close()
     return jsonify({"progress":data.decode("utf-8")})

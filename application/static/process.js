@@ -1,43 +1,17 @@
 
 
-function sendInfo2(box, boxtype, index) {
-    var element = event.srcElement;
-
-    var data;
-    var i = parseInt(index);
-
-
-    if (boxtype == "licenses") {
-        data = { type: "licenses", license: element.value, n: i, from: "saved" };
-    }
-    if (boxtype == "hours") {
-        data = { type: "hours", hours: element.value, n: i, from: "saved" };
-    }
-    if (boxtype == "details") {
-        data = { type: "details", details: element.value, n: i, from: "saved" };
-    }
-
-
-    fetch("/update_info_saved/" + i.toString() + "/{{user_id}}", {
-        method: "POST",
-        body: JSON.stringify(data)
-    }).then(function (r) { return r.json(); }).then(function (r) {
-        console.log(r);
-    })
-
-
-
-}
 
 
 function sendInfo(index = null) {
     //debugger;
     console.log(this)
-    var data;
 
-    data = { type: "hours", details: this.value, n: i, hours:this.value };
+    var property = event.srcElement.id.split('_')[0];
+    var modelCode = event.srcElement.id.split('_')[1];
+   
+    var data = { type: property, val: this.value, n: i };
 
-    var modelCode = event.srcElement.id.split('_')[1]
+    
 
     fetch("/updateinfo2/" + modelCode, {
         method: "POST",
@@ -160,6 +134,36 @@ for (var i = 0; i < savedModels.length; i++) {
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
     row.cells[toColumnComplete["file_name"]].innerHTML = savedModels[i].filename;
 
+    var licenseSelect = document.createElement("SELECT");
+        
+
+    var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
+    for (const license of licensTypes) {
+        var option = document.createElement("option");
+        option.text = license;
+        licenseSelect.add(option);
+    }
+
+    licenseSelect.id = "license_"+savedModels[i].code;
+    licenseSelect.addEventListener("change", sendInfo);
+    licenseSelect.value = savedModels[i].license
+    row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
+
+    var hoursInput = document.createElement("INPUT");
+    hoursInput.id = "hours_"+savedModels[i].code
+    hoursInput.addEventListener("change", sendInfo);
+    hoursInput.value = savedModels[i].hours;
+    row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
+
+    var detailsInput = document.createElement("INPUT");
+    detailsInput.id = "details_"+savedModels[i].code
+    detailsInput.addEventListener("change", sendInfo);
+    detailsInput.value = savedModels[i].details        
+    row.cells[toColumnComplete["details"]].appendChild(detailsInput);
+
+
+
+
     if (savedModels[i].progress == 100) {
 
 
@@ -172,20 +176,32 @@ for (var i = 0; i < savedModels.length; i++) {
         row.cells[toColumnComplete["geoms"]].innerHTML = savedModels[i].number_of_geometries;
         row.cells[toColumnComplete["props"]].innerHTML = savedModels[i].number_of_properties;
 
-        var licenseSelect = document.createElement("SELECT");
-        row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
+        // var licenseSelect = document.createElement("SELECT");
+        
 
-        var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-        for (const license of licensTypes) {
-            var option = document.createElement("option");
-            option.text = license;
-            licenseSelect.add(option);
-        }
+        // var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
+        // for (const license of licensTypes) {
+        //     var option = document.createElement("option");
+        //     option.text = license;
+        //     licenseSelect.add(option);
+        // }
 
-        var hoursInput = document.createElement("INPUT");
-        var detailsInput = document.createElement("INPUT");
-        row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
-        row.cells[toColumnComplete["details"]].appendChild(detailsInput);
+        // licenseSelect.id = "license_"+savedModels[i].code;
+        // licenseSelect.addEventListener("change", sendInfo);
+        // licenseSelect.value = savedModels[i].license
+        // row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
+
+        // var hoursInput = document.createElement("INPUT");
+        // hoursInput.id = "hours_"+savedModels[i].code
+        // hoursInput.addEventListener("change", sendInfo);
+        // hoursInput.value = savedModels[i].hours;
+        // row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
+
+        // var detailsInput = document.createElement("INPUT");
+        // detailsInput.id = "details_"+savedModels[i].code
+        // detailsInput.addEventListener("change", sendInfo);
+        // detailsInput.value = savedModels[i].details        
+        // row.cells[toColumnComplete["details"]].appendChild(detailsInput);
 
     }
 
@@ -211,24 +227,24 @@ for (var i = 0; i < savedModels.length; i++) {
         codeToId[savedModels[i].code] = savedModels[i].id;
 
 
-        var licenseSelect = document.createElement("SELECT");
-        row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
+        // var licenseSelect = document.createElement("SELECT");
+        // row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
 
-        var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-        for (const license of licensTypes) {
-            var option = document.createElement("option");
-            option.text = license;
-            licenseSelect.add(option);
-        }
+        // var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
+        // for (const license of licensTypes) {
+        //     var option = document.createElement("option");
+        //     option.text = license;
+        //     licenseSelect.add(option);
+        // }
 
-        var hoursInput = document.createElement("INPUT");
-        var detailsInput = document.createElement("INPUT");
+        // var hoursInput = document.createElement("INPUT");
+        // var detailsInput = document.createElement("INPUT");
       
-        row.cells[toColumnComplete["details"]].appendChild(detailsInput);
+        // row.cells[toColumnComplete["details"]].appendChild(detailsInput);
 
-        hoursInput.id = "hours_"+savedModels[i].code
-        hoursInput.addEventListener("change", sendInfo);
-        row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
+        // hoursInput.id = "hours_"+savedModels[i].code
+        // hoursInput.addEventListener("change", sendInfo);
+        // row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
 
 
 
