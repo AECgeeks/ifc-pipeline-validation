@@ -126,6 +126,10 @@ for (var i = 0; i < savedModels.length; i++) {
     for (var col = 0; col < nCols; col++) {
         row.insertCell(col);
     }
+
+
+
+  
     var ifcLogo = document.createElement("IMG");
     ifcLogo.src = "/static/icons/ifc.png";
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
@@ -165,6 +169,22 @@ for (var i = 0; i < savedModels.length; i++) {
 
     if (savedModels[i].progress == 100) {
 
+
+        var checks_type = ["syntax","schema","mvd","bsdd","ids"];
+        var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
+        for(var j=0;j<checks_type.length;j++){
+            var attr = "status_"+checks_type[j];
+            var status_result = savedModels[i][attr];
+            var icon = icons[status_result];
+            var img = document.createElement("IMG");
+            console.log( "test", "/static/icons/" + icon + ".png");
+            img.src = "/static/icons/" + icon + ".png";
+            row.cells[toColumnComplete[checks_type[j]]].appendChild(img);
+    
+        }
+        
+
+        row.cells[toColumnComplete["report"]].innerHTML = "View report";
 
         row.cells[toColumnComplete["report"]].innerHTML = "View report";
         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
