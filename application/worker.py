@@ -153,14 +153,14 @@ class bsdd_validation_task(task):
 
         
         print(directory)
-        check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd.py")
+        check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd_2.py")
         outname = id +"_bsdd.txt"
 
         # with open(os.path.join(directory, outname), "w") as f:
         #     subprocess.call([sys.executable, check_program, id + ".ifc"],cwd=directory,stdout=f)
 
         
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", validation_task_id], cwd=directory, stdout=subprocess.PIPE)
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
         i = 0
         while True:
             ch = proc.stdout.read(1)

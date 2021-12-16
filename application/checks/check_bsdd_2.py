@@ -8,10 +8,6 @@ from helper import database
 
 
 
-ifc_fn = sys.argv[1]
-ifc_file = ifcopenshell.open(ifc_fn)
-
-task_id = 0
 
 
 def get_classification_object(uri):
@@ -70,63 +66,97 @@ def validate_instance(constraint,ifc_file, instance):
         return {"constraint":constraint,"result":result}
 
 
-for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
-    related_objects = rel.RelatedObjects
-    relating_classification = rel.RelatingClassification
+ifc_fn = sys.argv[1]
+ifc_file = ifcopenshell.open(ifc_fn)
 
-    bsdd_response = validate_ifc_classification_reference(relating_classification)
-    
-    for instance in related_objects:
+task_id = 0
 
-        session = database.Session()
-        instance = database.ifc_instance(instance.GlobalId, instance.is_a(), 1)
-        session.add(instance)
-        session.flush()
-        instance_id = instance.id
-        session.commit()
-        session.close()
+import numpy as np
 
-        # This variable will contain all the information 
-        # about the validation result of an entity instance
-        bsdd_result = {"task_id":0,
-                            "instance_id":0,
-                            "bsdd_classification_uri":0,
-                            "bsdd_property_uri":0,
-                            "bsdd_property_constraint":0,
-                            "bsdd_type_constraint":0,
-                            "ifc_property_set":0,
-                            "ifc_property_name":0,
-                            "ifc_property_type":0,
-                            "ifc_property_value":0
-                            }
+n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
 
-        if bsdd_response:
-            if has_specifications(json.loads(bsdd_response.text)):
-                specifications = json.loads(bsdd_response.text)["classificationProperties"]
+if n:
+    rnd_array = np.random.multinomial(100, np.ones(n)/n, size=1)[0]
+    for idx, rel in enumerate(ifc_file.by_type("IfcRelAssociatesClassification")):
 
-                for constraint in specifications:
+        sys.stdout.write(rnd_array[idx] * ".")
+        sys.stdout.flush()
 
-                    # Validation of the instance
-                    
-                    constraint_content = json.loads(bsdd_response.text)
 
-                    # Store everything in DB
-                    bsdd_result["task_id"] = task_id
-                    
-                    # Should create instance entry
-                    bsdd_result["instance_id"] = instance_id
+        related_objects = rel.RelatedObjects
+        relating_classification = rel.RelatingClassification
 
-                    bsdd_result["bsdd_classification_uri"] = constraint_content["namespaceUri"]
-                    bsdd_result["bsdd_type_constraint"] = ";".join(constraint_content["relatedIfcEntityNames"])
-                    bsdd_result["bsdd_property_constraint"] = json.dumps(constraint)
-                    bsdd_result["bsdd_property_uri"] = constraint["propertyNamespaceUri"]
+        bsdd_response = validate_ifc_classification_reference(relating_classification)
+        
+        for instance in related_objects:
 
-                    results = validate_instance(constraint, ifc_file, instance)
-                    bsdd_result["ifc_property_set"] = results["result"]["pset_name"]
-                    bsdd_result["ifc_property_name"] = results["result"]["property_name"]
-                    bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
-                    bsdd_result["ifc_property_value"] = results["result"]["value"]
+            session = database.Session()
+            instance = database.ifc_instance(instance.GlobalId, instance.is_a(), 1)
+            session.add(instance)
+            session.flush()
+            instance_id = instance.id
+            session.commit()
+            session.close()
 
+            # This variable will contain all the information 
+            # about the validation result of an entity instance
+            bsdd_result = {"task_id":0,
+                                "instance_id":0,
+                                "bsdd_classification_uri":0,
+                                "bsdd_property_uri":0,
+                                "bsdd_property_constraint":0,
+                                "bsdd_type_constraint":0,
+                                "ifc_property_set":0,
+                                "ifc_property_name":0,
+                                "ifc_property_type":0,
+                                "ifc_property_value":0
+                                }
+
+            if bsdd_response:
+                if has_specifications(json.loads(bsdd_response.text)):
+                    specifications = json.loads(bsdd_response.text)["classificationProperties"]
+
+                    for constraint in specifications:
+
+                        # Validation of the instance
+                        
+                        constraint_content = json.loads(bsdd_response.text)
+
+                        # Store everything in DB
+                        bsdd_result["task_id"] = task_id
+                        
+                        # Should create instance entry
+                        bsdd_result["instance_id"] = instance_id
+
+                        bsdd_result["bsdd_classification_uri"] = constraint_content["namespaceUri"]
+                        bsdd_result["bsdd_type_constraint"] = ";".join(constraint_content["relatedIfcEntityNames"])
+                        bsdd_result["bsdd_property_constraint"] = json.dumps(constraint)
+                        bsdd_result["bsdd_property_uri"] = constraint["propertyNamespaceUri"]
+
+                        results = validate_instance(constraint, ifc_file, instance)
+                        bsdd_result["ifc_property_set"] = results["result"]["pset_name"]
+                        bsdd_result["ifc_property_name"] = results["result"]["property_name"]
+                        bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
+                        bsdd_result["ifc_property_value"] = results["result"]["value"]
+
+                        session = database.Session()
+                        db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
+
+                        for key, value in bsdd_result.items():
+                            setattr(db_bsdd_result, key, value) 
+
+                        session.add(db_bsdd_result)
+                        session.commit()
+                        session.close()
+
+            
+
+
+                        pass
+                else:
+                    # Record NULL in other fields
+                    bsdd_result["bsdd_property_constraint"] = "no constraint"
+                                    
                     session = database.Session()
                     db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
@@ -137,14 +167,11 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                     session.commit()
                     session.close()
 
-        
-
-
                     pass
             else:
-                # Record NULL in other fields
-                bsdd_result["bsdd_property_constraint"] = "no constraint"
-                                   
+                # Record NULL everywhere in bsdd_result
+                bsdd_result["bsdd_classification_uri"] = "classification not found"
+                                
                 session = database.Session()
                 db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
@@ -156,21 +183,6 @@ for rel in ifc_file.by_type("IfcRelAssociatesClassification"):
                 session.close()
 
                 pass
-        else:
-            # Record NULL everywhere in bsdd_result
-            bsdd_result["bsdd_classification_uri"] = "classification not found"
-                               
-            session = database.Session()
-            db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
-
-            for key, value in bsdd_result.items():
-                setattr(db_bsdd_result, key, value) 
-
-            session.add(db_bsdd_result)
-            session.commit()
-            session.close()
-
-            pass
 
     
 

@@ -56,8 +56,6 @@ import database
 import worker
 
 
-
-
 def send_simple_message(msg_content):
         dom = os.getenv("MG_DOMAIN")
         base_url = f"https://api.mailgun.net/v3/{dom}/messages"
@@ -72,8 +70,6 @@ def send_simple_message(msg_content):
             "to": [email],
             "subject": "License update",
             "text": msg_content})
-
-
 
 
 application = Flask(__name__)
