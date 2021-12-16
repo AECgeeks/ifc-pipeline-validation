@@ -31,7 +31,9 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
 import os
+import datetime
 from sqlalchemy.pool import StaticPool
+
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
@@ -51,16 +53,19 @@ Base = declarative_base()
 class Serializable(object):
     def serialize(self):
         d = {}
+        
         for attribute in inspect(self).attrs.keys():
             if isinstance(getattr(self, attribute), (list, tuple)):
                 d[attribute] = []
                 for element in getattr(self, attribute):
                     d[attribute].append(element.id)
             else:
-                d[attribute] = getattr(self, attribute)
 
-        # import pdb; pdb = pdb.set_trace()
-        # return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
+                if isinstance(getattr(self, attribute), datetime.datetime):
+                    d[attribute] = getattr(self, attribute).strftime("%Y-%m-%d %H:%M:%S")
+                else:
+                    d[attribute] = getattr(self, attribute)
+
         return d
 
 
