@@ -30,7 +30,7 @@ function completeTable(i) {
 
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
 
-        console.log(r["results"]['bsddlog']);
+        
 
         var syntaxImg = document.createElement("img");
         syntaxImg.src = "/static/icons/" + icons[r["results"]['syntaxlog']] + ".png";
@@ -177,7 +177,6 @@ for (var i = 0; i < savedModels.length; i++) {
             var status_result = savedModels[i][attr];
             var icon = icons[status_result];
             var img = document.createElement("IMG");
-            console.log( "test", "/static/icons/" + icon + ".png");
             img.src = "/static/icons/" + icon + ".png";
             row.cells[toColumnComplete[checks_type[j]]].appendChild(img);
     
@@ -245,7 +244,10 @@ function poll(unsavedConcat) {
             var percentage = document.getElementById("percentage" + id)
             var bar = document.getElementById("bar" + id)
 
-
+            var file_row = document.getElementById(id)
+            file_row.cells[toColumnUncomplete["geoms"]].innerHTML= r["file_info"][0]["number_of_geometries"]
+            file_row.cells[toColumnUncomplete["props"]].innerHTML= r["file_info"][0]["number_of_properties"]
+          
             if (r.progress[i] === 100) {
 
                 if (!registered.has(i)) {
