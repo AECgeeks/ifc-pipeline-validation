@@ -3,7 +3,6 @@
 
 
 function sendInfo(index = null) {
-    //debugger;
     console.log(this)
 
     var property = event.srcElement.id.split('_')[0];
@@ -169,9 +168,6 @@ for (var i = 0; i < savedModels.length; i++) {
 
         row.cells[toColumnComplete["report"]].innerHTML = "View report";
         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
-
-        
-        
 
         var a = document.createElement('a');
         var linkText = document.createTextNode("Download");

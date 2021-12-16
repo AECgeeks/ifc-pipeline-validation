@@ -513,6 +513,9 @@ def validate_files(id, user_id):
         session.close()
 
     saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()[::-1]
+
+
+
     #import pdb;pdb.set_trace()
 
     return render_template('dashboard_new.html',user_id=user_id, saved_models=saved_models, n_files=n_files, id=id)

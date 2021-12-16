@@ -50,7 +50,18 @@ Base = declarative_base()
 
 class Serializable(object):
     def serialize(self):
-        return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
+        d = {}
+        for attribute in inspect(self).attrs.keys():
+            if isinstance(getattr(self, attribute), (list, tuple)):
+                d[attribute] = []
+                for element in getattr(self, attribute):
+                    d[attribute].append(element.id)
+            else:
+                d[attribute] = getattr(self, attribute)
+
+        # import pdb; pdb = pdb.set_trace()
+        # return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
+        return d
 
 
 class user(Base, Serializable):
