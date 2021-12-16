@@ -55,6 +55,27 @@ import utils
 import database
 import worker
 
+
+
+
+def send_simple_message(msg_content):
+        dom = os.getenv("MG_DOMAIN")
+        base_url = f"https://api.mailgun.net/v3/{dom}/messages"
+        from_ = f"Validation Service <bsdd_val@{dom}>"
+        email = os.getenv("MG_EMAIL")
+
+        return requests.post(
+        base_url,
+        auth=("api", os.getenv("MG_KEY")),
+
+        data={"from": from_,
+            "to": [email],
+            "subject": "License update",
+            "text": msg_content})
+
+
+
+
 application = Flask(__name__)
 dropzone = Dropzone(application)
 
@@ -599,7 +620,7 @@ def updateinfo2(code):
     print('updating info')
     session = database.Session()
     model = session.query(database.model).filter(database.model.code == code).all()[0]
-
+    original_license = model.license
     data =  request.get_data()
 
     #import pdb;pdb.set_trace()
@@ -610,8 +631,16 @@ def updateinfo2(code):
     setattr(model, property, decoded_data["val"])
 
 
+    user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
+    
+
+    if decoded_data["type"] == "license":
+        send_simple_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
+
     session.commit()
     session.close()
+
+
     return jsonify({"progress":data.decode("utf-8")})
 
 
