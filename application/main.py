@@ -38,7 +38,7 @@ from redis.client import parse_client_list
 from sqlalchemy.ext import declarative
 
 from werkzeug import datastructures
-from flask_dropzone import Dropzone
+
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, session, send_file, render_template, abort, jsonify, redirect, url_for, make_response
@@ -73,12 +73,6 @@ def send_simple_message(msg_content):
 
 
 application = Flask(__name__)
-dropzone = Dropzone(application)
-
-
-# Trying to fix the secret key issue
-application.config['SESSION_TYPE'] = 'filesystem'
-application.config['SECRET_KEY'] = 'O5vB0ishUSFmXhyOGGk0zZJgcXhVnc2M6dZLHXzBoxo'
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 

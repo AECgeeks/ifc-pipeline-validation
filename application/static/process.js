@@ -245,8 +245,8 @@ function poll(unsavedConcat) {
             var bar = document.getElementById("bar" + id)
 
             var file_row = document.getElementById(id)
-            file_row.cells[toColumnUncomplete["geoms"]].innerHTML= r["file_info"][0]["number_of_geometries"]
-            file_row.cells[toColumnUncomplete["props"]].innerHTML= r["file_info"][0]["number_of_properties"]
+            file_row.cells[toColumnUncomplete["geoms"]].innerHTML= r["file_info"][i]["number_of_geometries"]
+            file_row.cells[toColumnUncomplete["props"]].innerHTML= r["file_info"][i]["number_of_properties"]
           
             if (r.progress[i] === 100) {
 
