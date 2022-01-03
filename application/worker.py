@@ -321,15 +321,15 @@ def do_process(id, validation_config, ids_spec):
     for task, to_validate in validation_config["config"].items():
        
         if int(to_validate):
-            if task == 'syntax':
+            if task == 'syntax' and to_validate:
                 tasks.append(syntax_validation_task)
-            elif task == 'schema':
+            elif task == 'schema' and to_validate:
                 tasks.append(ifc_validation_task)
-            elif task == 'mvd':
+            elif task == 'mvd' and to_validate:
                 tasks.append(mvd_validation_task)
-            elif task == 'bsdd':
+            elif task == 'bsdd' and to_validate:
                 tasks.append(bsdd_validation_task)
-            elif task =='ids':
+            elif task =='ids' and to_validate:
                 tasks.append(ids_validation_task)
 
     

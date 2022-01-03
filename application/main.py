@@ -75,8 +75,6 @@ def send_simple_message(msg_content):
 application = Flask(__name__)
 dropzone = Dropzone(application)
 
-# application.config['DROPZONE_UPLOAD_MULTIPLE'] = True
-# application.config['DROPZONE_PARALLEL_UPLOADS'] = 3
 
 # Trying to fix the secret key issue
 application.config['SESSION_TYPE'] = 'filesystem'
@@ -374,6 +372,8 @@ def put_main():
 
     extensions = set()
 
+
+    # import pdb;pdb.set_trace()
     for key, f in request.files.items():
         
         if key.startswith('file'):
@@ -384,14 +384,17 @@ def put_main():
                 extensions.add('xml')
             if file.filename.endswith('.ifc'):
                 extensions.add('ifc')
-           
+          
     val_config = request.form.to_dict()
+    
     val_results = {k + "log":'n' for (k,v) in val_config.items() if k != "user"}
     
     validation_config = {}
     validation_config["config"] = val_config
     del val_config["user"]
     validation_config["results"] = val_results
+
+    # import pdb;pdb.set_trace()
 
     
     if VALIDATION:
@@ -430,6 +433,8 @@ def put_main2(test):
     files = []
 
     extensions = set()
+
+    
 
     for key, f in request.files.items():
         if key.startswith('file'):

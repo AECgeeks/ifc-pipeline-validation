@@ -5,6 +5,8 @@
     <title>buildingSMART IFC Validation Service</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 
     <script>
         var isIE = !!window.MSInputMethodContext;
@@ -14,15 +16,14 @@
     </script>
 
     <script>
-        var decoded = {{decoded|tojson}}
+        var decoded = {{ decoded| tojson}}
         console.log(decoded);
 
 
-        function goToDashboard(){
+        function goToDashboard() {
             var st = window.location.href;
-
             var baseUrl = st.split('/')[2];
-            var url = "/dashboard/"+ decoded['aud'];
+            var url = "/dashboard/" + decoded['aud'];
             console.log(url)
             window.location = url;
         }
@@ -30,49 +31,6 @@
     </script>
 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='index.css') }}">
-
-    {{ dropzone.load_css() }}
-    {{ dropzone.style('border: 2px dashed #0087F7; min-height: 20vh;') }}
-
-    <style>
-        .dropzone .dz-preview .dz-image {
-            width: 100%;
-            background: #eee !important;
-            border: solid 1px #ddd;
-        }
-
-
-        .dropzone .dz-preview .dz-details .dz-size {
-            margin-bottom: 2em;
-        }
-
-        .dz-message {
-            font-family: Calibri;
-        }
-
-        .dropzone .dz-preview .dz-progress {
-            width: 80%;
-            margin-left: -40%;
-
-        }
-
-        .dropzone * {
-            border-radius: 0 !important;
-        }
-
-
-        .dropzone {
-            border: 2px dashed #bbb;
-            border-radius: 20px;
-            background: #fafafa;
-            width: 100%;
-        }
-
-        .dropzone .dz-preview .dz-details .dz-filename span,
-        .dropzone .dz-preview .dz-details .dz-size span {
-            background: none;
-        }
-    </style>
 
 <body>
 
@@ -87,8 +45,9 @@
             <div id="logo" style="margin-right:10px; display: flex;flex-direction: row; align-items: center;
             justify-content: center; align-content: space-between; gap: 12px;">
 
-            <button onclick= "goToDashboard();" style="height: 40px;width: 150px;">DASHBOARD >></button>
-                <button style="height: 50px;width: 50px;border-radius: 50%;background-image: url(static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
+                <button onclick="goToDashboard();" style="height: 40px;width: 150px;">DASHBOARD >></button>
+                <button
+                    style="height: 50px;width: 50px;border-radius: 50%;background-image: url(static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
                 <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
             </div>
 
@@ -106,12 +65,9 @@
 
             <div class="submit-area" id="ifc_tab">
 
+                <form action="{{url_for('put_main')}}" class="dropzone" id="ifc_dropzone"></form>
 
-                {{ dropzone.create('put_main') }}
 
-                {{ dropzone.load_js() }}
-
-                <script> const virgindz = document.getElementById("myDropzone");</script>
                 <div id="config">
                     <div>
                         <input type="checkbox" id="syntax_outside" name="syntax">
@@ -133,10 +89,6 @@
                         <label for="bSDD">bSDD</label>
                     </div>
 
-                    <div style="display:none;">
-                        <input type="checkbox" id="ids_outside" name="ids" disabled="disabled" >
-                        <label for="ids">IDS</label>
-                    </div>
 
                 </div>
 
@@ -147,16 +99,9 @@
 
 
             <div class="submit-area" id="ids_tab" style="display:none">
-
-
-                {{ dropzone.create('put_main') }}
+                <form action="{{url_for('put_main')}}" class="dropzone" id="ids_dropzone"></form>
                 <button class="submit-button" id="submit2">Upload IDS</button>
-
-
             </div>
-
-
-
 
             <script>
 
@@ -183,7 +128,6 @@
                     document.getElementById(tabType).style.display = "flex";
                     document.getElementById(tabType).style.flexDirection = "column";
 
-
                 }
 
             </script>
@@ -192,7 +136,87 @@
 
     </div>
 
+
     <script>
+        Dropzone.autoDiscover = false;
+        var dz = new Dropzone("#ifc_dropzone",
+            {
+                uploadMultiple: true,
+                acceptedFiles: ".ifc, .xml",
+                parallelUploads: 100,
+                maxFiles: 100,
+                maxFilesize: 8 * 1024,
+                autoProcessQueue: false,
+                addRemoveLinks: true
+            });
+
+        dz.on("addedfile", file => { console.log("new file") });
+
+        dz.on("sending", function (file, xhr, data) {
+            data.append("user", decoded["aud"]);
+            var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
+
+
+            for (var i = 0; i < validationTypes.length; i++) {
+                var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
+                console.log(checkboxOutside)
+                console.log(checkboxOutside.checked)
+                var to_check;
+                if (checkboxOutside.checked == 1) {
+                    to_check = 1;
+                }
+
+                else {
+                    to_check = 0;
+                }
+
+                data.append(validationTypes[i], to_check);
+
+            }
+
+
+        });
+
+
+
+        dz.on("success", function (file, response) {
+            console.log("new file");
+            window.location = response.url;
+
+        });
+
+        var submitButton = document.querySelector("#submit");
+        submitButton.addEventListener("click", function () {
+            dz.processQueue();
+
+        });
+
+
+        var dz_ids = new Dropzone("#ids_dropzone",
+            {
+                uploadMultiple: true,
+                acceptedFiles: ".xml",
+                parallelUploads: 100,
+                maxFiles: 100,
+                maxFilesize: 8 * 1024,
+                autoProcessQueue: false,
+                addRemoveLinks: true
+            });
+
+
+        var submitButton2 = document.querySelector("#submit2");
+        submitButton2.addEventListener("click", function () {
+            dz_ids.processQueue();
+        });
+
+        dz_ids.on("sending", function (file, xhr, data) {
+            data.append("user", decoded["aud"]);
+        });
+
+    </script>
+
+
+    <!-- <script>
 
         Dropzone.prototype.defaultOptions.dictDefaultMessage = "Drop files or click here to upload";
 
@@ -271,11 +295,8 @@
 
                 });
 
-
             
                 this.on("success", function (file, response) {
-
-                    
 
                     var submitAreas = document.getElementsByClassName("submit-area");
 
@@ -343,7 +364,7 @@
 
         };
 
-    </script>
+    </script> -->
 
 
 </body>
