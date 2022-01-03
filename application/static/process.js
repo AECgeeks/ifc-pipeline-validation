@@ -71,7 +71,7 @@ function completeTable(i) {
     var baseUrl = st.split('/')[2];
     var url = "/report/" + i + "/" + unsavedConcat + "/" + fn;
 
-    repText.href = url;
+    // repText.href = url;
     rows[row_index].cells[7].appendChild(repText)
 
     rows[row_index].cells[7].style.color = "#0070C0";
