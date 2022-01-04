@@ -2,12 +2,9 @@ import ifcopenshell
 import sys 
 import requests
 import json
-
+import numpy as np
 
 from helper import database
-
-
-
 
 
 def get_classification_object(uri):
@@ -50,6 +47,7 @@ def validate_instance(constraint,ifc_file, instance):
             for property in pset.HasProperties:
                 if property.Name == constraint["specified_property_name"]:
                     print('property found')
+                    print(property.NominalValue)
                     result["property_name"] = property.Name
 
                     if isinstance(property.NominalValue, ifcopenshell.entity_instance):
@@ -62,8 +60,8 @@ def validate_instance(constraint,ifc_file, instance):
 
 
         # todo below: actually validate
-        
-        return {"constraint":constraint,"result":result}
+    import pdb;pdb.set_trace()
+    return {"constraint":constraint,"result":result}
 
 
 ifc_fn = sys.argv[1]
@@ -71,7 +69,7 @@ ifc_file = ifcopenshell.open(ifc_fn)
 
 task_id = 0
 
-import numpy as np
+
 
 n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
 
@@ -116,6 +114,7 @@ if n:
                 if has_specifications(json.loads(bsdd_response.text)):
                     specifications = json.loads(bsdd_response.text)["classificationProperties"]
 
+                    
                     for constraint in specifications:
 
                         # Validation of the instance
@@ -136,16 +135,20 @@ if n:
                         results = validate_instance(constraint, ifc_file, instance)
                         bsdd_result["ifc_property_set"] = results["result"]["pset_name"]
                         bsdd_result["ifc_property_name"] = results["result"]["property_name"]
-                        bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
+                        
+                        if not isinstance(results["result"]["datatype"], str):
+                            bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
                         bsdd_result["ifc_property_value"] = results["result"]["value"]
-
+                        
                         session = database.Session()
                         db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
                         for key, value in bsdd_result.items():
                             setattr(db_bsdd_result, key, value) 
-
+                        
+                        # import pdb;pdb.set_trace()
                         session.add(db_bsdd_result)
+                        
                         session.commit()
                         session.close()
 
