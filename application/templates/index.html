@@ -23,7 +23,7 @@
         function goToDashboard() {
             var st = window.location.href;
             var baseUrl = st.split('/')[2];
-            var url = "/dashboard/" + decoded['aud'];
+            var url = "/dashboard/" + decoded['sub'];
             console.log(url)
             window.location = url;
         }
@@ -153,7 +153,7 @@
         dz.on("addedfile", file => { console.log("new file") });
 
         dz.on("sending", function (file, xhr, data) {
-            data.append("user", decoded["aud"]);
+            data.append("user", decoded["sub"]);
             var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
 
 
@@ -210,7 +210,7 @@
         });
 
         dz_ids.on("sending", function (file, xhr, data) {
-            data.append("user", decoded["aud"]);
+            data.append("user", decoded["sub"]);
         });
 
     </script>

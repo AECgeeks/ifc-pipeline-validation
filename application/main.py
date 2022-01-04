@@ -132,7 +132,6 @@ def index():
         return redirect(url_for('login')) 
     else:
 
-        
         with open('decoded.json') as json_file:
             decoded = json.load(json_file)
 
@@ -145,8 +144,6 @@ def index():
         else:
             print(user)
         #todo: query database to send information JSON
-
-
 
         return render_template('index.html', decoded=decoded) 
         
@@ -175,9 +172,9 @@ def callback():
     decoded = jwt.decode(id_token, key=key)
     
     db_session = database.Session()
-    user = db_session.query(database.user).filter(database.user.id == decoded["aud"]).all()
+    user = db_session.query(database.user).filter(database.user.id == decoded["sub"]).all()
     if len(user) == 0:
-        db_session.add(database.user(str(decoded["aud"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
+        db_session.add(database.user(str(decoded["sub"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
         db_session.commit()
         db_session.close()
     else:
@@ -206,6 +203,7 @@ def process_upload(filewriter, callback_url=None):
         
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
         t.start()
+        
   
     else:
         q.enqueue(worker.process, id, callback_url)
@@ -235,6 +233,7 @@ def process_upload_multiple(files, callback_url=None):
     
     if DEVELOPMENT:
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
+        
         t.start()        
     else:
         q.enqueue(worker.process, id, callback_url)
@@ -357,6 +356,8 @@ def put_main():
     files = []
 
     user_id = request.form.to_dict()["user"]
+
+    # import pdb;pdb.set_trace()
 
     extensions = set()
 
@@ -540,6 +541,10 @@ def dashboard(user_id):
 
     saved_models = [model.serialize() for model in saved_models]
     #import pdb;pdb.set_trace()
+
+    # import pdb;pdb.set_trace()
+
+
     return render_template('dashboard_new.html',user_id=user_id, saved_models=saved_models)
 
 
@@ -563,7 +568,7 @@ def get_validation_progress(id):
         model_progresses.append(model.progress)
         session.close()
 
-    
+    # import pdb;pdb.set_trace()
     return jsonify({"progress": model_progresses,"filename":model.filename, "file_info":file_info})
 
 
@@ -619,6 +624,8 @@ def updateinfo2(code):
     #model.hours = decoded_data[property]
     setattr(model, property, decoded_data["val"])
 
+
+    # import pdb;pdb.set_trace()
 
     user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
     
@@ -731,18 +738,10 @@ def get_viewer(id):
 
 @application.route('/reslogs/<i>/<ids>')
 def log_results(i, ids):
-
     all_ids = utils.unconcatenate_ids(ids)
 
-    # The results will be passed with the config file
-    config_file = os.path.join(utils.storage_dir_for_id(all_ids[int(i)]), "config.json")
-    with open(config_file) as json_file:
-        config = json.load(json_file)
-    
- 
     session = database.Session()
     model = session.query(database.model).filter(database.model.code == all_ids[int(i)]).all()[0]
-
 
     response = {"results":{}, "time":None}
 
@@ -752,25 +751,13 @@ def log_results(i, ids):
     response["results"]["bsddlog"] = model.status_bsdd
     response["results"]["idslog"] = model.status_ids
 
-
-    #import pdb;pdb.set_trace()
-
     session.close()
-
-    
 
     time = datetime.datetime.now()
     time = time.strftime("%Y-%m-%d %H:%M:%S")
-    config["time"] = time
-
+    
     response["time"] = time
 
-    
-    with open(config_file, 'w', encoding='utf-8') as f:
-        json.dump(config, f, ensure_ascii=False, indent=4)
-        
-    
-    
     return jsonify(response)
     
 

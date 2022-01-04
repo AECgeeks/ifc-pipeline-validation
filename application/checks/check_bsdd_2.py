@@ -64,6 +64,13 @@ def validate_instance(constraint,ifc_file, instance):
 ifc_fn = sys.argv[1]
 ifc_file = ifcopenshell.open(ifc_fn)
 
+file_code = ifc_fn.split(".ifc")[0]
+session = database.Session()
+model = session.query(database.model).filter(database.model.code == file_code)[0]
+file_id = model.id
+session.close()
+
+
 task_id = 0
 
 n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
@@ -85,10 +92,13 @@ if n:
             print(ifc_instance)
 
             session = database.Session()
-            instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), 1)
+            instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), file_id)
             session.add(instance)
             session.flush()
             instance_id = instance.id
+
+            
+
             session.commit()
             session.close()
 
@@ -178,8 +188,13 @@ if n:
                 session.close()
                 pass
 
-    
 
+#todo: implement scores that actually validate or not the model
+session = database.Session()
+model = session.query(database.model).filter(database.model.code == file_code)[0]
+model.status_bsdd = 'v'
+session.commit()
+session.close()
    
         
 

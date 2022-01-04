@@ -113,21 +113,13 @@ class model(Base, Serializable):
     size = Column(String)
     mvd = Column(String)
 
-    status_syntax = Column(String, default='w')
+    status_syntax = Column(String, default='n')
     status_schema = Column(String, default='n')
-    status_bsdd = Column(String, default='v')
-    status_mvd = Column(String, default='i')
+    status_bsdd = Column(String, default='n')
+    status_mvd = Column(String, default='n')
     status_ids= Column(String, default='n')
     
     instances = relationship("ifc_instance")
-
-
-    # state_syntax = Column(String, default="n")
-    # state_schema = Column(String, default="n")
-    # state_mvd = Column(String, default="n")
-    # state_bsdd = Column(String, default="n")
-    # state_ids = Column(String, default="n")
-
 
     def __init__(self, code, filename, user_id):
         self.code = code
