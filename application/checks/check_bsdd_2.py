@@ -37,30 +37,27 @@ def validate_instance(constraint,ifc_file, instance):
         "specified_predefined_value" : constraint["predefinedValue"]
     }
 
-    for pset in ifc_file.by_type("IfcPropertySet"):
-        if pset.Name == constraint["specified_pset_name"]:
-            result["property_name"] = "property not found"
-            result["value"] = "property not found"
-            result["datatype"] = "property not found"
+    for definition in instance.IsDefinedBy:
+        if definition.is_a() == "IfcRelDefinesByProperties":
+            
+            pset = definition.RelatingPropertyDefinition
+            if pset.Name == constraint["specified_pset_name"]:
+                result["property_name"] = "property not found"
+                result["value"] = "property not found"
+                result["datatype"] = "property not found"
 
-            result = {"pset_name":pset.Name,"property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
-            for property in pset.HasProperties:
-                if property.Name == constraint["specified_property_name"]:
-                    print('property found')
-                    print(property.NominalValue)
-                    result["property_name"] = property.Name
+                result = {"pset_name":pset.Name,"property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
+                for property in pset.HasProperties:
+                    if property.Name == constraint["specified_property_name"]:
+                        result["property_name"] = property.Name
 
-                    if isinstance(property.NominalValue, ifcopenshell.entity_instance):
-                        result["value"] = property.NominalValue[0]
-                    else:
-                        result["value"] = property.NominalValue
+                        if isinstance(property.NominalValue, ifcopenshell.entity_instance):
+                            result["value"] = property.NominalValue[0]
+                        else:
+                            result["value"] = property.NominalValue
 
+                        result["datatype"] = type(str(property))
 
-                    result["datatype"] = type(str(property))
-
-
-        # todo below: actually validate
-    import pdb;pdb.set_trace()
     return {"constraint":constraint,"result":result}
 
 
@@ -68,8 +65,6 @@ ifc_fn = sys.argv[1]
 ifc_file = ifcopenshell.open(ifc_fn)
 
 task_id = 0
-
-
 
 n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
 
@@ -86,10 +81,11 @@ if n:
 
         bsdd_response = validate_ifc_classification_reference(relating_classification)
         
-        for instance in related_objects:
+        for ifc_instance in related_objects:
+            print(ifc_instance)
 
             session = database.Session()
-            instance = database.ifc_instance(instance.GlobalId, instance.is_a(), 1)
+            instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), 1)
             session.add(instance)
             session.flush()
             instance_id = instance.id
@@ -114,7 +110,7 @@ if n:
                 if has_specifications(json.loads(bsdd_response.text)):
                     specifications = json.loads(bsdd_response.text)["classificationProperties"]
 
-                    
+                    #import pdb;pdb.set_trace()
                     for constraint in specifications:
 
                         # Validation of the instance
@@ -132,7 +128,7 @@ if n:
                         bsdd_result["bsdd_property_constraint"] = json.dumps(constraint)
                         bsdd_result["bsdd_property_uri"] = constraint["propertyNamespaceUri"]
 
-                        results = validate_instance(constraint, ifc_file, instance)
+                        results = validate_instance(constraint, ifc_file, ifc_instance)
                         bsdd_result["ifc_property_set"] = results["result"]["pset_name"]
                         bsdd_result["ifc_property_name"] = results["result"]["property_name"]
                         
@@ -146,14 +142,10 @@ if n:
                         for key, value in bsdd_result.items():
                             setattr(db_bsdd_result, key, value) 
                         
-                        # import pdb;pdb.set_trace()
                         session.add(db_bsdd_result)
                         
                         session.commit()
                         session.close()
-
-            
-
 
                         pass
                 else:
@@ -184,7 +176,6 @@ if n:
                 session.add(db_bsdd_result)
                 session.commit()
                 session.close()
-
                 pass
 
     

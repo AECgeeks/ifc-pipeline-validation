@@ -86,9 +86,9 @@ th{
   padding-top:10px ;
 }
 
-/* table {
-  width:50%;
-} */
+table {
+  width:90%;
+}
 
 table, th, td {
   border: 1px solid rgba(161, 161, 161, 0.24);

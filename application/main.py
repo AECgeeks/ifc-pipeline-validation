@@ -137,9 +137,9 @@ def index():
             decoded = json.load(json_file)
 
         session = database.Session()
-        user = session.query(database.user).filter(database.user.id == decoded["aud"]).all()
+        user = session.query(database.user).filter(database.user.id == decoded["sub"]).all()
         if len(user) == 0:
-            session.add(database.user(str(decoded["aud"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
+            session.add(database.user(str(decoded["sub"]), str(decoded["email"]), str(decoded["family_name"]),str(decoded["given_name"]),str(decoded["name"])))
             session.commit()
             session.close()
         else:
