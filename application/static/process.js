@@ -184,6 +184,8 @@ for (var i = 0; i < savedModels.length; i++) {
         
 
         row.cells[toColumnComplete["report"]].innerHTML = "View report";
+
+        row.cells[toColumnComplete["report"]].innerHTML = "View report";
         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
 
         var a = document.createElement('a');
@@ -265,9 +267,8 @@ function poll(unsavedConcat) {
                     p = 0
                 } else {
                     percentage.innerHTML = p + "%";
-                    bar.style.width = p * 2 + 'px';
                 }
-                
+                bar.style.width = p * 2 + 'px';
 
             }
 

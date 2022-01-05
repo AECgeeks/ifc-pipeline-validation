@@ -65,7 +65,9 @@ ifc_fn = sys.argv[1]
 ifc_file = ifcopenshell.open(ifc_fn)
 
 file_code = ifc_fn.split(".ifc")[0]
+
 session = database.Session()
+
 model = session.query(database.model).filter(database.model.code == file_code)[0]
 file_id = model.id
 session.close()
@@ -89,7 +91,7 @@ if n:
         bsdd_response = validate_ifc_classification_reference(relating_classification)
         
         for ifc_instance in related_objects:
-            print(ifc_instance)
+            # print(ifc_instance)
 
             session = database.Session()
             instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), file_id)
