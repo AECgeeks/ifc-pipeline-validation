@@ -247,8 +247,10 @@ def process_upload_multiple(files, callback_url=None):
 def process_upload_validation(files,validation_config,user_id, callback_url=None):
     
     ids = []
+    filenames = []
     for file in files:
         fn = file.filename
+        filenames.append(fn)
         filewriter = lambda fn: file.save(fn)
         id = utils.generate_id()
         ids.append(id)
@@ -257,9 +259,15 @@ def process_upload_validation(files,validation_config,user_id, callback_url=None
         filewriter(os.path.join(d, id+".ifc"))
         session = database.Session()
         session.add(database.model(id, fn, user_id))
-
         session.commit()
         session.close()
+    
+    session = database.Session()
+    user = session.query(database.user).filter(database.user.id == user_id).all()[0]
+    session.close()
+
+    msg = f"The files {(', ').join(filenames)} were upload by user {user.name} ({user.email}) "
+    send_simple_message(msg)
     
     if DEVELOPMENT:
         for id in ids:
@@ -269,7 +277,6 @@ def process_upload_validation(files,validation_config,user_id, callback_url=None
         for id in ids:
             q.enqueue(worker.process, id, validation_config, callback_url)
 
-    
     return ids
 
 
@@ -844,7 +851,7 @@ def download_model(id):
     code = model.code
     path = utils.storage_file_for_id(code, "ifc")
 
-    return send_file(path,attachment_filename=model.filename, as_attachment=True)
+    return send_file(path,attachment_filename=model.filename, as_attachment=True, conditional=True)
 
 
 
