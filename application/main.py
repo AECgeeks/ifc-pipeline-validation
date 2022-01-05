@@ -266,7 +266,7 @@ def process_upload_validation(files,validation_config,user_id, callback_url=None
     user = session.query(database.user).filter(database.user.id == user_id).all()[0]
     session.close()
 
-    msg = f"The files {(', ').join(filenames)} were upload by user {user.name} ({user.email}) "
+    msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
     send_simple_message(msg)
     
     if DEVELOPMENT:
