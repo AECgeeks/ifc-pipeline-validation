@@ -72,8 +72,8 @@ model = session.query(database.model).filter(database.model.code == file_code)[0
 file_id = model.id
 session.close()
 
-
-task_id = 0
+task_id = sys.argv[2]
+# task_id = 0
 
 n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
 
