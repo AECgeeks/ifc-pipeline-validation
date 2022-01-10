@@ -65,6 +65,10 @@ function completeTable(i) {
     repText.id = "report"
     repText.style.textDecoration = "none";
     repText.innerHTML = "View report"
+
+
+
+
     var fn = rows[row_index].cells[6].innerHTML;
     var st = window.location.href;
 
@@ -183,9 +187,24 @@ for (var i = 0; i < savedModels.length; i++) {
         }
         
 
-        row.cells[toColumnComplete["report"]].innerHTML = "View report";
+        
 
-        row.cells[toColumnComplete["report"]].innerHTML = "View report";
+        var repText = document.createElement("a");
+        repText.id ="report"
+        // repText.style.textDecoration = "none";
+        repText.innerHTML = "View report"
+        var fn = savedModels[i].filename;
+        var st = window.location.href;
+
+        var baseUrl = st.split('/')[2];
+        var url = "/report2/"+ savedModels[i].code + "/" + fn;
+        var url = "/report2/"+ savedModels[i].code
+        
+        repText.href = url;
+        row.cells[toColumnComplete["report"]].appendChild(repText)
+
+
+
         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
 
         var a = document.createElement('a');

@@ -37,6 +37,7 @@ from collections import defaultdict, namedtuple
 from redis.client import parse_client_list
 from sqlalchemy.ext import declarative
 
+
 from werkzeug import datastructures
 
 
@@ -770,6 +771,28 @@ def log_results(i, ids):
 
     return jsonify(response)
     
+
+
+@application.route('/report2/<id>')
+def view_report2(id):
+
+    session = database.Session()
+
+    model = session.query(database.model).filter(database.model.code == id).all()[0]
+
+    bsdd_validation_task = session.query(database.bsdd_validation_task).filter(database.bsdd_validation_task.validated_file == model.id).all()[0]
+    
+    bsdd_results= session.query(database.bsdd_result).filter(database.bsdd_result.task_id == bsdd_validation_task.id).all()
+    bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+    bsdd_validation_task = bsdd_validation_task.serialize()
+    instances = session.query(database.ifc_instance).filter(database.ifc_instance.file == model.id).all()
+    instances = [instance.serialize() for instance in instances]
+    session.close()
+
+    return render_template("report2.html",
+                            bsdd_validation_task=bsdd_validation_task,
+                            bsdd_results=bsdd_results,
+                            instances=instances)
 
 
 @application.route('/report/<id>/<ids>/<fn>')
