@@ -5,7 +5,7 @@ RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggest
 
 RUN python3 -m pip install --upgrade pip
 
-RUN python3 -m pip install flask flask-cors numpy Pillow gunicorn rq redis SQLAlchemy==1.3.24 psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests flask-dropzone lark-parser pyparsing XlsxWriter fuzzywuzzy python-Levenshtein requests_oauthlib Authlib requests --upgrade
+RUN python3 -m pip install flask flask-cors numpy Pillow gunicorn rq redis SQLAlchemy==1.3.24 psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests flask-dropzone lark-parser pyparsing XlsxWriter fuzzywuzzy python-Levenshtein requests_oauthlib Authlib requests argparse --upgrade
 RUN npm install -g jsdoc gltf-pipeline requirejs npx uglify-js
 
 # IfcConvert v0.6.0

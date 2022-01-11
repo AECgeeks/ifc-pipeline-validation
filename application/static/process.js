@@ -61,11 +61,25 @@ function completeTable(i) {
     });
 
 
-    var repText = document.createElement("a");
-    repText.id = "report"
-    repText.style.textDecoration = "none";
-    repText.innerHTML = "View report"
+    // var repText = document.createElement("a");
+    // repText.id = "report"
+    // repText.style.textDecoration = "none";
+    // repText.innerHTML = "View report"
 
+    
+    var repText = document.createElement("a");
+    repText.id ="report"
+    // repText.style.textDecoration = "none";
+    repText.innerHTML = "View report"
+    var fn = savedModels[i].filename;
+    var st = window.location.href;
+
+    var baseUrl = st.split('/')[2];
+    var url = "/report2/"+ savedModels[i].code + "/" + fn;
+    var url = "/report2/"+ savedModels[i].code
+    
+    repText.href = url;
+    row.cells[toColumnComplete["report"]].appendChild(repText)
 
 
 
@@ -195,13 +209,17 @@ for (var i = 0; i < savedModels.length; i++) {
         repText.innerHTML = "View report"
         var fn = savedModels[i].filename;
         var st = window.location.href;
-
         var baseUrl = st.split('/')[2];
-        var url = "/report2/"+ savedModels[i].code + "/" + fn;
         var url = "/report2/"+ savedModels[i].code
         
         repText.href = url;
         row.cells[toColumnComplete["report"]].appendChild(repText)
+
+
+        row.cells[toColumnComplete["report"]].style.color = "#0070C0";
+        row.cells[toColumnComplete["report"]].style.fontWeight = "bold";
+        row.cells[toColumnComplete["report"]].id = "report"
+    
 
 
 

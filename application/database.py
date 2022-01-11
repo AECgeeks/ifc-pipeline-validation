@@ -36,7 +36,7 @@ from sqlalchemy.pool import StaticPool
 
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
-# DEVELOPMENT = 1
+DEVELOPMENT = 1
 
 if DEVELOPMENT:
     file_path = os.path.dirname(__file__)+  "/ifc-pipeline.db"
