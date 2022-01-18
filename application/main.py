@@ -552,7 +552,6 @@ def dashboard(user_id):
 
     saved_models = [model.serialize() for model in saved_models]
     #import pdb;pdb.set_trace()
-
     # import pdb;pdb.set_trace()
 
 
@@ -768,6 +767,7 @@ def log_results(i, ids):
     time = time.strftime("%Y-%m-%d %H:%M:%S")
     
     response["time"] = time
+    response["time"] = model.date
 
     return jsonify(response)
     
