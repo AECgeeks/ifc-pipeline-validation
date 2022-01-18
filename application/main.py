@@ -548,8 +548,11 @@ def dashboard(user_id):
     #Retrieve user data 
     session = database.Session()
     saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
+    
+    saved_models.sort(key=lambda m: m.date)
     saved_models = saved_models[::-1]
 
+    # import pdb;pdb.set_trace()
     saved_models = [model.serialize() for model in saved_models]
     #import pdb;pdb.set_trace()
     # import pdb;pdb.set_trace()
@@ -761,13 +764,8 @@ def log_results(i, ids):
     response["results"]["bsddlog"] = model.status_bsdd
     response["results"]["idslog"] = model.status_ids
 
+    response["time"] = model.serialize()['date']
     session.close()
-
-    time = datetime.datetime.now()
-    time = time.strftime("%Y-%m-%d %H:%M:%S")
-    
-    response["time"] = time
-    response["time"] = model.date
 
     return jsonify(response)
     
