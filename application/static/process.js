@@ -96,9 +96,10 @@ function completeTable(i) {
     var splittedLocation = window.location.href.split("/");
     var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
     a.href = "/download/" +  savedModels[i].id.toString();
+
+    var children = rows[row_index].cells[9].childNodes;
+    rows[row_index].cells[9].removeChild(children[0]);
     rows[row_index].cells[9].appendChild(a);
-
-
 
     rows[row_index].cells[10].innerHTML = '<a href="{{ url_for("index") }}" style ="text-decoration:none;">Delete</a>';
 
