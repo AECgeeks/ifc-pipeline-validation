@@ -8,8 +8,8 @@ console.log(bsdd_results)
 
 for(var i=-0;i<bsdd_results.length;i++){
     var constraint = bsdd_results[i]["bsdd_property_constraint"]
-    constraint =  JSON.parse(constraint)
-    bsdd_results[i]["bsdd_property_constraint"] = constraint
+    // constraint =  JSON.parse(constraint)
+    // bsdd_results[i]["bsdd_property_constraint"] = constraint
 }
 
 

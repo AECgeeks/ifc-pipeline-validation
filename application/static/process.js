@@ -54,6 +54,8 @@ function completeTable(i) {
         rows[row_index].cells[4].appendChild(idsImg);
 
         rows[row_index].cells[8].innerHTML = r["time"];
+
+
         rows[row_index].cells[8].style.fontWeight = "bold";
         rows[row_index].cells[8].style.color = "#d9d9d9";
 
@@ -61,10 +63,6 @@ function completeTable(i) {
     });
 
 
-    // var repText = document.createElement("a");
-    // repText.id = "report"
-    // repText.style.textDecoration = "none";
-    // repText.innerHTML = "View report"
 
     
     var repText = document.createElement("a");
@@ -74,21 +72,14 @@ function completeTable(i) {
     var fn = savedModels[i].filename;
     var st = window.location.href;
 
-    var baseUrl = st.split('/')[2];
-    var url = "/report2/"+ savedModels[i].code + "/" + fn;
-    var url = "/report2/"+ savedModels[i].code
-    
+
+    var url ="/report2/" + userId + "/"+ savedModels[i].code;
     repText.href = url;
     row.cells[toColumnComplete["report"]].appendChild(repText)
 
 
 
-    var fn = rows[row_index].cells[6].innerHTML;
-    var st = window.location.href;
-
-    var baseUrl = st.split('/')[2];
-    var url = "/report/" + i + "/" + unsavedConcat + "/" + fn;
-
+  
     // repText.href = url;
     rows[row_index].cells[7].appendChild(repText)
 
@@ -96,7 +87,19 @@ function completeTable(i) {
     rows[row_index].cells[7].style.fontWeight = "bold";
     rows[row_index].cells[7].id = "report"
 
-    rows[row_index].cells[9].innerHTML = '<a href="{{ url_for("index") }}" style ="text-decoration:none;">Download</a>';
+
+    var a = document.createElement('a');
+    var linkText = document.createTextNode("Download");
+    a.appendChild(linkText);
+    a.title = "Download";
+
+    var splittedLocation = window.location.href.split("/");
+    var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
+    a.href = "/download/" +  savedModels[i].id.toString();
+    rows[row_index].cells[9].appendChild(a);
+
+
+
     rows[row_index].cells[10].innerHTML = '<a href="{{ url_for("index") }}" style ="text-decoration:none;">Delete</a>';
 
     rows[row_index].cells[9].style.fontWeight = "bold";
@@ -104,26 +107,6 @@ function completeTable(i) {
     rows[row_index].cells[9].style.color = "rgb(105, 125, 239)";
     rows[row_index].cells[10].style.color = "rgb(224, 101, 101)";
 
-
-    
-
-    //License
-    var values = ["private", "CC", "MIT", "GPL"];
-
-    // var select = document.createElement("select");
-    // select.name = "licenses";
-    // select.id = "licenses"
-    var select = document.getElementById("licenses");
-    //select.addEventListener("change", sendInfo);
-
-    //Production hours
-    var hoursInputBox = document.getElementById("hours");
-    //hoursInputBox.addEventListener("change", sendInfo);
-
-
-    //Additional details
-    var detailsInputBox = document.getElementById("details");
-    //detailsInputBox.addEventListener("change", sendInfo);
 
 }
 
@@ -210,7 +193,9 @@ for (var i = 0; i < savedModels.length; i++) {
         var fn = savedModels[i].filename;
         var st = window.location.href;
         var baseUrl = st.split('/')[2];
-        var url = "/report2/"+ savedModels[i].code
+        // var url = "/report2/"+ savedModels[i].code;
+        console.log("user id ", userId)
+        var url ="/report2/" + userId + "/"+ savedModels[i].code;
         
         repText.href = url;
         row.cells[toColumnComplete["report"]].appendChild(repText)

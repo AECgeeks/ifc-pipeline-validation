@@ -771,26 +771,36 @@ def log_results(i, ids):
     
 
 
-@application.route('/report2/<id>')
-def view_report2(id):
+@application.route('/report2/<user_id>/<id>')
+def view_report2(user_id, id):
 
     session = database.Session()
 
     model = session.query(database.model).filter(database.model.code == id).all()[0]
+    m = model.serialize()
 
     bsdd_validation_task = session.query(database.bsdd_validation_task).filter(database.bsdd_validation_task.validated_file == model.id).all()[0]
     
     bsdd_results= session.query(database.bsdd_result).filter(database.bsdd_result.task_id == bsdd_validation_task.id).all()
     bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+
+    for bsdd_result in bsdd_results:
+        bsdd_result["bsdd_property_constraint"] = json.loads(bsdd_result["bsdd_property_constraint"])
+
+
+    #import pdb;pdb.set_trace
+
     bsdd_validation_task = bsdd_validation_task.serialize()
     instances = session.query(database.ifc_instance).filter(database.ifc_instance.file == model.id).all()
-    instances = [instance.serialize() for instance in instances]
+    instances = {instance.id:instance.serialize() for instance in instances}
     session.close()
 
     return render_template("report2.html",
+                            model=m,
                             bsdd_validation_task=bsdd_validation_task,
                             bsdd_results=bsdd_results,
-                            instances=instances)
+                            instances=instances, 
+                            user_id=user_id)
 
 
 @application.route('/report/<id>/<ids>/<fn>')

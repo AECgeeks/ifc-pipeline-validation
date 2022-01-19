@@ -61,10 +61,12 @@ def validate_instance(constraint,ifc_file, instance):
 
                         if isinstance(property.NominalValue, ifcopenshell.entity_instance):
                             result["value"] = property.NominalValue[0]
+                            result["datatype"] = type(property.NominalValue[0])
                         else:
                             result["value"] = property.NominalValue
+                            result["datatype"] = type(property.NominalValue[0])
 
-                        result["datatype"] = type(str(property))
+                        
 
     return {"constraint":constraint,"result":result}
 

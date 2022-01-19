@@ -121,8 +121,11 @@ a:visited {
 
 table {
   width: 75%;
-  font-size: 20px
+  font-size: 20px;
+
 }
+
+
 
 tr{
   opacity: 1;
@@ -147,6 +150,12 @@ table, th, td {
   border-left: none;
   border-right: none;
   align-self: center;
+}
+
+table, th, td {
+  border: 1px solid black;
+  /* background-color: antiquewhite; */
+  padding: 10px;
 }
 
 th {
