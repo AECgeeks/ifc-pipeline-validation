@@ -96,6 +96,7 @@ function completeTable(i) {
     var splittedLocation = window.location.href.split("/");
     var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
     a.href = "/download/" +  savedModels[i].id.toString();
+    a.style.textDecoration = "none";
 
     var children = rows[row_index].cells[9].childNodes;
     rows[row_index].cells[9].removeChild(children[0]);
@@ -138,6 +139,8 @@ for (var i = 0; i < savedModels.length; i++) {
 
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
     row.cells[toColumnComplete["file_name"]].innerHTML = savedModels[i].filename;
+    row.cells[toColumnComplete["file_name"]].style.textAlign = "left"; 
+    row.cells[toColumnComplete["file_name"]].className = "filename";
 
     var licenseSelect = document.createElement("SELECT");
         
@@ -158,6 +161,7 @@ for (var i = 0; i < savedModels.length; i++) {
     hoursInput.id = "hours_"+savedModels[i].code
     hoursInput.addEventListener("change", sendInfo);
     hoursInput.value = savedModels[i].hours;
+    hoursInput.style.width="30px"
     row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
 
     var detailsInput = document.createElement("INPUT");
@@ -219,10 +223,23 @@ for (var i = 0; i < savedModels.length; i++) {
         var splittedLocation = window.location.href.split("/");
         var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
         a.href = "/download/" +  savedModels[i].id.toString();
+        a.style.textDecoration = "none";
         row.cells[toColumnComplete["download"]].appendChild(a);
 
         
         row.cells[toColumnComplete["delete"]].innerHTML = "Delete";
+
+
+
+        row.cells[toColumnComplete["download"]].style.fontWeight = "bold";
+        
+
+        row.cells[toColumnComplete["delete"]].style.fontWeight = "bold";
+        row.cells[toColumnComplete["download"]].style.color = "rgb(105, 125, 239)";
+        row.cells[toColumnComplete["delete"]].style.color = "rgb(224, 101, 101)";
+    
+
+
 
         row.cells[toColumnComplete["geoms"]].innerHTML = savedModels[i].number_of_geometries;
         row.cells[toColumnComplete["props"]].innerHTML = savedModels[i].number_of_properties;

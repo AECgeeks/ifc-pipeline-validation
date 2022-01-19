@@ -100,7 +100,7 @@ table, th, td {
 }
 
 td {
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
   padding-left: 20px;
 }
@@ -133,6 +133,9 @@ td {
   width: 0px;
   border-radius: 25px;
 }
+
+
+
 
 @keyframes spin {
   to {
