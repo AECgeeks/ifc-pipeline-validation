@@ -102,6 +102,7 @@ function completeTable(i) {
     rows[row_index].cells[9].removeChild(children[0]);
     rows[row_index].cells[9].appendChild(a);
 
+    a.style.color = "inherit";
     rows[row_index].cells[10].innerHTML = '<a href="{{ url_for("index") }}" style ="text-decoration:none;">Delete</a>';
 
     rows[row_index].cells[9].style.fontWeight = "bold";
@@ -219,6 +220,7 @@ for (var i = 0; i < savedModels.length; i++) {
         var linkText = document.createTextNode("Download");
         a.appendChild(linkText);
         a.title = "Download";
+        a.style.color = "inherit";
 
         var splittedLocation = window.location.href.split("/");
         var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
