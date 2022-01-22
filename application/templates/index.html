@@ -57,9 +57,10 @@
 
             <div class="tabs"">
 
-                <button class=" w3-bar-item w3-button tab" id="ifc_button" onclick="changeTab('ifc_tab')">IFC</button>
-                <p style="font-size: 25px; color:grey;">|</p>
-                <button class="w3-bar-item w3-button tab" id="ids_button" onclick="changeTab('ids_tab')">IDS</button>
+                <!-- <button class=" w3-bar-item w3-button tab" id="ifc_button" onclick="changeTab('ifc_tab')">IFC</button> -->
+                <button class=" w3-bar-item w3-button tab" id="ifc_button">IFC</button>
+                <!-- <p style="font-size: 25px; color:grey;">|</p> -->
+                <!-- <button class="w3-bar-item w3-button tab" id="ids_button" onclick="changeTab('ids_tab')">IDS</button> -->
 
             </div>
 
@@ -214,158 +215,6 @@
         });
 
     </script>
-
-
-    <!-- <script>
-
-        Dropzone.prototype.defaultOptions.dictDefaultMessage = "Drop files or click here to upload";
-
-        Dropzone.options.myDropzone = {
-
-            autoProcessQueue: false,
-            acceptedFiles: ".ifc, .xml",
-            parallelUploads: 1000,
-            uploadMultiple: true,
-            addRemoveLinks: false,
-            timeout: 0,
-            maxFilesize: 8 * 1024,
-
-            init: function () {
-
-                var submitButton = document.querySelector("#submit");
-                var submitButton2 = document.querySelector("#submit2");
-
-                myDropzone = this;
-
-                myDropzone.on("sending", function(file, xhr, data) {
-                        data.append("user", decoded["aud"]);});
-
-
-
-                var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd', 'ids'];
-
-                for (var i = 0; i < validationTypes.length; i++) {
-                    var checkbox = document.createElement('input');
-                    checkbox.type = "checkbox";
-                    checkbox.name = validationTypes[i];
-                    checkbox.value = 0;
-                    checkbox.checked = 1;
-
-                    checkbox.id = validationTypes[i];
-                    checkbox.style.visibility = "hidden";
-                    myDropzone.element.appendChild(checkbox);
-
-                }
-
-                submitButton2.addEventListener("click", function () {
-
-                    myDropzone = Dropzone.instances[1];
-
-                    for (var i = 0; i < validationTypes.length; i++) {
-                        var checkboxToUpdate = document.getElementById(validationTypes[i]);
-                        var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
-
-                        if (checkboxOutside.checked == 1) {
-                            checkboxToUpdate.value = 1;
-                        }
-                    }
-
-                    myDropzone.processQueue();
-
-                });
-
-                submitButton.addEventListener("click", function () {
-
-                    myDropzone = Dropzone.instances[0];
-
-                    for (var i = 0; i < validationTypes.length; i++) {
-                        var checkboxToUpdate = document.getElementById(validationTypes[i]);
-                        var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
-
-
-                        if (checkboxOutside.checked == 1) {
-                            checkboxToUpdate.value = 1;
-                        }
-
-                    }
-
-
-
-                    myDropzone.processQueue();
-
-                });
-
-            
-                this.on("success", function (file, response) {
-
-                    var submitAreas = document.getElementsByClassName("submit-area");
-
-                    if (submitAreas[0].id == 'ids_tab') {
-                        var ids_tab = submitAreas[0]
-                        var ifc_tab = submitAreas[1]
-                    }
-                    else {
-                        var ids_tab = submitAreas[1]
-                        var ifc_tab = submitAreas[0]
-
-                    }
-
-                    var selectedMode;
-
-                    if (ids_tab.style.display == 'none') {
-                        selectedMode = 'ifc'
-
-                    }
-                    else if (ifc_tab.style.display == 'none') {
-                        selectedMode = 'ids'
-                    }
-
-                    if (selectedMode == 'ifc') {
-                        window.location = response.url;
-                    }
-
-                    else if (selectedMode == 'ids') {
-
-                        var newUrl = response.url;
-
-                        ids_tab.style.backgroundColor = 'light-blue';
-                        ids_tab.innerHTML = '';
-                        var newDiv = document.createElement("div");
-                        newDiv.style.display = "flex"; 
-                        newDiv.style.flexDirection = "column";
-
-                        ids_tab.appendChild(newDiv);
-
-                        var url = "/idschecking";
-                        var repText = document.createElement("a");
-                        repText.innerHTML = "go to link";
-                        repText.href = newUrl;
-                        newDiv.appendChild(repText);
-
-                        var copyLink = document.createElement("p");
-                        copyLink.innerHTML = "copy link";
-                        // copyLink.href = url;
-                        newDiv.appendChild(copyLink);
-
-                        var linkArea = document.createElement("TEXTAREA");
-                        newDiv.appendChild(linkArea);
-                        linkArea.value = window.location.origin + ""; 
-                        // window.location.hostname + newUrl
-                        linkArea.style.resize = "none";
-                        linkArea.style.height = "20px;"
-                        linkArea.style.whiteSpace = "nowrap";
-                        linkArea.style.overflow = "hidden";
-
-                    
-                    }
-
-                });
-            }
-
-        };
-
-    </script> -->
-
 
 </body>
 

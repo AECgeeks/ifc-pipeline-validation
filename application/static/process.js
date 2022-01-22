@@ -1,18 +1,13 @@
 
 
-
-
 function sendInfo(index = null) {
     console.log(this)
-
     var property = event.srcElement.id.split('_')[0];
     var modelCode = event.srcElement.id.split('_')[1];
-   
+
     var data = { type: property, val: this.value, n: i };
 
-    
-
-    fetch("/updateinfo2/" + modelCode, {
+    fetch("/update_info/" + modelCode, {
         method: "POST",
         body: JSON.stringify(data)
     }).then(function (r) { return r.json(); }).then(function (r) {
@@ -29,8 +24,6 @@ function completeTable(i) {
     var rows = table.rows;
 
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
-
-        
 
         var syntaxImg = document.createElement("img");
         syntaxImg.src = "/static/icons/" + icons[r["results"]['syntaxlog']] + ".png";
@@ -64,22 +57,20 @@ function completeTable(i) {
 
 
 
-    
+
     var repText = document.createElement("a");
-    repText.id ="report"
+    repText.id = "report"
     // repText.style.textDecoration = "none";
     repText.innerHTML = "View report"
     var fn = savedModels[i].filename;
     var st = window.location.href;
 
 
-    var url ="/report2/" + userId + "/"+ savedModels[i].code;
+    var url = "/report2/" + userId + "/" + savedModels[i].code;
     repText.href = url;
     row.cells[toColumnComplete["report"]].appendChild(repText)
 
 
-
-  
     // repText.href = url;
     rows[row_index].cells[7].appendChild(repText)
 
@@ -94,8 +85,8 @@ function completeTable(i) {
     a.title = "Download";
 
     var splittedLocation = window.location.href.split("/");
-    var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
-    a.href = "/download/" +  savedModels[i].id.toString();
+    var domain = splittedLocation[0] + "/" + splittedLocation[1] + splittedLocation[2]
+    a.href = "/download/" + savedModels[i].id.toString();
     a.style.textDecoration = "none";
 
     var children = rows[row_index].cells[9].childNodes;
@@ -133,18 +124,18 @@ for (var i = 0; i < savedModels.length; i++) {
 
 
 
-  
+
     var ifcLogo = document.createElement("IMG");
     ifcLogo.src = "/static/icons/ifc.png";
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
 
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
     row.cells[toColumnComplete["file_name"]].innerHTML = savedModels[i].filename;
-    row.cells[toColumnComplete["file_name"]].style.textAlign = "left"; 
+    row.cells[toColumnComplete["file_name"]].style.textAlign = "left";
     row.cells[toColumnComplete["file_name"]].className = "filename";
 
     var licenseSelect = document.createElement("SELECT");
-        
+
 
     var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
     for (const license of licensTypes) {
@@ -153,22 +144,22 @@ for (var i = 0; i < savedModels.length; i++) {
         licenseSelect.add(option);
     }
 
-    licenseSelect.id = "license_"+savedModels[i].code;
+    licenseSelect.id = "license_" + savedModels[i].code;
     licenseSelect.addEventListener("change", sendInfo);
     licenseSelect.value = savedModels[i].license
     row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
 
     var hoursInput = document.createElement("INPUT");
-    hoursInput.id = "hours_"+savedModels[i].code
+    hoursInput.id = "hours_" + savedModels[i].code
     hoursInput.addEventListener("change", sendInfo);
     hoursInput.value = savedModels[i].hours;
-    hoursInput.style.width="30px"
+    hoursInput.style.width = "30px"
     row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
 
     var detailsInput = document.createElement("INPUT");
-    detailsInput.id = "details_"+savedModels[i].code
+    detailsInput.id = "details_" + savedModels[i].code
     detailsInput.addEventListener("change", sendInfo);
-    detailsInput.value = savedModels[i].details        
+    detailsInput.value = savedModels[i].details
     row.cells[toColumnComplete["details"]].appendChild(detailsInput);
 
 
@@ -177,23 +168,23 @@ for (var i = 0; i < savedModels.length; i++) {
     if (savedModels[i].progress == 100) {
 
 
-        var checks_type = ["syntax","schema","mvd","bsdd","ids"];
+        var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids"];
         var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
-        for(var j=0;j<checks_type.length;j++){
-            var attr = "status_"+checks_type[j];
+        for (var j = 0; j < checks_type.length; j++) {
+            var attr = "status_" + checks_type[j];
             var status_result = savedModels[i][attr];
             var icon = icons[status_result];
             var img = document.createElement("IMG");
             img.src = "/static/icons/" + icon + ".png";
             row.cells[toColumnComplete[checks_type[j]]].appendChild(img);
-    
-        }
-        
 
-        
+        }
+
+
+
 
         var repText = document.createElement("a");
-        repText.id ="report"
+        repText.id = "report"
         // repText.style.textDecoration = "none";
         repText.innerHTML = "View report"
         var fn = savedModels[i].filename;
@@ -201,8 +192,8 @@ for (var i = 0; i < savedModels.length; i++) {
         var baseUrl = st.split('/')[2];
         // var url = "/report2/"+ savedModels[i].code;
         console.log("user id ", userId)
-        var url ="/report2/" + userId + "/"+ savedModels[i].code;
-        
+        var url = "/report2/" + userId + "/" + savedModels[i].code;
+
         repText.href = url;
         row.cells[toColumnComplete["report"]].appendChild(repText)
 
@@ -210,7 +201,7 @@ for (var i = 0; i < savedModels.length; i++) {
         row.cells[toColumnComplete["report"]].style.color = "#0070C0";
         row.cells[toColumnComplete["report"]].style.fontWeight = "bold";
         row.cells[toColumnComplete["report"]].id = "report"
-    
+
 
 
 
@@ -223,23 +214,23 @@ for (var i = 0; i < savedModels.length; i++) {
         a.style.color = "inherit";
 
         var splittedLocation = window.location.href.split("/");
-        var domain = splittedLocation[0] +"/"+ splittedLocation[1] + splittedLocation[2]
-        a.href = "/download/" +  savedModels[i].id.toString();
+        var domain = splittedLocation[0] + "/" + splittedLocation[1] + splittedLocation[2]
+        a.href = "/download/" + savedModels[i].id.toString();
         a.style.textDecoration = "none";
         row.cells[toColumnComplete["download"]].appendChild(a);
 
-        
+
         row.cells[toColumnComplete["delete"]].innerHTML = "Delete";
 
 
 
         row.cells[toColumnComplete["download"]].style.fontWeight = "bold";
-        
+
 
         row.cells[toColumnComplete["delete"]].style.fontWeight = "bold";
         row.cells[toColumnComplete["download"]].style.color = "rgb(105, 125, 239)";
         row.cells[toColumnComplete["delete"]].style.color = "rgb(224, 101, 101)";
-    
+
 
 
 
@@ -287,9 +278,9 @@ function poll(unsavedConcat) {
             var bar = document.getElementById("bar" + id)
 
             var file_row = document.getElementById(id)
-            file_row.cells[toColumnUncomplete["geoms"]].innerHTML= r["file_info"][i]["number_of_geometries"]
-            file_row.cells[toColumnUncomplete["props"]].innerHTML= r["file_info"][i]["number_of_properties"]
-          
+            file_row.cells[toColumnUncomplete["geoms"]].innerHTML = r["file_info"][i]["number_of_geometries"]
+            file_row.cells[toColumnUncomplete["props"]].innerHTML = r["file_info"][i]["number_of_properties"]
+
             if (r.progress[i] === 100) {
 
                 if (!registered.has(i)) {

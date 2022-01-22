@@ -36,7 +36,6 @@ def validate_instance(constraint,ifc_file, instance):
         "specified_predefined_value" : constraint["predefinedValue"],
     }
 
-    # import pdb;pdb.set_trace()
 
     # Integrate these:
     #   "maxExclusive": 0
@@ -73,18 +72,11 @@ def validate_instance(constraint,ifc_file, instance):
 
 
 def check_bsdd(ifc_fn, USE_DB, task_id):
-    # import pdb;pdb.set_trace()
 
     if USE_DB:
-        # import pdb;pdb.set_trace()
         from helper import database
 
-
     file_code = ifc_fn.split(".ifc")[0]
-
-    # file_code = "mDgWwLEwesUQnwwrnpqmyNCyVBbODQLy"
-
-
     ifc_file = ifcopenshell.open(ifc_fn)
 
     if USE_DB:
@@ -111,7 +103,6 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
             bsdd_response = validate_ifc_classification_reference(relating_classification)
             
             for ifc_instance in related_objects:
-                # print(ifc_instance)
 
                 if USE_DB:
 
@@ -141,11 +132,8 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
                                     }
 
                 if bsdd_response:
-                    # import pdb;pdb.set_trace()
                     if has_specifications(json.loads(bsdd_response.text)):
                         specifications = json.loads(bsdd_response.text)["classificationProperties"]
-                        # import pdb;pdb.set_trace()
-                        #import pdb;pdb.set_trace()
                         for constraint in specifications:
 
 

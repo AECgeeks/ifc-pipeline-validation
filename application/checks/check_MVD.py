@@ -10,11 +10,7 @@ def validate_mvd(mvd_fn):
     mvd_concept_roots = ifcopenshell.mvd.concept_root.parse(mvd_fn)
     passed = 1
 
-
-
-
     for concept_root in mvd_concept_roots:
-        # import pdb;pdb.set_trace()
         try: #todo: check mvdXML file schema   
             entity_type = concept_root.entity
             if len(ifc_file.by_type(entity_type)):
@@ -23,8 +19,7 @@ def validate_mvd(mvd_fn):
                     for rule in concept.template().rules:
                         
                         for e in entity_instances:
-                            extraction = mvd.extract_data(rule,e) 
-                            # import pdb;pdb.set_trace()                 
+                            extraction = mvd.extract_data(rule,e)              
                             for ex in extraction:
                                 print(ex)
                                 for k, v in ex.items():
