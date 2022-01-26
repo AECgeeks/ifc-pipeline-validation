@@ -60,15 +60,4 @@ def validate_id(id):
 
 
 def unconcatenate_ids(id):
-    n_files = int(len(id)/32)
-    unconcatenated = []
-    b = 0
-    i = 1
-    a = 32
-    for d in range(n_files):
-        token = id[b:a]
-        unconcatenated.append(token)
-        b = a
-        i+= 1
-        a = 32*i
-    return unconcatenated
+    return [id[i:i+32] for i in range(0, len(id), 32)]
