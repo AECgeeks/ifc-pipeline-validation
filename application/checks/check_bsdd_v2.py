@@ -9,7 +9,6 @@ from helper import database
 
 def get_classification_object(uri):
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v3"
-    base_url = "https://bs-dd-api-prototype.azurewebsites.net/api/"
     return requests.get(url, {'namespaceUri':uri})
 
 def validate_ifc_classification_reference(relating_classification):
@@ -71,7 +70,7 @@ def validate_instance(constraint,ifc_file, instance):
 
 
 
-def check_bsdd(ifc_fn, USE_DB, task_id):
+def check_bsdd(ifc_fn, task_id):
    
     file_code = ifc_fn.split(".ifc")[0]
     ifc_file = ifcopenshell.open(ifc_fn)
@@ -183,7 +182,6 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
 if __name__=="__main__":
         parser = argparse.ArgumentParser(description="Generate classified IFC file")
         parser.add_argument("--input","-i", default="Duplex_A_20110505.ifc", type=str)
-        parser.add_argument("--db","-d", default=1, type=bool)
         parser.add_argument("--task","-t", default=0, type=int)
 
         args = parser.parse_args()
