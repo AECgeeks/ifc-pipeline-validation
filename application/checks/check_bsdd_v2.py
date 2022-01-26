@@ -132,14 +132,14 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
                             bsdd_result["bsdd_property_constraint"] = json.dumps(constraint)
                             bsdd_result["bsdd_property_uri"] = constraint["propertyNamespaceUri"]
 
-                            results = validate_instance(constraint, ifc_file, ifc_instance)
+                            results = validate_instance(constraint, ifc_file, ifc_instance)["result"]
 
-                            bsdd_result["ifc_property_set"] = results["result"]["pset_name"]
-                            bsdd_result["ifc_property_name"] = results["result"]["property_name"]
+                            bsdd_result["ifc_property_set"] = results["pset_name"]
+                            bsdd_result["ifc_property_name"] = results["property_name"]
                             
-                            if not isinstance(results["result"]["datatype"], str):
-                                bsdd_result["ifc_property_type"] = results["result"]["datatype"].__name__
-                            bsdd_result["ifc_property_value"] = results["result"]["value"]
+                            if not isinstance(results["datatype"], str):
+                                bsdd_result["ifc_property_type"] = results["datatype"].__name__
+                            bsdd_result["ifc_property_value"] = results["value"]
                             
                             db_bsdd_result = database.bsdd_result(bsdd_result["task_id"])
 
