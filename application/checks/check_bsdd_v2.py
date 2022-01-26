@@ -81,8 +81,9 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
         file_id = model.id
         
         n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
-        percentages = [i * 100. / n for i in range(n+1)]
-        num_dots = [int(b) - int(a) for a, b in zip(percentages, percentages[1:])]
+        if n:
+            percentages = [i * 100. / n for i in range(n+1)]
+            num_dots = [int(b) - int(a) for a, b in zip(percentages, percentages[1:])]
 
         for idx, rel in enumerate(ifc_file.by_type("IfcRelAssociatesClassification")):
 
@@ -93,6 +94,7 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
             relating_classification = rel.RelatingClassification
 
             bsdd_response = validate_ifc_classification_reference(relating_classification)
+            bsdd_content = json.loads(bsdd_response.text)
             
             for ifc_instance in related_objects:
                 instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), file_id)
@@ -116,21 +118,17 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
                                     }
 
                 if bsdd_response:
-                    if has_specifications(json.loads(bsdd_response.text)):
-                        specifications = json.loads(bsdd_response.text)["classificationProperties"]
+                    if has_specifications(bsdd_content):
+                        specifications = bsdd_content["classificationProperties"]
                         for constraint in specifications:
-
-                            # Validation of the instance
-                            constraint_content = json.loads(bsdd_response.text)
-
                             # Store everything in DB
                             bsdd_result["task_id"] = task_id
                             
                             # Should create instance entry
                             bsdd_result["instance_id"] = instance_id
 
-                            bsdd_result["bsdd_classification_uri"] = constraint_content["namespaceUri"]
-                            bsdd_result["bsdd_type_constraint"] = ";".join(constraint_content["relatedIfcEntityNames"])
+                            bsdd_result["bsdd_classification_uri"] = bsdd_content["namespaceUri"]
+                            bsdd_result["bsdd_type_constraint"] = ";".join(bsdd_content["relatedIfcEntityNames"])
                             bsdd_result["bsdd_property_constraint"] = json.dumps(constraint)
                             bsdd_result["bsdd_property_uri"] = constraint["propertyNamespaceUri"]
 
@@ -174,7 +172,7 @@ def check_bsdd(ifc_fn, USE_DB, task_id):
                     session.add(db_bsdd_result)
                     session.commit()
                 
-    
+        
         #todo: implement scores that actually validate or not the model
         model = session.query(database.model).filter(database.model.code == file_code)[0]
         model.status_bsdd = 'v'
@@ -190,7 +188,6 @@ if __name__=="__main__":
 
         args = parser.parse_args()
         check_bsdd(args.input,args.db, args.task)
-
 
 
 
