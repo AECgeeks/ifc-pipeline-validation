@@ -1,4 +1,4 @@
 from main import application
 
 if __name__ == "__main__":
-    application.run(debug=1)
+    application.run()

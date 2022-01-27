@@ -153,7 +153,7 @@ class bsdd_validation_task(task):
 
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd_v2.py")
 
-        proc = subprocess.Popen([sys.executable, check_program, "--input", id + ".ifc", "--db","1", "--task",validation_task_id], cwd=directory, stdout=subprocess.PIPE)
+        proc = subprocess.Popen([sys.executable, check_program, "--input", id + ".ifc", "--task",validation_task_id], cwd=directory, stdout=subprocess.PIPE)
         i = 0
         while True:
             ch = proc.stdout.read(1)
