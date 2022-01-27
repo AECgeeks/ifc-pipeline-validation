@@ -32,15 +32,12 @@ from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
 import os
 import datetime
-from sqlalchemy.pool import StaticPool
-
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
-DEVELOPMENT = 1
 
 if DEVELOPMENT:
-    file_path = os.path.dirname(__file__)+  "/ifc-pipeline.db"
-    engine = create_engine('sqlite:///'+file_path, connect_args={'check_same_thread': False})
+    file_path = os.path.join(os.path.dirname(__file__), "ifc-pipeline.db") 
+    engine = create_engine(f'sqlite:///{file_path}', connect_args={'check_same_thread': False})
 else:
     host = os.environ.get('POSTGRES_HOST', 'localhost')
     password = os.environ['POSTGRES_PASSWORD']
@@ -50,11 +47,9 @@ Session = sessionmaker(bind=engine)
 
 Base = declarative_base()
 
-
 class Serializable(object):
     def serialize(self):
         d = {}
-        
         for attribute in inspect(self).attrs.keys():
             if isinstance(getattr(self, attribute), (list, tuple)):
                 d[attribute] = []
@@ -78,7 +73,6 @@ class user(Base, Serializable):
     family_name = Column(String)
     given_name = Column(String)
     name = Column(String)
-    # files = relationship("file") 
     models = relationship("model") 
 
     def __init__(self, id, email, family_name, given_name, name):
@@ -95,7 +89,6 @@ class model(Base, Serializable):
     id = Column(Integer, primary_key=True)
     code = Column(String)
     filename = Column(String)
-    #files = relationship("file")
     user_id = Column(String, ForeignKey('users.id'))
 
     progress = Column(Integer, default=-1)
@@ -134,23 +127,6 @@ class file(Base, Serializable):
     code = Column(String)
     filename = Column(String)
  
-    #model_id = Column(Integer, ForeignKey('models.id'))
-    # user_id = Column(String, ForeignKey('users.id'))
-
-    # progress = Column(Integer, default=-1)
-    # date = Column(DateTime, server_default=func.now())
-    # authoring_application = Column(String)
-    # schema = Column(String)
-    # production_hours = Column(String)
-    # license = Column(String)
-    # number_of_geometries = Column(String)
-    # number_of_properties = Column(String)
-    
-    # size = Column(String)
-    # app = Column(String)
-    # mvd = Column(String)
-    
-
     def __init__(self, code, filename):
         self.code = code
         self.filename = filename
@@ -168,11 +144,8 @@ class bsdd_validation_task(Base, Serializable):
 
     def __init__(self, validated_file):
         self.validated_file = validated_file
-        #self.file_id = Column(Integer, ForeignKey('files.id'))
+        
 
-
-
-    
 class ifc_instance(Base, Serializable):
     __tablename__ = 'instances'
 
@@ -187,8 +160,7 @@ class ifc_instance(Base, Serializable):
         self.ifc_type = ifc_type
         self.file = file
 
-
-       
+     
 class bsdd_result(Base, Serializable):
     __tablename__ = 'bSDD_results'
 
