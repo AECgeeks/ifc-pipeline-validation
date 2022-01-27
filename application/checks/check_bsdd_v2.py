@@ -102,12 +102,11 @@ def check_bsdd(ifc_fn, task_id):
                 instance_id = instance.id
                 session.commit()               
 
-                bsdd_result = database.bsdd_result(task_id)
-        
                 if bsdd_response:
                     if has_specifications(bsdd_content):
                         specifications = bsdd_content["classificationProperties"]
                         for constraint in specifications: 
+                            bsdd_result = database.bsdd_result(task_id)
                             # Should create instance entry
                             bsdd_result.instance_id = instance_id
 
@@ -129,11 +128,13 @@ def check_bsdd(ifc_fn, task_id):
                             session.commit()
                     else:
                         # Record NULL in other fields
+                        bsdd_result = database.bsdd_result(task_id)
                         bsdd_result.bsdd_property_constraint = "no constraint"
                         session.add(bsdd_result)
                         session.commit()
                 else:
                     # Record NULL everywhere in bsdd_result
+                    bsdd_result = database.bsdd_result(task_id)
                     bsdd_result.bsdd_classification_uri = "classification not found"
                     session.add(bsdd_result)
                     session.commit()
