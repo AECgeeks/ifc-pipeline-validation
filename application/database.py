@@ -49,19 +49,17 @@ Base = declarative_base()
 
 class Serializable(object):
     def serialize(self):
+        # Transforms data from dataclasses to a dict,
+        # storing primary key of references and handling date format
         d = {}
         for attribute in inspect(self).attrs.keys():
             if isinstance(getattr(self, attribute), (list, tuple)):
-                d[attribute] = []
-                for element in getattr(self, attribute):
-                    d[attribute].append(element.id)
+                d[attribute] = [element.id for element in getattr(self, attribute)]
             else:
-
                 if isinstance(getattr(self, attribute), datetime.datetime):
                     d[attribute] = getattr(self, attribute).strftime("%Y-%m-%d %H:%M:%S")
                 else:
                     d[attribute] = getattr(self, attribute)
-
         return d
 
 
