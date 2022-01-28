@@ -7,9 +7,7 @@ ifc_file = ifcopenshell.open(ifc_fn)
 
 try:
     detected_mvd = ifc_file.header.file_description.description[0].split(" ", 1)[1]
-    detected_mvd = detected_mvd[1:]
-    detected_mvd = detected_mvd[:-1]
-    # detected_mvd = detected_mvd.split(",")
+    detected_mvd = detected_mvd[1:-1]
 except:
     detected_mvd = "no MVD detected"
 
@@ -24,6 +22,7 @@ with database.Session() as session:
     model.schema = ifc_file.schema
     model.authoring_application = authoring_app
     model.mvd = detected_mvd
+    model.number_of_elements = len(ifc_file.by_type("IfcBuildingElement"))
     model.number_of_geometries = len(ifc_file.by_type("IfcShapeRepresentation"))
     model.number_of_properties = len(ifc_file.by_type("IfcProperty"))
 

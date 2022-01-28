@@ -98,9 +98,10 @@ class model(Base, Serializable):
     hours = Column(String)
     details = Column(String)
 
+    number_of_elements = Column(Integer)
     number_of_geometries = Column(Integer)
     number_of_properties = Column(Integer)
-
+    
     authoring_application = Column(String)
     schema = Column(String)
     size = Column(String)
