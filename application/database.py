@@ -27,7 +27,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 from sqlalchemy.inspection import inspect
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
 import os
@@ -92,7 +92,7 @@ class model(Base, Serializable):
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
-    license = Column(String,default="private")
+    license = Column(Enum('private','CC','MIT','GPL','LGPL'), server_default="private")
     hours = Column(String)
     details = Column(String)
 
@@ -105,11 +105,11 @@ class model(Base, Serializable):
     size = Column(String)
     mvd = Column(String)
 
-    status_syntax = Column(String, default='n')
-    status_schema = Column(String, default='n')
-    status_bsdd = Column(String, default='n')
-    status_mvd = Column(String, default='n')
-    status_ids= Column(String, default='n')
+    status_syntax = Column(Enum('n','v','w','i'), server_default='n')
+    status_schema = Column(Enum('n','v','w','i'), server_default='n')
+    status_bsdd = Column(Enum('n','v','w','i'), server_default='n')
+    status_mvd = Column(Enum('n','v','w','i'), server_default='n')
+    status_ids= Column(Enum('n','v','w','i'), server_default='n')
     
     instances = relationship("ifc_instance")
 
