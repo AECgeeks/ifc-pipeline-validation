@@ -105,11 +105,11 @@ class model(Base, Serializable):
     size = Column(String)
     mvd = Column(String)
 
-    status_syntax = Column(Enum('n','v','w','i'), server_default='n')
-    status_schema = Column(Enum('n','v','w','i'), server_default='n')
-    status_bsdd = Column(Enum('n','v','w','i'), server_default='n')
-    status_mvd = Column(Enum('n','v','w','i'), server_default='n')
-    status_ids= Column(Enum('n','v','w','i'), server_default='n')
+    status_syntax = Column(Enum('n','v','w','i'), default='n')
+    status_schema = Column(Enum('n','v','w','i'), default='n')
+    status_bsdd = Column(Enum('n','v','w','i'), default='n')
+    status_mvd = Column(Enum('n','v','w','i'), default='n')
+    status_ids= Column(Enum('n','v','w','i'), default='n')
     
     instances = relationship("ifc_instance")
 
