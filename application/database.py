@@ -27,7 +27,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 from sqlalchemy.inspection import inspect
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, Enum
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
 import os
@@ -55,11 +55,10 @@ class Serializable(object):
         for attribute in inspect(self).attrs.keys():
             if isinstance(getattr(self, attribute), (list, tuple)):
                 d[attribute] = [element.id for element in getattr(self, attribute)]
+            elif isinstance(getattr(self, attribute), datetime.datetime):
+                d[attribute] = getattr(self, attribute).strftime("%Y-%m-%d %H:%M:%S")
             else:
-                if isinstance(getattr(self, attribute), datetime.datetime):
-                    d[attribute] = getattr(self, attribute).strftime("%Y-%m-%d %H:%M:%S")
-                else:
-                    d[attribute] = getattr(self, attribute)
+                d[attribute] = getattr(self, attribute)
         return d
 
 
@@ -93,7 +92,7 @@ class model(Base, Serializable):
     date = Column(DateTime, server_default=func.now())
 
     license = Column(Enum('private','CC','MIT','GPL','LGPL'), server_default="private")
-    hours = Column(String)
+    hours = Column(Float)
     details = Column(String)
 
     number_of_elements = Column(Integer)
