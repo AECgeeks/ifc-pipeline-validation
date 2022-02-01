@@ -294,18 +294,13 @@ def put_main():
 
     user_id = request.form.to_dict()["user"]
 
-    extensions = set()
+    
 
     for key, f in request.files.items():
 
         if key.startswith('file'):
             file = f
             files.append(file)
-
-            if file.filename.endswith('.xml'):
-                extensions.add('xml')
-            if file.filename.endswith('.ifc'):
-                extensions.add('ifc')
 
     val_config = request.form.to_dict()
 
@@ -351,9 +346,7 @@ def dashboard(user_id):
     saved_models = session.query(database.model).filter(
         database.model.user_id == user_id).all()
 
-    saved_models.sort(key=lambda m: m.date)
-    saved_models = saved_models[::-1]
-
+    saved_models.sort(key=lambda m: m.date, reverse=True)
     saved_models = [model.serialize() for model in saved_models]
 
     return render_template('dashboard.html', user_id=user_id, saved_models=saved_models)
