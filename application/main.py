@@ -1,3 +1,4 @@
+
 ##################################################################################
 #                                                                                #
 # Copyright (c) 2020 AECgeeks                                                    #
@@ -30,7 +31,7 @@ import json
 import ast
 import threading
 from pathlib import Path
-
+from functools import wraps
 import datetime
 
 from collections import defaultdict, namedtuple
@@ -76,7 +77,7 @@ def send_simple_message(msg_content):
 application = Flask(__name__)
 
 application.config['SESSION_TYPE'] = 'filesystem'
-
+application.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 DEVELOPMENT = os.environ.get(
     'environment', 'production').lower() == 'development'
 
@@ -130,28 +131,25 @@ if not DEVELOPMENT:
     redirect_uri = 'https://validate-bsi-staging.aecgeeks.com/callback'
 
 
-@application.route("/")
-def index():
-    if not DEVELOPMENT:
-        return redirect(url_for('login'))
-    else:
-
-        with open('decoded.json') as json_file:
-            decoded = json.load(json_file)
-
-        session = database.Session()
-        user = session.query(database.user).filter(
-            database.user.id == decoded["sub"]).all()
-        if len(user) == 0:
-            session.add(database.user(str(decoded["sub"]), str(decoded["email"]), str(
-                decoded["family_name"]), str(decoded["given_name"]), str(decoded["name"])))
-            session.commit()
-            session.close()
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not DEVELOPMENT:
+            if not "oauth_token" in session.keys():
+                return redirect(url_for('login'))
+            return f(session['decoded'],*args, **kwargs)
         else:
-            print(user)
-        # todo: query database to send information JSON
+            with open('decoded.json') as json_file:
+                decoded = json.load(json_file)
+            return f(decoded, *args, **kwargs)
+    return decorated_function
 
-        return render_template('index.html', decoded=decoded)
+
+@application.route("/")
+@login_required
+def index(decoded):
+    print('decoded', decoded)
+    return render_template('index.html', decoded=decoded)
 
 
 @application.route('/login', methods=['GET'])
@@ -181,18 +179,17 @@ def callback():
     id_token = t['id_token']
 
     decoded = jwt.decode(id_token, key=key)
+    session['decoded'] = decoded
+    #db_session = database.Session()
+    #user = db_session.query(database.user).filter(
+        #database.user.id == decoded["sub"]).all()
+    #if len(user) == 0:
+        #db_session.add(database.user(str(decoded["sub"]), str(decoded["email"]), str(
+            #decoded["family_name"]), str(decoded["given_name"]), str(decoded["name"])))
+        #db_session.commit()
+        #db_session.close()
 
-    db_session = database.Session()
-    user = db_session.query(database.user).filter(
-        database.user.id == decoded["sub"]).all()
-    if len(user) == 0:
-        db_session.add(database.user(str(decoded["sub"]), str(decoded["email"]), str(
-            decoded["family_name"]), str(decoded["given_name"]), str(decoded["name"])))
-        db_session.commit()
-        db_session.close()
-
-    return render_template('index.html', decoded=decoded)
-
+    return redirect(url_for('index'))
 
 def process_upload(filewriter, callback_url=None):
 
