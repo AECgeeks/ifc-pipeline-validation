@@ -191,7 +191,7 @@ def callback():
 
 @application.route("/logout")
 @login_required
-def logout():
+def logout(decoded):
     logout_url = "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout"
     requests.get(logout_url)
     session.clear()
