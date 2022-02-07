@@ -60,18 +60,10 @@ function completeTable(i) {
 
     var repText = document.createElement("a");
     repText.id = "report"
-    // repText.style.textDecoration = "none";
     repText.innerHTML = "View report"
-    var fn = savedModels[i].filename;
-    var st = window.location.href;
-
-
-    var url = "/report2/" + userId + "/" + savedModels[i].code;
-    repText.href = url;
+    repText.href = "/report2/${savedModels[i].code}";
     row.cells[toColumnComplete["report"]].appendChild(repText)
 
-
-    // repText.href = url;
     rows[row_index].cells[7].appendChild(repText)
 
     rows[row_index].cells[7].style.color = "#0070C0";
@@ -182,25 +174,14 @@ for (var i = 0; i < savedModels.length; i++) {
 
         var repText = document.createElement("a");
         repText.id = "report"
-        // repText.style.textDecoration = "none";
         repText.innerHTML = "View report"
-        var fn = savedModels[i].filename;
-        var st = window.location.href;
-        var baseUrl = st.split('/')[2];
-        // var url = "/report2/"+ savedModels[i].code;
-        console.log("user id ", userId)
-        var url = "/report2/" + userId + "/" + savedModels[i].code;
+        repText.href = "/report2/${savedModels[i].code}";
 
-        repText.href = url;
         row.cells[toColumnComplete["report"]].appendChild(repText)
-
 
         row.cells[toColumnComplete["report"]].style.color = "#0070C0";
         row.cells[toColumnComplete["report"]].style.fontWeight = "bold";
         row.cells[toColumnComplete["report"]].id = "report"
-
-
-
 
         row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
 
@@ -212,7 +193,7 @@ for (var i = 0; i < savedModels.length; i++) {
 
         var splittedLocation = window.location.href.split("/");
         var domain = splittedLocation[0] + "/" + splittedLocation[1] + splittedLocation[2]
-        a.href = "/download/" + savedModels[i].id.toString();
+        a.href = "/download/${savedModels[i].id}";
         a.style.textDecoration = "none";
         row.cells[toColumnComplete["download"]].appendChild(a);
 
