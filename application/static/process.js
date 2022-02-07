@@ -83,10 +83,7 @@ function completeTable(i) {
     var linkText = document.createTextNode("Download");
     a.appendChild(linkText);
     a.title = "Download";
-
-    var splittedLocation = window.location.href.split("/");
-    var domain = splittedLocation[0] + "/" + splittedLocation[1] + splittedLocation[2]
-    a.href = "/download/" + savedModels[i].id.toString();
+    a.href = "/download/${savedModels[i].id}";
     a.style.textDecoration = "none";
 
     var children = rows[row_index].cells[9].childNodes;

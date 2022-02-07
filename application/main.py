@@ -296,7 +296,7 @@ def put_main(decoded):
     ids = []
     files = []
 
-    user_id = request.form.to_dict()["user"]
+    user_id = decoded["sub"]
 
     for key, f in request.files.items():
 
@@ -358,7 +358,7 @@ def dashboard(decoded):
 
 @application.route('/valprog/<id>', methods=['GET'])
 @login_required
-def get_validation_progress(id):
+def get_validation_progress(decoded, id):
     if not utils.validate_id(id):
         abort(404)
 
@@ -381,9 +381,9 @@ def get_validation_progress(id):
     return jsonify({"progress": model_progresses, "filename": model.filename, "file_info": file_info})
 
 
-@application.route('/update_info/<ids>/<number>/<user_id>', methods=['POST'])
+@application.route('/update_info/<ids>/<number>', methods=['POST'])
 @login_required
-def register_info_input(ids, number, user_id):
+def register_info_input(decoded, ids, number):
 
     data = request.get_data()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
@@ -417,7 +417,7 @@ def register_info_input(ids, number, user_id):
 
 @application.route('/update_info/<code>', methods=['POST'])
 @login_required
-def update_info(code):
+def update_info(decoded, code):
     session = database.Session()
     model = session.query(database.model).filter(
         database.model.code == code).all()[0]
@@ -442,9 +442,9 @@ def update_info(code):
     return jsonify({"progress": data.decode("utf-8")})
 
 
-@application.route('/update_info_saved/<number>/<user_id>', methods=['POST'])
+@application.route('/update_info_saved/<number>', methods=['POST'])
 @login_required
-def update_info_input(number, user_id):
+def update_info_input(decoded, number, user_id):
 
     data = request.get_data()
     decoded_data = ast.literal_eval(data.decode("utf-8"))
@@ -540,7 +540,7 @@ def get_viewer(id):
 
 @application.route('/reslogs/<i>/<ids>')
 @login_required
-def log_results(i, ids):
+def log_results(decoded, i, ids):
     all_ids = utils.unconcatenate_ids(ids)
 
     session = database.Session()
