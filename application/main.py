@@ -38,10 +38,6 @@ from collections import defaultdict, namedtuple
 from redis.client import parse_client_list
 from sqlalchemy.ext import declarative
 
-
-from werkzeug import datastructures
-
-
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, session, send_file, render_template, abort, jsonify, redirect, url_for, make_response
 from flask_cors import CORS
@@ -76,8 +72,7 @@ def send_simple_message(msg_content):
 
 application = Flask(__name__)
 
-application.config['SESSION_TYPE'] = 'filesystem'
-application.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+
 DEVELOPMENT = os.environ.get(
     'environment', 'production').lower() == 'development'
 
@@ -119,6 +114,8 @@ if not DEVELOPMENT:
 
 
 if not DEVELOPMENT:
+    application.config['SESSION_TYPE'] = 'filesystem'
+    application.config['SECRET_KEY'] = os.environ['SECRET_KEY']
     # LOGIN
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
     os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
@@ -189,6 +186,15 @@ def callback():
         #db_session.commit()
         #db_session.close()
 
+    return redirect(url_for('index'))
+
+
+@application.route("/logout")
+@login_required
+def logout():
+    logout_url = "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout"
+    requests.get(logout_url)
+    session.clear()
     return redirect(url_for('index'))
 
 def process_upload(filewriter, callback_url=None):
@@ -284,14 +290,13 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
 
 
 @application.route('/', methods=['POST'])
-def put_main():
+@login_required
+def put_main(decoded):
 
     ids = []
     files = []
 
     user_id = request.form.to_dict()["user"]
-
-    
 
     for key, f in request.files.items():
 
@@ -336,8 +341,10 @@ def check_viewer(id):
     return render_template('progress.html', id=id)
 
 
-@application.route('/dashboard/<user_id>', methods=['GET'])
-def dashboard(user_id):
+@application.route('/dashboard', methods=['GET'])
+@login_required
+def dashboard(decoded):
+    user_id = decoded['sub']
     # Retrieve user data
     session = database.Session()
     saved_models = session.query(database.model).filter(
@@ -350,6 +357,7 @@ def dashboard(user_id):
 
 
 @application.route('/valprog/<id>', methods=['GET'])
+@login_required
 def get_validation_progress(id):
     if not utils.validate_id(id):
         abort(404)
@@ -374,6 +382,7 @@ def get_validation_progress(id):
 
 
 @application.route('/update_info/<ids>/<number>/<user_id>', methods=['POST'])
+@login_required
 def register_info_input(ids, number, user_id):
 
     data = request.get_data()
@@ -407,6 +416,7 @@ def register_info_input(ids, number, user_id):
 
 
 @application.route('/update_info/<code>', methods=['POST'])
+@login_required
 def update_info(code):
     session = database.Session()
     model = session.query(database.model).filter(
@@ -433,6 +443,7 @@ def update_info(code):
 
 
 @application.route('/update_info_saved/<number>/<user_id>', methods=['POST'])
+@login_required
 def update_info_input(number, user_id):
 
     data = request.get_data()
@@ -528,6 +539,7 @@ def get_viewer(id):
 
 
 @application.route('/reslogs/<i>/<ids>')
+@login_required
 def log_results(i, ids):
     all_ids = utils.unconcatenate_ids(ids)
 
@@ -549,8 +561,9 @@ def log_results(i, ids):
     return jsonify(response)
 
 
-@application.route('/report2/<user_id>/<id>')
-def view_report2(user_id, id):
+@application.route('/report2/<id>')
+@login_required
+def view_report2(decoded, id):
 
     session = database.Session()
 
@@ -575,6 +588,7 @@ def view_report2(user_id, id):
     instances = {instance.id: instance.serialize() for instance in instances}
     session.close()
 
+    user_id = decoded['sub']
     return render_template("report_v2.html",
                            model=m,
                            bsdd_validation_task=bsdd_validation_task,
