@@ -61,7 +61,7 @@ function completeTable(i) {
     var repText = document.createElement("a");
     repText.id = "report"
     repText.innerHTML = "View report"
-    repText.href = "/report2/${savedModels[i].code}";
+    repText.href = `/report2/${savedModels[i].code}`;
     row.cells[toColumnComplete["report"]].appendChild(repText)
 
     rows[row_index].cells[7].appendChild(repText)
@@ -75,7 +75,7 @@ function completeTable(i) {
     var linkText = document.createTextNode("Download");
     a.appendChild(linkText);
     a.title = "Download";
-    a.href = "/download/${savedModels[i].id}";
+    a.href = `/download/${savedModels[i].id}`;
     a.style.textDecoration = "none";
 
     var children = rows[row_index].cells[9].childNodes;
@@ -175,7 +175,7 @@ for (var i = 0; i < savedModels.length; i++) {
         var repText = document.createElement("a");
         repText.id = "report"
         repText.innerHTML = "View report"
-        repText.href = "/report2/${savedModels[i].code}";
+        repText.href = `/report2/${savedModels[i].code}`;
 
         row.cells[toColumnComplete["report"]].appendChild(repText)
 
@@ -191,9 +191,7 @@ for (var i = 0; i < savedModels.length; i++) {
         a.title = "Download";
         a.style.color = "inherit";
 
-        var splittedLocation = window.location.href.split("/");
-        var domain = splittedLocation[0] + "/" + splittedLocation[1] + splittedLocation[2]
-        a.href = "/download/${savedModels[i].id}";
+        a.href = `/download/${savedModels[i].id}`;
         a.style.textDecoration = "none";
         row.cells[toColumnComplete["download"]].appendChild(a);
 
