@@ -145,7 +145,6 @@ def login_required(f):
 @application.route("/")
 @login_required
 def index(decoded):
-    print('decoded', decoded)
     return render_template('index.html', decoded=decoded)
 
 
@@ -177,14 +176,16 @@ def callback():
 
     decoded = jwt.decode(id_token, key=key)
     session['decoded'] = decoded
-    #db_session = database.Session()
-    #user = db_session.query(database.user).filter(
-        #database.user.id == decoded["sub"]).all()
-    #if len(user) == 0:
-        #db_session.add(database.user(str(decoded["sub"]), str(decoded["email"]), str(
-            #decoded["family_name"]), str(decoded["given_name"]), str(decoded["name"])))
-        #db_session.commit()
-        #db_session.close()
+
+    with database.Session() as db_session:
+        user = db_session.query(database.user).filter(database.user.id == decoded["sub"]).all()
+        if len(user) == 0:
+            db_session.add(database.user(str(decoded["sub"]),
+                                        str(decoded["email"]),
+                                        str(decoded["family_name"]),
+                                        str(decoded["given_name"]),
+                                        str(decoded["name"])))
+            db_session.commit()
 
     return redirect(url_for('index'))
 
@@ -192,7 +193,6 @@ def callback():
 @application.route("/logout")
 @login_required
 def logout(decoded):
-
     session.clear()  # Wipe out the user and the token cache from the session
     return redirect(  # Also need to log out from the Microsoft Identity platform
         "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout"
@@ -257,24 +257,21 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
 
     ids = []
     filenames = []
-    for file in files:
-        fn = file.filename
-        filenames.append(fn)
-        def filewriter(fn): return file.save(fn)
-        id = utils.generate_id()
-        ids.append(id)
-        d = utils.storage_dir_for_id(id)
-        os.makedirs(d)
-        filewriter(os.path.join(d, id+".ifc"))
-        session = database.Session()
-        session.add(database.model(id, fn, user_id))
-        session.commit()
-        session.close()
 
-    session = database.Session()
-    user = session.query(database.user).filter(
-        database.user.id == user_id).all()[0]
-    session.close()
+    with database.Session() as session:
+        for file in files:
+            fn = file.filename
+            filenames.append(fn)
+            def filewriter(fn): return file.save(fn)
+            id = utils.generate_id()
+            ids.append(id)
+            d = utils.storage_dir_for_id(id)
+            os.makedirs(d)
+            filewriter(os.path.join(d, id+".ifc"))
+            session.add(database.model(id, fn, user_id))
+            session.commit()
+
+        user = session.query(database.user).filter(database.user.id == user_id).all()[0]
 
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
     send_simple_message(msg)
@@ -348,12 +345,10 @@ def check_viewer(id):
 def dashboard(decoded):
     user_id = decoded['sub']
     # Retrieve user data
-    session = database.Session()
-    saved_models = session.query(database.model).filter(
-        database.model.user_id == user_id).all()
-
-    saved_models.sort(key=lambda m: m.date, reverse=True)
-    saved_models = [model.serialize() for model in saved_models]
+    with database.Session() as session:
+        saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
+        saved_models.sort(key=lambda m: m.date, reverse=True)
+        saved_models = [model.serialize() for model in saved_models]
 
     return render_template('dashboard.html', user_id=user_id, saved_models=saved_models)
 
@@ -370,15 +365,13 @@ def get_validation_progress(decoded, id):
     file_info = []
 
     for i in all_ids:
-        session = database.Session()
-        model = session.query(database.model).filter(
-            database.model.code == i).all()[0]
+        with database.Session() as session:
+            model = session.query(database.model).filter(database.model.code == i).all()[0]
 
-        file_info.append({"number_of_geometries": model.number_of_geometries,
-                         "number_of_properties": model.number_of_properties})
+            file_info.append({"number_of_geometries": model.number_of_geometries,
+                            "number_of_properties": model.number_of_properties})
 
-        model_progresses.append(model.progress)
-        session.close()
+            model_progresses.append(model.progress)
 
     return jsonify({"progress": model_progresses, "filename": model.filename, "file_info": file_info})
 
@@ -392,27 +385,24 @@ def register_info_input(decoded, ids, number):
     i = decoded_data['n']
 
     all_ids = utils.unconcatenate_ids(ids)
+    with database.Session() as session:
+        if decoded_data["from"] == "saved":
+            models = session.query(database.model).all()
+            model = models[-(i+2)]
+        else:
+            model = session.query(database.model).filter(
+                database.model.code == all_ids[i]).all()[0]
 
-    session = database.Session()
+        if decoded_data["type"] == "licenses":
+            model.license = decoded_data['license']
 
-    if decoded_data["from"] == "saved":
-        models = session.query(database.model).all()
-        model = models[-(i+2)]
-    else:
-        model = session.query(database.model).filter(
-            database.model.code == all_ids[i]).all()[0]
+        if decoded_data["type"] == "hours":
+            model.hours = decoded_data['hours']
 
-    if decoded_data["type"] == "licenses":
-        model.license = decoded_data['license']
+        if decoded_data["type"] == "details":
+            model.details = decoded_data['details']
 
-    if decoded_data["type"] == "hours":
-        model.hours = decoded_data['hours']
-
-    if decoded_data["type"] == "details":
-        model.details = decoded_data['details']
-
-    session.commit()
-    session.close()
+        session.commit()
 
     return jsonify({"progress": data.decode("utf-8")})
 
@@ -420,26 +410,23 @@ def register_info_input(decoded, ids, number):
 @application.route('/update_info/<code>', methods=['POST'])
 @login_required
 def update_info(decoded, code):
-    session = database.Session()
-    model = session.query(database.model).filter(
-        database.model.code == code).all()[0]
-    original_license = model.license
-    data = request.get_data()
+    with database.Session() as session:
+        model = session.query(database.model).filter(database.model.code == code).all()[0]
+        original_license = model.license
+        data = request.get_data()
 
-    decoded_data = ast.literal_eval(data.decode("utf-8"))
+        decoded_data = ast.literal_eval(data.decode("utf-8"))
 
-    property = decoded_data["type"]
-    setattr(model, property, decoded_data["val"])
+        property = decoded_data["type"]
+        setattr(model, property, decoded_data["val"])
 
-    user = session.query(database.user).filter(
-        database.user.id == model.user_id).all()[0]
+        user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
-    if decoded_data["type"] == "license":
-        send_simple_message(
-            f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
+        if decoded_data["type"] == "license":
+            send_simple_message(
+                f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
 
-    session.commit()
-    session.close()
+        session.commit()
 
     return jsonify({"progress": data.decode("utf-8")})
 
@@ -452,22 +439,20 @@ def update_info_input(decoded, number, user_id):
     decoded_data = ast.literal_eval(data.decode("utf-8"))
     i = decoded_data['n']
 
-    session = database.Session()
+    with database.Session() as session:
+        models = session.query(database.model).all()
+        model = models[-(i+1)]
 
-    models = session.query(database.model).all()
-    model = models[-(i+1)]
+        if decoded_data["type"] == "licenses":
+            model.license = decoded_data['license']
 
-    if decoded_data["type"] == "licenses":
-        model.license = decoded_data['license']
+        if decoded_data["type"] == "hours":
+            model.hours = decoded_data['hours']
 
-    if decoded_data["type"] == "hours":
-        model.hours = decoded_data['hours']
+        if decoded_data["type"] == "details":
+            model.details = decoded_data['details']
 
-    if decoded_data["type"] == "details":
-        model.details = decoded_data['details']
-
-    session.commit()
-    session.close()
+        session.commit()
 
     return jsonify({"progress": data.decode("utf-8")})
 
@@ -515,8 +500,7 @@ def get_viewer(id):
         abort(404)
     d = utils.storage_dir_for_id(id)
 
-    ifc_files = [os.path.join(d, name) for name in os.listdir(
-        d) if os.path.isfile(os.path.join(d, name)) and name.endswith('.ifc')]
+    ifc_files = [os.path.join(d, name) for name in os.listdir(d) if os.path.isfile(os.path.join(d, name)) and name.endswith('.ifc')]
 
     if len(ifc_files) == 0:
         abort(404)
@@ -544,21 +528,19 @@ def get_viewer(id):
 @login_required
 def log_results(decoded, i, ids):
     all_ids = utils.unconcatenate_ids(ids)
+    with database.Session() as session:
+        model = session.query(database.model).filter(
+            database.model.code == all_ids[int(i)]).all()[0]
 
-    session = database.Session()
-    model = session.query(database.model).filter(
-        database.model.code == all_ids[int(i)]).all()[0]
+        response = {"results": {}, "time": None}
 
-    response = {"results": {}, "time": None}
+        response["results"]["syntaxlog"] = model.status_syntax
+        response["results"]["schemalog"] = model.status_schema
+        response["results"]["mvdlog"] = model.status_mvd
+        response["results"]["bsddlog"] = model.status_bsdd
+        response["results"]["idslog"] = model.status_ids
 
-    response["results"]["syntaxlog"] = model.status_syntax
-    response["results"]["schemalog"] = model.status_schema
-    response["results"]["mvdlog"] = model.status_mvd
-    response["results"]["bsddlog"] = model.status_bsdd
-    response["results"]["idslog"] = model.status_ids
-
-    response["time"] = model.serialize()['date']
-    session.close()
+        response["time"] = model.serialize()['date']
 
     return jsonify(response)
 
@@ -566,30 +548,29 @@ def log_results(decoded, i, ids):
 @application.route('/report2/<id>')
 @login_required
 def view_report2(decoded, id):
+    with database.Session() as session:
+        session = database.Session()
 
-    session = database.Session()
+        model = session.query(database.model).filter(
+            database.model.code == id).all()[0]
+        m = model.serialize()
 
-    model = session.query(database.model).filter(
-        database.model.code == id).all()[0]
-    m = model.serialize()
+        bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
+            database.bsdd_validation_task.validated_file == model.id).all()[0]
 
-    bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
-        database.bsdd_validation_task.validated_file == model.id).all()[0]
+        bsdd_results = session.query(database.bsdd_result).filter(
+            database.bsdd_result.task_id == bsdd_validation_task.id).all()
+        bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
 
-    bsdd_results = session.query(database.bsdd_result).filter(
-        database.bsdd_result.task_id == bsdd_validation_task.id).all()
-    bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+        for bsdd_result in bsdd_results:
+            bsdd_result["bsdd_property_constraint"] = json.loads(
+                bsdd_result["bsdd_property_constraint"])
 
-    for bsdd_result in bsdd_results:
-        bsdd_result["bsdd_property_constraint"] = json.loads(
-            bsdd_result["bsdd_property_constraint"])
-
-    bsdd_validation_task = bsdd_validation_task.serialize()
-    instances = session.query(database.ifc_instance).filter(
-        database.ifc_instance.file == model.id).all()
-    instances = {instance.id: instance.serialize() for instance in instances}
-    session.close()
-
+        bsdd_validation_task = bsdd_validation_task.serialize()
+        instances = session.query(database.ifc_instance).filter(
+            database.ifc_instance.file == model.id).all()
+        instances = {instance.id: instance.serialize() for instance in instances}
+    
     user_id = decoded['sub']
     return render_template("report_v2.html",
                            model=m,
@@ -671,10 +652,10 @@ def view_report(id, ids, fn):
 
 @application.route('/download/<id>', methods=['GET'])
 def download_model(id):
-    session = database.Session()
-    model = session.query(database.model).filter(
-        database.model.id == id).all()[0]
-    code = model.code
+    with database.Session() as session:
+        session = database.Session()
+        model = session.query(database.model).filter(database.model.id == id).all()[0]
+        code = model.code
     path = utils.storage_file_for_id(code, "ifc")
 
     return send_file(path, attachment_filename=model.filename, as_attachment=True, conditional=True)
