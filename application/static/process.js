@@ -4,8 +4,8 @@ function sendInfo(index = null) {
     console.log(this)
     var property = event.srcElement.id.split('_')[0];
     var modelCode = event.srcElement.id.split('_')[1];
-
-    var data = { type: property, val: this.value, n: i };
+    console.log(modelCode)
+    var data = { type: property, val: this.value, n: i, code: modelCode};
 
     fetch("/update_info/" + modelCode, {
         method: "POST",
@@ -13,9 +13,7 @@ function sendInfo(index = null) {
     }).then(function (r) { return r.json(); }).then(function (r) {
         console.log(r);
     })
-
 }
-
 
 var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
 function completeTable(i) {
@@ -110,9 +108,6 @@ for (var i = 0; i < savedModels.length; i++) {
     for (var col = 0; col < nCols; col++) {
         row.insertCell(col);
     }
-
-
-
 
     var ifcLogo = document.createElement("IMG");
     ifcLogo.src = "/static/icons/ifc.png";

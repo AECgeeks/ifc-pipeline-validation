@@ -378,32 +378,20 @@ def get_validation_progress(decoded, id):
 @application.route('/update_info/<ids>/<number>', methods=['POST'])
 @login_required
 def register_info_input(decoded, ids, number):
-
-    data = request.get_data()
     decoded_data = request.json()
+    model_code = decoded_data["code"]
 
-    i = decoded_data['n']
-    all_ids = utils.unconcatenate_ids(ids)
     with database.Session() as session:
-        if decoded_data["from"] == "saved":
-            models = session.query(database.model).all()
-            model = models[-(i+2)]
-        else:
-            model = session.query(database.model).filter(
-                database.model.code == all_ids[i]).all()[0]
-
+        model = session.query(database.model).filter(database.model.code == model_code).all()[0]
         if decoded_data["type"] == "licenses":
             model.license = decoded_data['license']
-
         if decoded_data["type"] == "hours":
             model.hours = decoded_data['hours']
-
         if decoded_data["type"] == "details":
             model.details = decoded_data['details']
-
         session.commit()
 
-    return jsonify({"progress": data.decode("utf-8")})
+    return jsonify({"progress": decoded_data})
 
 
 @application.route('/update_info/<code>', methods=['POST'])
