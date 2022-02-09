@@ -192,10 +192,12 @@ def callback():
 @application.route("/logout")
 @login_required
 def logout(decoded):
-    logout_url = "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout"
-    requests.get(logout_url)
-    session.clear()
-    return redirect(url_for('index'))
+
+    session.clear()  # Wipe out the user and the token cache from the session
+    return redirect(  # Also need to log out from the Microsoft Identity platform
+        "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout"
+        "?post_logout_redirect_uri=" + url_for("index", _external=True))
+
 
 def process_upload(filewriter, callback_url=None):
 
