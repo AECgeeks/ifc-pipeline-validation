@@ -363,9 +363,8 @@ def get_validation_progress(decoded, id):
 
     model_progresses = []
     file_info = []
-
-    for i in all_ids:
-        with database.Session() as session:
+    with database.Session() as session:
+        for i in all_ids:
             model = session.query(database.model).filter(database.model.code == i).all()[0]
 
             file_info.append({"number_of_geometries": model.number_of_geometries,
@@ -381,9 +380,9 @@ def get_validation_progress(decoded, id):
 def register_info_input(decoded, ids, number):
 
     data = request.get_data()
-    decoded_data = ast.literal_eval(data.decode("utf-8"))
-    i = decoded_data['n']
+    decoded_data = request.json()
 
+    i = decoded_data['n']
     all_ids = utils.unconcatenate_ids(ids)
     with database.Session() as session:
         if decoded_data["from"] == "saved":
