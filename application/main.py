@@ -418,32 +418,6 @@ def update_info(decoded, code):
     return jsonify({"progress": data.decode("utf-8")})
 
 
-@application.route('/update_info_saved/<number>', methods=['POST'])
-@login_required
-def update_info_input(decoded, number, user_id):
-
-    data = request.get_data()
-    decoded_data = ast.literal_eval(data.decode("utf-8"))
-    i = decoded_data['n']
-
-    with database.Session() as session:
-        models = session.query(database.model).all()
-        model = models[-(i+1)]
-
-        if decoded_data["type"] == "licenses":
-            model.license = decoded_data['license']
-
-        if decoded_data["type"] == "hours":
-            model.hours = decoded_data['hours']
-
-        if decoded_data["type"] == "details":
-            model.details = decoded_data['details']
-
-        session.commit()
-
-    return jsonify({"progress": data.decode("utf-8")})
-
-
 @application.route('/pp/<id>', methods=['GET'])
 def get_progress(id):
     if not utils.validate_id(id):
