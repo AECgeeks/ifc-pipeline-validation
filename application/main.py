@@ -30,18 +30,14 @@ import os
 import json
 import ast
 import threading
-from pathlib import Path
 from functools import wraps
-import datetime
 
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 from redis.client import parse_client_list
-from sqlalchemy.ext import declarative
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, session, send_file, render_template, abort, jsonify, redirect, url_for, make_response
 from flask_cors import CORS
-
 
 from flasgger import Swagger, validate
 
@@ -365,6 +361,9 @@ def get_validation_progress(decoded, id):
     with database.Session() as session:
         for i in all_ids:
             model = session.query(database.model).filter(database.model.code == i).all()[0]
+            
+            if model.user_id != decoded["sub"]:
+                abort(404)
 
             file_info.append({"number_of_geometries": model.number_of_geometries,
                             "number_of_properties": model.number_of_properties})
