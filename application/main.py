@@ -43,7 +43,7 @@ from flask import Flask, request, session, send_file, render_template, abort, js
 from flask_cors import CORS
 
 
-from flasgger import Swagger
+from flasgger import Swagger, validate
 
 import requests
 from requests_oauthlib import OAuth2Session
@@ -287,7 +287,6 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
 
     return ids
 
-
 @application.route('/', methods=['POST'])
 @login_required
 def put_main(decoded):
@@ -303,14 +302,14 @@ def put_main(decoded):
             file = f
             files.append(file)
 
-    val_config = request.form.to_dict()
+    validate(data=request.form, filepath='defs.yml')
 
+    val_config = request.form.to_dict()
     val_results = {
         k + "log": 'n' for (k, v) in val_config.items() if k != "user"}
 
     validation_config = {}
     validation_config["config"] = val_config
-    del val_config["user"]
     validation_config["results"] = val_results
 
     if VALIDATION:

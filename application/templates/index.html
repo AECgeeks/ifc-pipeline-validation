@@ -150,9 +150,7 @@
         dz.on("addedfile", file => { console.log("new file") });
 
         dz.on("sending", function (file, xhr, data) {
-            data.append("user", decoded["sub"]);
             var validationTypes = ['syntax', 'schema', 'mvd', 'bsdd'];
-
 
             for (var i = 0; i < validationTypes.length; i++) {
                 var checkboxOutside = document.getElementById(validationTypes[i] + "_outside");
