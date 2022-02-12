@@ -139,13 +139,10 @@ def check_bsdd(ifc_fn, task_id):
                     session.add(bsdd_result)
                     session.commit()
                 
-        
         #todo: implement scores that actually validate or not the model
         model = session.query(database.model).filter(database.model.code == file_code)[0]
         model.status_bsdd = 'v'
         session.commit()
-        session.close()
-
 
 if __name__=="__main__":
         parser = argparse.ArgumentParser(description="Generate classified IFC file")
