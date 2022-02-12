@@ -11,16 +11,12 @@ parameters:
       required:
         - type
         - val
-        - n
         - code
       properties:
         type:
           type: string
           default: "0"
         val:
-          type: string
-          default: "0"
-        n:
           type: string
           default: "0"
         code:
