@@ -1,7 +1,7 @@
-Validation using JsonSchema for checking the config
+Validation using JsonSchema for checking the update
 ---
 tags:
-  - config
+  - update
 parameters:
   - name: body
     in: formData
@@ -9,20 +9,20 @@ parameters:
     schema:
       id: User
       required:
-        - syntax
-        - schema
-        - mvd
-        - bsdd
+        - type
+        - val
+        - n
+        - code
       properties:
-        syntax:
+        type:
           type: string
           default: "0"
-        schema:
+        val:
           type: string
           default: "0"
-        mvd:
+        n:
           type: string
           default: "0"
-        bsdd:
+        code:
           type: string
           default: "0"

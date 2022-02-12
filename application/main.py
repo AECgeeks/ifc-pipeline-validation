@@ -373,28 +373,10 @@ def get_validation_progress(decoded, id):
     return jsonify({"progress": model_progresses, "filename": model.filename, "file_info": file_info})
 
 
-@application.route('/update_info/<ids>/<number>', methods=['POST'])
-@login_required
-def register_info_input(decoded, ids, number):
-    decoded_data = request.json()
-    model_code = decoded_data["code"]
-
-    with database.Session() as session:
-        model = session.query(database.model).filter(database.model.code == model_code).all()[0]
-        if decoded_data["type"] == "licenses":
-            model.license = decoded_data['license']
-        if decoded_data["type"] == "hours":
-            model.hours = decoded_data['hours']
-        if decoded_data["type"] == "details":
-            model.details = decoded_data['details']
-        session.commit()
-
-    return jsonify({"progress": decoded_data})
-
-
 @application.route('/update_info/<code>', methods=['POST'])
 @login_required
 def update_info(decoded, code):
+    validate(data=request.get_data(), filepath='update.yml')    
     with database.Session() as session:
         model = session.query(database.model).filter(database.model.code == code).all()[0]
         original_license = model.license
