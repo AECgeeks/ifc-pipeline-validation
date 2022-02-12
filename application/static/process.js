@@ -5,7 +5,7 @@ function sendInfo(index = null) {
     var property = event.srcElement.id.split('_')[0];
     var modelCode = event.srcElement.id.split('_')[1];
     console.log(modelCode)
-    var data = { type: property, val: this.value, n: i, code: modelCode};
+    var data = { type: property, val: this.value, code: modelCode};
 
     fetch("/update_info/" + modelCode, {
         method: "POST",
@@ -22,52 +22,28 @@ function completeTable(i) {
     var rows = table.rows;
 
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
-
-        var syntaxImg = document.createElement("img");
-        syntaxImg.src = "/static/icons/" + icons[r["results"]['syntaxlog']] + ".png";
-
-        var schemaImg = document.createElement("img");
-        schemaImg.src = "/static/icons/" + icons[r["results"]['schemalog']] + ".png";
-
-        var MVDImg = document.createElement("img");
-        MVDImg.src = "/static/icons/" + icons[r["results"]['mvdlog']] + ".png";
-
-        var bsddImg = document.createElement("img");
-        bsddImg.src = "/static/icons/" + icons[r["results"]['bsddlog']] + ".png";
-
-        var idsImg = document.createElement("img");
-        idsImg.src = "/static/icons/" + icons[r["results"]['idslog']] + ".png";
-
-        rows[row_index].cells[0].appendChild(syntaxImg);
-        rows[row_index].cells[1].appendChild(schemaImg);
-        rows[row_index].cells[2].appendChild(MVDImg);
-        rows[row_index].cells[3].appendChild(bsddImg);
-        rows[row_index].cells[4].appendChild(idsImg);
+        ['syntaxlog', 'schemalog', 'mvdlog', 'bsddlog'].forEach((x, i) => {
+            var img = document.createElement("img");
+            img.src = "/static/icons/" + icons[r["results"][x]] + ".png";
+            rows[row_index].cells[i].appendChild(img);
+          });
 
         rows[row_index].cells[8].innerHTML = r["time"];
-
-
         rows[row_index].cells[8].style.fontWeight = "bold";
         rows[row_index].cells[8].style.color = "#d9d9d9";
-
-
     });
-
-
-
 
     var repText = document.createElement("a");
     repText.id = "report"
     repText.innerHTML = "View report"
     repText.href = `/report2/${savedModels[i].code}`;
-    row.cells[toColumnComplete["report"]].appendChild(repText)
+    rows[row_index].cells[toColumnComplete["report"]].appendChild(repText)
 
     rows[row_index].cells[7].appendChild(repText)
 
     rows[row_index].cells[7].style.color = "#0070C0";
     rows[row_index].cells[7].style.fontWeight = "bold";
     rows[row_index].cells[7].id = "report"
-
 
     var a = document.createElement('a');
     var linkText = document.createTextNode("Download");
@@ -99,11 +75,10 @@ var codeToId = {};
 var idToRowIndex = {}
 
 
-for (var i = 0; i < savedModels.length; i++) {
-
+savedModels.forEach((model, i) => {
     var rowIndex = i + 1;
     var row = table.insertRow(rowIndex);
-    row.id = savedModels[i].id;
+    row.id = model.id;
 
     for (var col = 0; col < nCols; col++) {
         row.insertCell(col);
@@ -114,7 +89,7 @@ for (var i = 0; i < savedModels.length; i++) {
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
 
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
-    row.cells[toColumnComplete["file_name"]].innerHTML = savedModels[i].filename;
+    row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
     row.cells[toColumnComplete["file_name"]].style.textAlign = "left";
     row.cells[toColumnComplete["file_name"]].className = "filename";
 
@@ -128,35 +103,35 @@ for (var i = 0; i < savedModels.length; i++) {
         licenseSelect.add(option);
     }
 
-    licenseSelect.id = "license_" + savedModels[i].code;
+    licenseSelect.id = "license_" + model.code;
     licenseSelect.addEventListener("change", sendInfo);
-    licenseSelect.value = savedModels[i].license
+    licenseSelect.value = model.license
     row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
 
     var hoursInput = document.createElement("INPUT");
-    hoursInput.id = "hours_" + savedModels[i].code
+    hoursInput.id = "hours_" + model.code
     hoursInput.addEventListener("change", sendInfo);
-    hoursInput.value = savedModels[i].hours;
+    hoursInput.value = model.hours;
     hoursInput.style.width = "30px"
     row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
 
     var detailsInput = document.createElement("INPUT");
-    detailsInput.id = "details_" + savedModels[i].code
+    detailsInput.id = "details_" + model.code
     detailsInput.addEventListener("change", sendInfo);
-    detailsInput.value = savedModels[i].details
+    detailsInput.value = model.details
     row.cells[toColumnComplete["details"]].appendChild(detailsInput);
 
 
 
 
-    if (savedModels[i].progress == 100) {
+    if (model.progress == 100) {
 
 
         var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids"];
         var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
         for (var j = 0; j < checks_type.length; j++) {
             var attr = "status_" + checks_type[j];
-            var status_result = savedModels[i][attr];
+            var status_result = model[attr];
             var icon = icons[status_result];
             var img = document.createElement("IMG");
             img.src = "/static/icons/" + icon + ".png";
@@ -170,7 +145,7 @@ for (var i = 0; i < savedModels.length; i++) {
         var repText = document.createElement("a");
         repText.id = "report"
         repText.innerHTML = "View report"
-        repText.href = `/report2/${savedModels[i].code}`;
+        repText.href = `/report2/${model.code}`;
 
         row.cells[toColumnComplete["report"]].appendChild(repText)
 
@@ -178,7 +153,7 @@ for (var i = 0; i < savedModels.length; i++) {
         row.cells[toColumnComplete["report"]].style.fontWeight = "bold";
         row.cells[toColumnComplete["report"]].id = "report"
 
-        row.cells[toColumnComplete["date"]].innerHTML = savedModels[i].date
+        row.cells[toColumnComplete["date"]].innerHTML = model.date
 
         var a = document.createElement('a');
         var linkText = document.createTextNode("Download");
@@ -186,7 +161,7 @@ for (var i = 0; i < savedModels.length; i++) {
         a.title = "Download";
         a.style.color = "inherit";
 
-        a.href = `/download/${savedModels[i].id}`;
+        a.href = `/download/${model.id}`;
         a.style.textDecoration = "none";
         row.cells[toColumnComplete["download"]].appendChild(a);
 
@@ -205,37 +180,38 @@ for (var i = 0; i < savedModels.length; i++) {
 
 
 
-        row.cells[toColumnComplete["geoms"]].innerHTML = savedModels[i].number_of_geometries;
-        row.cells[toColumnComplete["props"]].innerHTML = savedModels[i].number_of_properties;
+        row.cells[toColumnComplete["geoms"]].innerHTML = model.number_of_geometries;
+        row.cells[toColumnComplete["props"]].innerHTML = model.number_of_properties;
 
 
     }
 
     else {
         console.log("unsaved");
-        unsavedConcat += savedModels[i].code;
-        modelIds.push(savedModels[i].id);
+        unsavedConcat += model.code;
+        modelIds.push(model.id);
 
-        idToRowIndex[savedModels[i].id] = rowIndex;
+        idToRowIndex[model.id] = rowIndex;
 
         row.cells[toColumnUncomplete["stop"]].innerHTML = "Stop";
 
         const newDiv = document.createElement("div");
         newDiv.className = "progress"
         const barDiv = document.createElement("div");
-        barDiv.id = "bar" + savedModels[i].id;
+        barDiv.id = "bar" + model.id;
         barDiv.className = "bar";
         newDiv.appendChild(barDiv)
         row.cells[toColumnUncomplete["progress"]].appendChild(newDiv);
 
-        row.cells[toColumnUncomplete["advancement"]].innerHTML = savedModels[i].progress;
-        row.cells[toColumnUncomplete["advancement"]].id = "percentage" + savedModels[i].id;
-        codeToId[savedModels[i].code] = savedModels[i].id;
+        row.cells[toColumnUncomplete["advancement"]].innerHTML = model.progress;
+        row.cells[toColumnUncomplete["advancement"]].id = "percentage" + model.id;
+        codeToId[model.code] = model.id;
 
 
     }
+});
 
-}
+
 
 
 const registered = new Set();
@@ -290,3 +266,4 @@ if (unsavedConcat) {
     poll(unsavedConcat);
 
 }
+
