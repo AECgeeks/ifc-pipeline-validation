@@ -334,7 +334,6 @@ def check_viewer(id):
         abort(404)
     return render_template('progress.html', id=id)
 
-
 @application.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard(decoded):
@@ -376,25 +375,26 @@ def get_validation_progress(decoded, id):
 @application.route('/update_info/<code>', methods=['POST'])
 @login_required
 def update_info(decoded, code):
-    validate(data=request.get_data(), filepath='update.yml')    
-    with database.Session() as session:
-        model = session.query(database.model).filter(database.model.code == code).all()[0]
-        original_license = model.license
-        data = request.get_data()
-        decoded_data = json.loads(data)
+    try:
+        validate(data=request.get_data(), filepath='update.yml')    
+        with database.Session() as session:
+            model = session.query(database.model).filter(database.model.code == code).all()[0]
+            original_license = model.license
+            data = request.get_data()
+            decoded_data = json.loads(data)
 
-        property = decoded_data["type"]
-        setattr(model, property, decoded_data["val"])
+            property = decoded_data["type"]
+            setattr(model, property, decoded_data["val"])
 
-        user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
+            user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
-        if decoded_data["type"] == "license":
-            send_simple_message(
-                f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
-
-        session.commit()
-
-    return jsonify({"progress": data.decode("utf-8")})
+            if decoded_data["type"] == "license":
+                send_simple_message(
+                    f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
+            session.commit()
+        return jsonify( {"progress": data.decode("utf-8")})
+    except:
+        return jsonify( {"progress": "an error happened"})
 
 
 @application.route('/pp/<id>', methods=['GET'])
@@ -521,7 +521,8 @@ def view_report2(decoded, id):
 
 
 @application.route('/download/<id>', methods=['GET'])
-def download_model(id):
+@login_required
+def download_model(decoded, id):
     with database.Session() as session:
         session = database.Session()
         model = session.query(database.model).filter(database.model.id == id).all()[0]
@@ -530,6 +531,10 @@ def download_model(id):
 
     return send_file(path, attachment_filename=model.filename, as_attachment=True, conditional=True)
 
+@application.route('/delete/<id>', methods=['GET'])
+@login_required
+def delete(decoded, id):
+    return "to implement"
 
 @application.route('/m/<fn>', methods=['GET'])
 def get_model(fn):

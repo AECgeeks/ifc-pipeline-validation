@@ -15,7 +15,7 @@ function sendInfo(index = null) {
     })
 }
 
-
+// Helper functions
 function createLicenseInput(licensTypes, row, model){
     var licenseSelect = document.createElement("SELECT");
 
@@ -32,13 +32,27 @@ function createLicenseInput(licensTypes, row, model){
 
 }
 
-
 function createInput(type, row, model){
     var input = document.createElement("INPUT")
     input.id = `${type}_${model.code}`;
     input.addEventListener("change", sendInfo);
     input.value = (type=="hours" ? model.hours : model.details);
     row.cells[toColumnComplete[type]].appendChild(input);
+}
+
+function replaceInCell(type, cell, modelId, replace=0){
+    if(replace){
+        cell.removeChild(cell.childNodes[0]);
+    }
+    cell.className = type;
+    var a = document.createElement('a');
+    var text = (type=="download") ? "Download":"Delete";
+    var linkText = document.createTextNode(text);
+    a.className = "dashboard_link"
+    a.appendChild(linkText);
+    a.title = type;
+    a.href = `/${type}/${modelId}`;
+    cell.appendChild(a);
 }
 
 
@@ -57,42 +71,21 @@ function completeTable(i) {
           });
 
         rows[row_index].cells[8].innerHTML = r["time"];
-        rows[row_index].cells[8].style.fontWeight = "bold";
-        rows[row_index].cells[8].style.color = "#d9d9d9";
+        rows[row_index].cells[8].className = "model_time";
+
     });
 
+
+    rows[row_index].cells[toColumnComplete["report"]].className = "model_report";
     var repText = document.createElement("a");
-    repText.id = "report"
-    repText.innerHTML = "View report"
+    repText.className = "dashboard_link";
+    repText.id = "report";
+    repText.innerHTML = "View report";
     repText.href = `/report2/${savedModels[i].code}`;
-    rows[row_index].cells[toColumnComplete["report"]].appendChild(repText)
+    rows[row_index].cells[toColumnComplete["report"]].appendChild(repText);
 
-    rows[row_index].cells[7].appendChild(repText)
-
-    rows[row_index].cells[7].style.color = "#0070C0";
-    rows[row_index].cells[7].style.fontWeight = "bold";
-    rows[row_index].cells[7].id = "report"
-
-    var a = document.createElement('a');
-    var linkText = document.createTextNode("Download");
-    a.appendChild(linkText);
-    a.title = "Download";
-    a.href = `/download/${savedModels[i].id}`;
-    a.style.textDecoration = "none";
-
-    var children = rows[row_index].cells[9].childNodes;
-    rows[row_index].cells[9].removeChild(children[0]);
-    rows[row_index].cells[9].appendChild(a);
-
-    a.style.color = "inherit";
-    rows[row_index].cells[10].innerHTML = '<a href="{{ url_for("index") }}" style ="text-decoration:none;">Delete</a>';
-
-    rows[row_index].cells[9].style.fontWeight = "bold";
-    rows[row_index].cells[10].style.fontWeight = "bold";
-    rows[row_index].cells[9].style.color = "rgb(105, 125, 239)";
-    rows[row_index].cells[10].style.color = "rgb(224, 101, 101)";
-
-
+    replaceInCell("download",rows[row_index].cells[toColumnComplete["download"]], savedModels[i].id, 1);
+    replaceInCell("delete",rows[row_index].cells[toColumnComplete["delete"]], savedModels[i].id, 1);
 }
 
 var table = document.getElementById("saved_models");
@@ -115,7 +108,6 @@ savedModels.forEach((model, i) => {
     row.cells[toColumnComplete["file_format"]].className = "ifc";
 
     row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
-    row.cells[toColumnComplete["file_name"]].style.textAlign = "left";
     row.cells[toColumnComplete["file_name"]].className = "filename";
 
     
@@ -141,33 +133,16 @@ savedModels.forEach((model, i) => {
         repText.href = `/report2/${model.code}`;
 
         row.cells[toColumnComplete["report"]].appendChild(repText)
-
-        row.cells[toColumnComplete["report"]].style.color = "#0070C0";
-        row.cells[toColumnComplete["report"]].style.fontWeight = "bold";
-        row.cells[toColumnComplete["report"]].id = "report"
+        row.cells[toColumnComplete["report"]].className = "model_report"
 
         row.cells[toColumnComplete["date"]].innerHTML = model.date
+        row.cells[toColumnComplete["date"]].className = "model_time"
 
-        var a = document.createElement('a');
-        var linkText = document.createTextNode("Download");
-        a.appendChild(linkText);
-        a.title = "Download";
-        a.style.color = "inherit";
-
-        a.href = `/download/${model.id}`;
-        a.style.textDecoration = "none";
-        row.cells[toColumnComplete["download"]].appendChild(a);
-
-        row.cells[toColumnComplete["delete"]].innerHTML = "Delete";
-
-        row.cells[toColumnComplete["download"]].style.fontWeight = "bold";
-        row.cells[toColumnComplete["delete"]].style.fontWeight = "bold";
-        row.cells[toColumnComplete["download"]].style.color = "rgb(105, 125, 239)";
-        row.cells[toColumnComplete["delete"]].style.color = "rgb(224, 101, 101)";
+        replaceInCell("download",row.cells[toColumnComplete["download"]], model.id);
+        replaceInCell("delete",row.cells[toColumnComplete["delete"]], model.id);
 
         row.cells[toColumnComplete["geoms"]].innerHTML = model.number_of_geometries;
         row.cells[toColumnComplete["props"]].innerHTML = model.number_of_properties;
-
 
     }
 
@@ -195,8 +170,6 @@ savedModels.forEach((model, i) => {
 
     }
 });
-
-
 
 
 const registered = new Set();

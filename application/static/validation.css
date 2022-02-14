@@ -98,35 +98,39 @@ td {
   padding-left: 20px;
 }
 
+
+.filename{
+  text-align: left;
+}
+
 .valid{
   background-image: url('./icons/valid.png');
   background-repeat: no-repeat;
-  /* background-size: cover; */
+  background-position: center;
 }
-
 
 .warning{
   background-image: url('./icons/warning.png');
   background-repeat: no-repeat;
-  /* background-size: cover; */
+  background-position: center;
 }
 
 .invalid{
   background-image: url('./icons/invalid.png');
   background-repeat: no-repeat;
-  /* background-size: cover; */
+  background-position: center;
 }
 
 .not{
   background-image: url('./icons/not.png');
   background-repeat: no-repeat;
-  /* background-size: cover; */
+  background-position: center;
 }
 
 .ifc{
   background-image: url('./icons/ifc.png');
   background-repeat: no-repeat;
-  /* background-size: cover; */
+  background-position: center;
 }
 
 
@@ -156,5 +160,31 @@ td {
   width: 0px;
   border-radius: 25px;
 }
+
+.model_report{
+  font-weight: bold;
+  color:#0070C0;
+}
+
+.model_time{
+  font-weight: bold;
+  color:#d9d9d9;
+}
+
+.dashboard_link{
+  color:inherit;
+  text-decoration: none;
+}
+
+.download{
+  font-weight: bold;
+  color:rgb(105, 125, 239);
+}
+
+.delete{
+  font-weight: bold;
+  color:rgb(224, 101, 101);
+}
+
 
 
