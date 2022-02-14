@@ -15,6 +15,33 @@ function sendInfo(index = null) {
     })
 }
 
+
+function createLicenseInput(licensTypes, row, model){
+    var licenseSelect = document.createElement("SELECT");
+
+    for (const license of licensTypes) {
+        var option = document.createElement("option");
+        option.text = license;
+        licenseSelect.add(option);
+    }
+
+    licenseSelect.id = "license_" + model.code;
+    licenseSelect.addEventListener("change", sendInfo);
+    licenseSelect.value = model.license
+    row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
+
+}
+
+
+function createInput(type, row, model){
+    var input = document.createElement("INPUT")
+    input.id = `${type}_${model.code}`;
+    input.addEventListener("change", sendInfo);
+    input.value = (type=="hours" ? model.hours : model.details);
+    row.cells[toColumnComplete[type]].appendChild(input);
+}
+
+
 var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
 function completeTable(i) {
     var table = document.getElementById("saved_models");
@@ -88,45 +115,18 @@ savedModels.forEach((model, i) => {
     ifcLogo.src = "/static/icons/ifc.png";
     row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
 
-    row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
     row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
     row.cells[toColumnComplete["file_name"]].style.textAlign = "left";
     row.cells[toColumnComplete["file_name"]].className = "filename";
 
-    var licenseSelect = document.createElement("SELECT");
-
-
+    
     var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-    for (const license of licensTypes) {
-        var option = document.createElement("option");
-        option.text = license;
-        licenseSelect.add(option);
-    }
 
-    licenseSelect.id = "license_" + model.code;
-    licenseSelect.addEventListener("change", sendInfo);
-    licenseSelect.value = model.license
-    row.cells[toColumnComplete["license"]].appendChild(licenseSelect);
-
-    var hoursInput = document.createElement("INPUT");
-    hoursInput.id = "hours_" + model.code
-    hoursInput.addEventListener("change", sendInfo);
-    hoursInput.value = model.hours;
-    hoursInput.style.width = "30px"
-    row.cells[toColumnComplete["hours"]].appendChild(hoursInput);
-
-    var detailsInput = document.createElement("INPUT");
-    detailsInput.id = "details_" + model.code
-    detailsInput.addEventListener("change", sendInfo);
-    detailsInput.value = model.details
-    row.cells[toColumnComplete["details"]].appendChild(detailsInput);
-
-
-
+    createLicenseInput(licensTypes, row, model);
+    createInput("hours", row, model);
+    createInput("details", row, model);
 
     if (model.progress == 100) {
-
-
         var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids"];
         var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
         for (var j = 0; j < checks_type.length; j++) {
@@ -138,9 +138,6 @@ savedModels.forEach((model, i) => {
             row.cells[toColumnComplete[checks_type[j]]].appendChild(img);
 
         }
-
-
-
 
         var repText = document.createElement("a");
         repText.id = "report"
