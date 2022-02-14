@@ -381,8 +381,7 @@ def update_info(decoded, code):
         model = session.query(database.model).filter(database.model.code == code).all()[0]
         original_license = model.license
         data = request.get_data()
-
-        decoded_data = ast.literal_eval(data.decode("utf-8"))
+        decoded_data = json.loads(data)
 
         property = decoded_data["type"]
         setattr(model, property, decoded_data["val"])
