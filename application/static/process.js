@@ -51,8 +51,9 @@ function completeTable(i) {
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
         ['syntaxlog', 'schemalog', 'mvdlog', 'bsddlog'].forEach((x, i) => {
             var img = document.createElement("img");
+            var icon = icons[r["results"][x]];
+            rows[row_index].cells[i].className = icon;
             img.src = "/static/icons/" + icons[r["results"][x]] + ".png";
-            rows[row_index].cells[i].appendChild(img);
           });
 
         rows[row_index].cells[8].innerHTML = r["time"];
@@ -111,9 +112,7 @@ savedModels.forEach((model, i) => {
         row.insertCell(col);
     }
 
-    var ifcLogo = document.createElement("IMG");
-    ifcLogo.src = "/static/icons/ifc.png";
-    row.cells[toColumnComplete["file_format"]].appendChild(ifcLogo);
+    row.cells[toColumnComplete["file_format"]].className = "ifc";
 
     row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
     row.cells[toColumnComplete["file_name"]].style.textAlign = "left";
@@ -133,10 +132,7 @@ savedModels.forEach((model, i) => {
             var attr = "status_" + checks_type[j];
             var status_result = model[attr];
             var icon = icons[status_result];
-            var img = document.createElement("IMG");
-            img.src = "/static/icons/" + icon + ".png";
-            row.cells[toColumnComplete[checks_type[j]]].appendChild(img);
-
+            row.cells[toColumnComplete[checks_type[j]]].className = icon;       
         }
 
         var repText = document.createElement("a");
@@ -162,20 +158,12 @@ savedModels.forEach((model, i) => {
         a.style.textDecoration = "none";
         row.cells[toColumnComplete["download"]].appendChild(a);
 
-
         row.cells[toColumnComplete["delete"]].innerHTML = "Delete";
 
-
-
         row.cells[toColumnComplete["download"]].style.fontWeight = "bold";
-
-
         row.cells[toColumnComplete["delete"]].style.fontWeight = "bold";
         row.cells[toColumnComplete["download"]].style.color = "rgb(105, 125, 239)";
         row.cells[toColumnComplete["delete"]].style.color = "rgb(224, 101, 101)";
-
-
-
 
         row.cells[toColumnComplete["geoms"]].innerHTML = model.number_of_geometries;
         row.cells[toColumnComplete["props"]].innerHTML = model.number_of_properties;
