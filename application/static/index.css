@@ -17,7 +17,6 @@ html, body, .full-screen {
   flex-direction: column;
 }
 
-/****** navigation ******/
 
 .header {
   display: flex;
@@ -25,7 +24,6 @@ html, body, .full-screen {
   justify-content: space-between;
   height: 90px;
   width: 100%;
-  /* background-color:green */
 }
 
 .bsdd-logo {
@@ -44,15 +42,10 @@ html, body, .full-screen {
   flex: 1 1 auto;
 }
 
-
-/****** tabs ******/
 .tabs{
   display: flex;
   align-items:center;
   justify-content:space-around;
-  /* width:300px;
-  padding-left: 10px;
-  padding-right: 10px; */
   width: 320px;
   background-color:#e7e7e7;
   gap:3px;
@@ -68,8 +61,6 @@ html, body, .full-screen {
 background: none;
 width:50%;
 font-size: 20px;
-
-/* height: 40px; */
 height: 100%;
 
 }
@@ -79,31 +70,16 @@ height: 100%;
 }
 
 .tab:active{
-  /* background:rgb(255, 255, 255); */
   border: none;
   outline:0;
 }
-/* button:focus{
-  background:rgb(255, 255, 255);
-  border: none;
-  outline:0;
-} */
+
 
 button:focus{
   outline:0;
 }
 
-/* .tab:hover{
-  background:bisque;
-} */
-
-
-
-/****** submit area ******/
-
 .submit-area{
- 
-  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -132,7 +108,6 @@ button:focus{
   text-align: left;
   width: 80%;
   background-color:rgba(0, 158, 176, 0.384);
-  /* background-color: rgb(181, 201, 255); */
   border-radius: 5px;
   font-family: Calibri;
 }
@@ -142,7 +117,6 @@ button:focus{
   border-radius: 5px;
   width: 40%;
   font-size: 15px;
-  /* border: none; */
 }
 
 a:visited {
