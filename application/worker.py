@@ -89,10 +89,19 @@ class syntax_validation_task(task):
 
     def execute(self, directory, id):
         check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == id).all()[0]
+
+        validation_task = database.syntax_validation_task(model.id)
+        session.add(validation_task)
+        validation_task_id = str(validation_task.id)
+
+        syntax_result = database.syntax_result(validation_task_id)
+        syntax_result.msg = str(proc.stderr.read())
+        session.add(syntax_result)
+
         model.status_syntax = 'i'
         session.commit()
         session.close()
@@ -116,9 +125,8 @@ class ifc_validation_task(task):
     def execute(self, directory, id):
         check_program = "ifcopenshell.validate"
 
-        proc = subprocess.Popen(["python","-m", check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
-
+        proc = subprocess.Popen(["python","-m", check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
         session = database.Session()
         model = session.query(database.model).filter(database.model.code == id).all()[0]
 
@@ -127,7 +135,7 @@ class ifc_validation_task(task):
         validation_task_id = str(validation_task.id)
 
         schema_result = database.schema_result(validation_task_id)
-        schema_result.msg = stderr
+        schema_result.msg = str(proc.stderr.read())
         session.add(schema_result)
 
         model.status_schema = 'w'

@@ -157,6 +157,21 @@ class schema_validation_task(Base, Serializable):
     def __init__(self, validated_file):
         self.validated_file = validated_file
 
+
+class syntax_validation_task(Base, Serializable):
+    __tablename__ = 'syntax_validation_tasks'
+
+    id = Column(Integer, primary_key=True)
+    validated_file = Column(Integer, ForeignKey('models.id'))
+    validation_start_time = Column(DateTime)
+    validation_end_time = Column(DateTime)
+
+    results = relationship("syntax_result")
+
+    def __init__(self, validated_file):
+        self.validated_file = validated_file
+
+
 class ifc_instance(Base, Serializable):
     __tablename__ = 'instances'
 
@@ -201,7 +216,19 @@ class schema_result(Base, Serializable):
 
     def __init__(self, task_id):
         self.task_id = task_id
-     
+
+
+class syntax_result(Base, Serializable):
+    __tablename__ = 'syntax_results'
+
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer, ForeignKey('syntax_validation_tasks.id'))
+    msg = Column(String, default="msg")
+
+    def __init__(self, task_id):
+        self.task_id = task_id
+
+
 def initialize():
     if not database_exists(engine.url):
         create_database(engine.url)
