@@ -17,10 +17,7 @@
     <!-- Store data from the server to JS variables -->
     <script>
         var savedModels = {{ saved_models| tojson}};
-        var userId = "{{user_id}}";
-
-
-
+ 
         var toColumnUncomplete = {
             "syntax": 0,
             "schema": 1,
@@ -84,7 +81,7 @@
         <div id="logo" style="margin-right:10px; display: flex;flex-direction: row; align-items: center;
             justify-content: center; align-content: space-between; gap: 12px;">
 
-            <button onclick="goToIndex();" style="height: 40px;width: 150px;">VALIDATION >></button>
+            <button onclick="goToIndex();" style="height: 40px;width: 150px;">+ ADD FILES</button>
             <button
                 style="height: 50px;width: 50px;border-radius: 50%;background-image: url(/static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
             <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
