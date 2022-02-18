@@ -85,13 +85,18 @@ class general_info_task(task):
 
 
 class syntax_validation_task(task):
-    est_time = 10
+    est_time = 20
 
     def execute(self, directory, id):
-        f = open(os.path.join(directory, "dresult_syntax.json"), "w")
         check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
-        #subprocess.call([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=f)
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=subprocess.PIPE)
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE)
+        
+        session = database.Session()
+        model = session.query(database.model).filter(database.model.code == id).all()[0]
+        model.status_syntax = 'i'
+        session.commit()
+        session.close()
+
         i = 0
         while True:
             ch = proc.stdout.read(1)
@@ -106,12 +111,29 @@ class syntax_validation_task(task):
 
 
 class ifc_validation_task(task):
-    est_time = 10
+    est_time = 15
 
     def execute(self, directory, id):
-        f = open(os.path.join(directory, "dresult_schema.json"), "w")
-        check_program = os.path.join(os.getcwd() + "/checks", "validate.py")
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory, stdout=subprocess.PIPE)
+        check_program = "ifcopenshell.validate"
+
+        proc = subprocess.Popen(["python","-m", check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+
+        session = database.Session()
+        model = session.query(database.model).filter(database.model.code == id).all()[0]
+
+        validation_task = database.schema_validation_task(model.id)
+        session.add(validation_task)
+        validation_task_id = str(validation_task.id)
+
+        schema_result = database.schema_result(validation_task_id)
+        schema_result.msg = stderr
+        session.add(schema_result)
+
+        model.status_schema = 'w'
+        session.commit()
+        session.close()
+
         i = 0
         while True:
             ch = proc.stdout.read(1)
@@ -154,6 +176,7 @@ class bsdd_validation_task(task):
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd_v2.py")
 
         proc = subprocess.Popen([sys.executable, check_program, "--input", id + ".ifc", "--task",validation_task_id], cwd=directory, stdout=subprocess.PIPE)
+
         i = 0
         while True:
             ch = proc.stdout.read(1)

@@ -141,6 +141,17 @@ def login_required(f):
 @application.route("/")
 @login_required
 def index(decoded):
+    if DEVELOPMENT:
+        with database.Session() as db_session:
+            user = db_session.query(database.user).filter(database.user.id == decoded["sub"]).all()
+            if len(user) == 0:
+                db_session.add(database.user(str(decoded["sub"]),
+                                            str(decoded["email"]),
+                                            str(decoded["family_name"]),
+                                            str(decoded["given_name"]),
+                                            str(decoded["name"])))
+                db_session.commit()
+
     return render_template('index.html', decoded=decoded)
 
 
@@ -283,6 +294,44 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
 
     return ids
 
+
+@application.route('/reprocess/<id>', methods=['POST'])
+@login_required
+def reprocess(decoded,id):
+    ids = []
+    filenames = []
+
+    # with database.Session() as session:
+
+    #     model = session.query(database.model).filter(database.model.id == id).all()[0]
+    #     for file in files:
+    #         fn = file.filename
+    #         filenames.append(fn)
+    #         def filewriter(fn): return file.save(fn)
+    #         id = utils.generate_id()
+    #         ids.append(id)
+    #         d = utils.storage_dir_for_id(id)
+    #         os.makedirs(d)
+    #         filewriter(os.path.join(d, id+".ifc"))
+    #         session.add(database.model(id, fn, user_id))
+    #         session.commit()
+
+    #     user = session.query(database.user).filter(database.user.id == user_id).all()[0]
+
+    # msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
+    # send_simple_message(msg)
+
+    if DEVELOPMENT:
+        for id in ids:
+            t = threading.Thread(target=lambda: worker.process(
+                id, validation_config, callback_url))
+            t.start()
+    else:
+        for id in ids:
+            q.enqueue(worker.process, id, validation_config, callback_url)
+
+    return ids
+
 @application.route('/', methods=['POST'])
 @login_required
 def put_main(decoded):
@@ -344,7 +393,7 @@ def dashboard(decoded):
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
 
-    return render_template('dashboard.html', user_id=user_id, saved_models=saved_models)
+    return render_template('dashboard.html', saved_models=saved_models)
 
 
 @application.route('/valprog/<id>', methods=['GET'])
