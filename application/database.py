@@ -91,7 +91,7 @@ class model(Base, Serializable):
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
-    license = Column(Enum('private','CC','MIT','GPL','LGPL'), server_default="private")
+    license = Column(Enum('private','CC','MIT','GPL','LGPL'), default="private")
     hours = Column(Float)
     details = Column(String)
 
@@ -144,6 +144,19 @@ class bsdd_validation_task(Base, Serializable):
         self.validated_file = validated_file
         
 
+class schema_validation_task(Base, Serializable):
+    __tablename__ = 'schema_validation_tasks'
+
+    id = Column(Integer, primary_key=True)
+    validated_file = Column(Integer, ForeignKey('models.id'))
+    validation_start_time = Column(DateTime)
+    validation_end_time = Column(DateTime)
+
+    results = relationship("schema_result")
+
+    def __init__(self, validated_file):
+        self.validated_file = validated_file
+
 class ifc_instance(Base, Serializable):
     __tablename__ = 'instances'
 
@@ -175,6 +188,17 @@ class bsdd_result(Base, Serializable):
     ifc_property_value = Column(String)
 
     
+    def __init__(self, task_id):
+        self.task_id = task_id
+
+
+class schema_result(Base, Serializable):
+    __tablename__ = 'schema_results'
+
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer, ForeignKey('schema_validation_tasks.id'))
+    msg = Column(String, default="msg")
+
     def __init__(self, task_id):
         self.task_id = task_id
      

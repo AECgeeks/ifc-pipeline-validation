@@ -153,7 +153,7 @@ savedModels.forEach((model, i) => {
 
         idToRowIndex[model.id] = rowIndex;
 
-        row.cells[toColumnUncomplete["stop"]].innerHTML = "Stop";
+        row.cells[toColumnUncomplete["stop"]].innerHTML = "&#8634";
 
         const newDiv = document.createElement("div");
         newDiv.className = "progress"
