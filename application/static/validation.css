@@ -20,11 +20,15 @@ html, body, th{
   height: 70px;
 }
 
-#main {
+/* #main {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+} */
+
+#main{
+  overflow-x: auto;
 }
 
 #report {
