@@ -368,7 +368,7 @@ def put_main(decoded):
         idstr += i
 
     if VALIDATION:
-        url = url_for('dashboard', user_id=user_id)
+        url = url_for('dashboard')
 
     elif VIEWER:
         url = url_for('check_viewer', id=idstr)
