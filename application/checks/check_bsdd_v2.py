@@ -78,22 +78,23 @@ def check_bsdd(ifc_fn, task_id):
     with database.Session() as session:
         model = session.query(database.model).filter(database.model.code == file_code)[0]
         file_id = model.id
-        
+ 
         n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
         if n:
             percentages = [i * 100. / n for i in range(n+1)]
             num_dots = [int(b) - int(a) for a, b in zip(percentages, percentages[1:])]
 
         for idx, rel in enumerate(ifc_file.by_type("IfcRelAssociatesClassification")):
-
-            sys.stdout.write(num_dots[idx] * ".")
-            sys.stdout.flush()
+            if num_dots[idx]:
+                #print(num_dots[idx] * ".", file=sys.stdout)
+                sys.stdout.write(num_dots[idx] * ".")
+                sys.stdout.flush()
 
             related_objects = rel.RelatedObjects
             relating_classification = rel.RelatingClassification
 
             bsdd_response = validate_ifc_classification_reference(relating_classification)
-            bsdd_content = json.loads(bsdd_response.text)
+            
             
             for ifc_instance in related_objects:
                 instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), file_id)
@@ -103,6 +104,7 @@ def check_bsdd(ifc_fn, task_id):
                 session.commit()               
 
                 if bsdd_response:
+                    bsdd_content = json.loads(bsdd_response.text)
                     if has_specifications(bsdd_content):
                         specifications = bsdd_content["classificationProperties"]
                         for constraint in specifications: 
