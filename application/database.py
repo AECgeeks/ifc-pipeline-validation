@@ -35,6 +35,7 @@ import datetime
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
+
 if DEVELOPMENT:
     file_path = os.path.join(os.path.dirname(__file__), "ifc-pipeline.db") 
     engine = create_engine(f'sqlite:///{file_path}', connect_args={'check_same_thread': False})

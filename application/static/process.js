@@ -96,81 +96,91 @@ var codeToId = {};
 var idToRowIndex = {}
 
 
-savedModels.forEach((model, i) => {
-    var rowIndex = i + 1;
+if(savedModels.length == 0){
+    var rowIndex = 1;
     var row = table.insertRow(rowIndex);
-    row.id = model.id;
+    row.insertCell(0);
+    row.cells[0].innerHTML = "No model uploaded";
+}
 
-    for (var col = 0; col < nCols; col++) {
-        row.insertCell(col);
-    }
+else{
 
-    row.cells[toColumnComplete["file_format"]].className = "ifc";
-
-    row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
-    row.cells[toColumnComplete["file_name"]].className = "filename";
-
+    savedModels.forEach((model, i) => {
+        var rowIndex = i + 1;
+        var row = table.insertRow(rowIndex);
+        row.id = model.id;
     
-    var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-
-    createLicenseInput(licensTypes, row, model);
-    createInput("hours", row, model);
-    createInput("details", row, model);
-
-    if (model.progress == 100) {
-        var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids"];
-        var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
-        for (var j = 0; j < checks_type.length; j++) {
-            var attr = "status_" + checks_type[j];
-            var status_result = model[attr];
-            var icon = icons[status_result];
-            row.cells[toColumnComplete[checks_type[j]]].className = icon;       
+        for (var col = 0; col < nCols; col++) {
+            row.insertCell(col);
         }
+    
+        row.cells[toColumnComplete["file_format"]].className = "ifc";
+    
+        row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
+        row.cells[toColumnComplete["file_name"]].className = "filename";
+    
+        
+        var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
+    
+        createLicenseInput(licensTypes, row, model);
+        createInput("hours", row, model);
+        createInput("details", row, model);
+    
+        if (model.progress == 100) {
+            var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids"];
+            var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
+            for (var j = 0; j < checks_type.length; j++) {
+                var attr = "status_" + checks_type[j];
+                var status_result = model[attr];
+                var icon = icons[status_result];
+                row.cells[toColumnComplete[checks_type[j]]].className = icon;       
+            }
+    
+            var repText = document.createElement("a");
+            repText.id = "report"
+            repText.innerHTML = "View report"
+            repText.href = `/report2/${model.code}`;
+    
+            row.cells[toColumnComplete["report"]].appendChild(repText)
+            row.cells[toColumnComplete["report"]].className = "model_report"
+    
+            row.cells[toColumnComplete["date"]].innerHTML = model.date
+            row.cells[toColumnComplete["date"]].className = "model_time"
+    
+            replaceInCell("download",row.cells[toColumnComplete["download"]], model.id);
+            replaceInCell("delete",row.cells[toColumnComplete["delete"]], model.id);
+    
+            row.cells[toColumnComplete["geoms"]].innerHTML = model.number_of_geometries;
+            row.cells[toColumnComplete["props"]].innerHTML = model.number_of_properties;
+    
+        }
+    
+        else {
+            console.log("unsaved");
+            unsavedConcat += model.code;
+            modelIds.push(model.id);
+    
+            idToRowIndex[model.id] = rowIndex;
+    
+            row.cells[toColumnUncomplete["stop"]].innerHTML = "&#8634";
+    
+            const newDiv = document.createElement("div");
+            newDiv.className = "progress"
+            const barDiv = document.createElement("div");
+            barDiv.id = "bar" + model.id;
+            barDiv.className = "bar";
+            newDiv.appendChild(barDiv)
+            row.cells[toColumnUncomplete["progress"]].appendChild(newDiv);
+    
+            row.cells[toColumnUncomplete["advancement"]].innerHTML = model.progress;
+            row.cells[toColumnUncomplete["advancement"]].id = "percentage" + model.id;
+            codeToId[model.code] = model.id;
+    
+    
+        }
+    });
 
-        var repText = document.createElement("a");
-        repText.id = "report"
-        repText.innerHTML = "View report"
-        repText.href = `/report2/${model.code}`;
-
-        row.cells[toColumnComplete["report"]].appendChild(repText)
-        row.cells[toColumnComplete["report"]].className = "model_report"
-
-        row.cells[toColumnComplete["date"]].innerHTML = model.date
-        row.cells[toColumnComplete["date"]].className = "model_time"
-
-        replaceInCell("download",row.cells[toColumnComplete["download"]], model.id);
-        replaceInCell("delete",row.cells[toColumnComplete["delete"]], model.id);
-
-        row.cells[toColumnComplete["geoms"]].innerHTML = model.number_of_geometries;
-        row.cells[toColumnComplete["props"]].innerHTML = model.number_of_properties;
-
-    }
-
-    else {
-        console.log("unsaved");
-        unsavedConcat += model.code;
-        modelIds.push(model.id);
-
-        idToRowIndex[model.id] = rowIndex;
-
-        row.cells[toColumnUncomplete["stop"]].innerHTML = "&#8634";
-
-        const newDiv = document.createElement("div");
-        newDiv.className = "progress"
-        const barDiv = document.createElement("div");
-        barDiv.id = "bar" + model.id;
-        barDiv.className = "bar";
-        newDiv.appendChild(barDiv)
-        row.cells[toColumnUncomplete["progress"]].appendChild(newDiv);
-
-        row.cells[toColumnUncomplete["advancement"]].innerHTML = model.progress;
-        row.cells[toColumnUncomplete["advancement"]].id = "percentage" + model.id;
-        codeToId[model.code] = model.id;
-
-
-    }
-});
-
+}
 
 const registered = new Set();
 function poll(unsavedConcat) {
@@ -212,7 +222,8 @@ function poll(unsavedConcat) {
 
         }
 
-        setTimeout(poll(unsavedConcat), 1000);
+        setTimeout( () => { poll(unsavedConcat) }, 1000);
+        // setTimeout(poll(unsavedConcat), 1000);
 
     });
 
@@ -221,6 +232,7 @@ function poll(unsavedConcat) {
 
 if (unsavedConcat) {
     console.log("/valprog/" + unsavedConcat);
+    
     poll(unsavedConcat);
 
 }
