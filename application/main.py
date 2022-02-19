@@ -544,28 +544,46 @@ def view_report2(decoded, id):
             database.model.code == id).all()[0]
         m = model.serialize()
 
-        bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
-            database.bsdd_validation_task.validated_file == model.id).all()[0]
+        results = { "syntax_result":0, "schema_result":0, "bsdd_results":{"tasks":0, "bsdd":0, "instances":0}}
 
-        bsdd_results = session.query(database.bsdd_result).filter(
-            database.bsdd_result.task_id == bsdd_validation_task.id).all()
-        bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+        if m["status_syntax"] != 'n':
+            syntax_validation_task = session.query(database.syntax_validation_task).filter(database.syntax_validation_task.validated_file == model.id).all()[0]
+            syntax_result = session.query(database.syntax_result).filter(database.syntax_result.task_id == syntax_validation_task.id).all()[0]
+            results["syntax_result"] = syntax_result.serialize() 
 
-        for bsdd_result in bsdd_results:
-            bsdd_result["bsdd_property_constraint"] = json.loads(
-                bsdd_result["bsdd_property_constraint"])
+        if m["status_schema"] != 'n':
+            schema_validation_task = session.query(database.schema_validation_task).filter(
+            database.schema_validation_task.validated_file == model.id).all()[0]
+            schema_result = session.query(database.schema_result).filter(database.schema_result.task_id == schema_validation_task.id).all()[0]
+            results["schema_result"] = schema_result.serialize() 
 
-        bsdd_validation_task = bsdd_validation_task.serialize()
-        instances = session.query(database.ifc_instance).filter(
-            database.ifc_instance.file == model.id).all()
-        instances = {instance.id: instance.serialize() for instance in instances}
-    
+        if m["status_bsdd"] != 'n':
+            bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
+                database.bsdd_validation_task.validated_file == model.id).all()[0]
+
+            bsdd_results = session.query(database.bsdd_result).filter(
+                database.bsdd_result.task_id == bsdd_validation_task.id).all()
+            bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+
+            for bsdd_result in bsdd_results:
+                bsdd_result["bsdd_property_constraint"] = json.loads(
+                    bsdd_result["bsdd_property_constraint"])
+            
+            results["bsdd_results"]["bsdd"] = bsdd_results
+            bsdd_validation_task = bsdd_validation_task.serialize()
+
+            results["bsdd_results"]["task"] = bsdd_validation_task
+
+            instances = session.query(database.ifc_instance).filter(
+                database.ifc_instance.file == model.id).all()
+            instances = {instance.id: instance.serialize() for instance in instances}
+
+            results["bsdd_results"]["instances"] = instances 
+
     user_id = decoded['sub']
     return render_template("report_v2.html",
                            model=m,
-                           bsdd_validation_task=bsdd_validation_task,
-                           bsdd_results=bsdd_results,
-                           instances=instances,
+                           results=results,
                            user_id=user_id)
 
 

@@ -90,21 +90,28 @@ class syntax_validation_task(task):
     def execute(self, directory, id):
         check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
         proc = subprocess.Popen([sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        session = database.Session()
-        model = session.query(database.model).filter(database.model.code == id).all()[0]
+   
+        with database.Session() as session:
+            model = session.query(database.model).filter(database.model.code == id).all()[0]
+         
+            validation_task = database.syntax_validation_task(model.id)
+            session.add(validation_task)
+            session.commit()
+            validation_task_id = str(validation_task.id)
+            
+            output = proc.stderr.read()
+            output = output.decode("utf-8").strip()
+            syntax_result = database.syntax_result(validation_task_id)
+            syntax_result.msg = output
+            session.add(syntax_result)
 
-        validation_task = database.syntax_validation_task(model.id)
-        session.add(validation_task)
-        validation_task_id = str(validation_task.id)
-
-        syntax_result = database.syntax_result(validation_task_id)
-        syntax_result.msg = str(proc.stderr.read())
-        session.add(syntax_result)
-
-        model.status_syntax = 'i'
-        session.commit()
-        session.close()
+            if output == 'valid':
+                model.status_syntax = 'v'
+            else:
+                model.status_syntax = 'i'  
+            
+            session.commit()
+            session.close()
 
         i = 0
         while True:
@@ -124,23 +131,23 @@ class ifc_validation_task(task):
 
     def execute(self, directory, id):
         check_program = "ifcopenshell.validate"
-
         proc = subprocess.Popen(["python","-m", check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    
-        session = database.Session()
-        model = session.query(database.model).filter(database.model.code == id).all()[0]
 
-        validation_task = database.schema_validation_task(model.id)
-        session.add(validation_task)
-        validation_task_id = str(validation_task.id)
+        with database.Session() as session:
+            model = session.query(database.model).filter(database.model.code == id).all()[0]
+            model.status_schema = 'w'
 
-        schema_result = database.schema_result(validation_task_id)
-        schema_result.msg = str(proc.stderr.read())
-        session.add(schema_result)
-
-        model.status_schema = 'w'
-        session.commit()
-        session.close()
+            validation_task = database.schema_validation_task(model.id)
+            session.add(validation_task)
+            session.commit()
+            validation_task_id = str(validation_task.id)
+           
+            output = proc.stderr.read()
+            output = output.decode("utf-8").strip()
+            schema_result = database.schema_result(validation_task_id)
+            schema_result.msg = output
+            session.add(schema_result)
+            session.commit()
 
         i = 0
         while True:
