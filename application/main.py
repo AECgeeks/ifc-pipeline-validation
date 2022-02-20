@@ -568,8 +568,12 @@ def view_report2(decoded, id):
             bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
 
             for bsdd_result in bsdd_results:
-                bsdd_result["bsdd_property_constraint"] = json.loads(
-                    bsdd_result["bsdd_property_constraint"])
+                if bsdd_result["bsdd_property_constraint"]:
+                    bsdd_result["bsdd_property_constraint"] = json.loads(
+                        bsdd_result["bsdd_property_constraint"])
+                else:
+                    bsdd_result["bsdd_property_constraint"] = 0
+
             
             results["bsdd_results"]["bsdd"] = bsdd_results
             bsdd_validation_task = bsdd_validation_task.serialize()

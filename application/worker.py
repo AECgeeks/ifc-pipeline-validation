@@ -453,5 +453,6 @@ def process(ids, validation_config, ids_spec = None , callback_url=None):
     except Exception as e:
         traceback.print_exc(file=sys.stdout)
         status = "failure"        
+        set_progress(id, -2)
     if callback_url is not None:       
         r = requests.post(callback_url, data={"status": status, "id": ids})
