@@ -194,151 +194,166 @@
           
             {%if results["bsdd_results"]["task"]%}
                 {%for bsdd_result in results["bsdd_results"]["bsdd"]%}
+                    {% if  bsdd_result['bsdd_classification_uri'] != 'classification not found' %}
+                        {% set constraints = bsdd_result['bsdd_property_constraint']%}
 
-                    {% set constraints = bsdd_result['bsdd_property_constraint']%}
+                    
+                        <tr style="font-style: bold;text-align:center;">
+                            <td colspan="2">
+                                IFC instance <span style="color:blue;">{{results['bsdd_results']['instances'][bsdd_result['instance_id']]['global_id']}}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr style="font-style: bold;text-align:center;">
+                            <td colspan="2">
+                                SPECIFICATIONS
+                            </td>
+                        </tr>
 
-                    <tr style="font-style: bold;text-align:center;">
-                        <td colspan="2">
-                            IFC instance <span style="color:blue;">{{results['bsdd_results']['instances'][bsdd_result['instance_id']]['global_id']}}
-                            </span>
-                        </td>
-                    </tr>
-                    <tr style="font-style: bold;text-align:center;">
-                        <td colspan="2">
-                            SPECIFICATIONS
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                Classification URI
+                            </td>
+                            <td>
+                                {{bsdd_result['bsdd_classification_uri']}}
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>
-                            Classification URI
-                        </td>
-                        <td>
-                            {{bsdd_result['bsdd_classification_uri']}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            IFC entity type
-                        </td>
-                        <td>
-                            {{bsdd_result['bsdd_type_constraint']}}
-                        </td>
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            Property set
-                        </td>
-                        <td>
-                            {{constraints['propertySet']}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Property name
-                        </td>
-                        <td>
-                            {{constraints['name']}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            Data type
-                        </td>
-                        <td>
-                            {{constraints['dataType']}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            Predefined value
-                        </td>
-                        <td>
-                            {{constraints['predefinedValue']}}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                IFC entity type
+                            </td>
+                            <td>
+                                {{bsdd_result['bsdd_type_constraint']}}
+                            </td>
+                        </tr>
 
 
+                        <tr>
+                            <td>
+                                Property set
+                            </td>
+                            <td>
+                                {{constraints['propertySet']}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Property name
+                            </td>
+                            <td>
+                                {{constraints['name']}}
+                            </td>
+                        </tr>
 
+                        <tr>
+                            <td>
+                                Data type
+                            </td>
+                            <td>
+                                {{constraints['dataType']}}
+                            </td>
+                        </tr>
 
-
-                    <tr>
-                        <td colspan="2" style="text-align:center;">
-                            RESULTS
-                        </td>
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            Entity type of the instance
-                        </td>
-
-                        <td>
-                            {{results['bsdd_results']['instances'][bsdd_result['instance_id']]['ifc_type']}}
-                        </td>
-
-                    </tr>
-
-                    <tr>
-                        <td>
-                            Property set
-                        </td>
-
-                        <td>
-                            {{bsdd_result['ifc_property_set']}}
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            Property name
-                        </td>
-
-                        <td>
-                            {{bsdd_result['ifc_property_name']}}
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            Property value type
-                        </td>
-
-                        <td>
-                            {{bsdd_result['ifc_property_type']}}
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            Value
-                        </td>
-
-                        <td>
-                            {{bsdd_result['ifc_property_value']}}
-                        </td>
-
-                    </tr>
+                        <tr>
+                            <td>
+                                Predefined value
+                            </td>
+                            <td>
+                                {{constraints['predefinedValue']}}
+                            </td>
+                        </tr>
 
 
 
 
-                    <tr>
-                        <td colspan=2 style="background-color: lightgray;">&nbsp;</td>
-                    </tr>
 
+                        <tr>
+                            <td colspan="2" style="text-align:center;">
+                                RESULTS
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                Entity type of the instance
+                            </td>
+
+                            <td>
+                                {{results['bsdd_results']['instances'][bsdd_result['instance_id']]['ifc_type']}}
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Property set
+                            </td>
+
+                            <td>
+                                {{bsdd_result['ifc_property_set']}}
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                Property name
+                            </td>
+
+                            <td>
+                                {{bsdd_result['ifc_property_name']}}
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                Property value type
+                            </td>
+
+                            <td>
+                                {{bsdd_result['ifc_property_type']}}
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                Value
+                            </td>
+
+                            <td>
+                                {{bsdd_result['ifc_property_value']}}
+                            </td>
+
+                        </tr>
+
+
+
+
+                        <tr>
+                            <td colspan=2 style="background-color: lightgray;">&nbsp;</td>
+                        </tr>
+                    
+                    {% else %}
+
+
+                        <tr>
+                            <td>
+                                Value
+                            </td>
+
+                            <td>
+                                {{bsdd_result['bsdd_classification_uri']}}
+                            </td>
+
+                        </tr>
+                    {% endif%}
 
                 {% endfor %}
 

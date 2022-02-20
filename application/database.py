@@ -194,16 +194,21 @@ class bsdd_result(Base, Serializable):
     id = Column(Integer, primary_key=True)
     task_id = Column(Integer, ForeignKey('bSDD_validation_tasks.id'))
     instance_id = Column(Integer, ForeignKey('instances.id'))
+
+    classification_name = Column(String)
+    classification_code = Column(String)
+    classification_domain = Column(String)
+
     bsdd_classification_uri = Column(String)
     bsdd_property_uri = Column(String)
     bsdd_property_constraint = Column(String)
     bsdd_type_constraint = Column(String)
+   
     ifc_property_set = Column(String)
     ifc_property_name = Column(String)
     ifc_property_type = Column(String)
     ifc_property_value = Column(String)
 
-    
     def __init__(self, task_id):
         self.task_id = task_id
 
