@@ -21,8 +21,14 @@
 # SOFTWARE.                                                                      #
 #                                                                                #
 ##################################################################################
-from psycopg2cffi import compat
-compat.register()
+
+import os
+
+DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
+
+if not DEVELOPMENT:
+    from psycopg2cffi import compat
+    compat.register()
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -32,11 +38,8 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, Enum
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
-import os
+
 import datetime
-
-DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
-
 
 if DEVELOPMENT:
     file_path = os.path.join(os.path.dirname(__file__), "ifc-pipeline.db") 
@@ -94,7 +97,7 @@ class model(Base, Serializable):
     progress = Column(Integer, default=-1)
     date = Column(DateTime, server_default=func.now())
 
-    license = Column(Enum('private','CC','MIT','GPL','LGPL'), default="private")
+    license = Column(Enum('private','CC','MIT','GPL','LGPL', name='licenses_types'), default="private")
     hours = Column(Float)
     details = Column(String)
 
@@ -107,11 +110,11 @@ class model(Base, Serializable):
     size = Column(String)
     mvd = Column(String)
 
-    status_syntax = Column(Enum('n','v','w','i'), default='n')
-    status_schema = Column(Enum('n','v','w','i'), default='n')
-    status_bsdd = Column(Enum('n','v','w','i'), default='n')
-    status_mvd = Column(Enum('n','v','w','i'), default='n')
-    status_ids= Column(Enum('n','v','w','i'), default='n')
+    status_syntax = Column(Enum('n','v','w','i', name='status_types'), default='n')
+    status_schema = Column(Enum('n','v','w','i', name='status_types'), default='n')
+    status_bsdd = Column(Enum('n','v','w','i', name='status_types'), default='n')
+    status_mvd = Column(Enum('n','v','w','i', name='status_types'), default='n')
+    status_ids= Column(Enum('n','v','w','i', name='status_types'), default='n')
     
     instances = relationship("ifc_instance")
 
