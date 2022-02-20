@@ -126,7 +126,7 @@ else{
         createInput("hours", row, model);
         createInput("details", row, model);
     
-        if (model.progress == 100) {
+        if (model.progress == 100 || model.progress == -2) {
             var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids"];
             var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
             for (var j = 0; j < checks_type.length; j++) {
