@@ -11,6 +11,12 @@ def get_classification_object(uri):
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v3"
     return requests.get(url, {'namespaceUri':uri})
 
+def get_domain(classification_uri):
+    url = "https://bs-dd-api-prototype.azurewebsites.net/api/Domain/v2"
+    uri = classification_uri.split("/class")[0]
+    return requests.get(url, {'namespaceUri':uri})
+
+
 def validate_ifc_classification_reference(relating_classification):
     uri = relating_classification.Location
     bsdd_response = get_classification_object(uri)
@@ -85,10 +91,10 @@ def check_bsdd(ifc_fn, task_id):
             num_dots = [int(b) - int(a) for a, b in zip(percentages, percentages[1:])]
 
         for idx, rel in enumerate(ifc_file.by_type("IfcRelAssociatesClassification")):
-            if num_dots[idx]:
+            # if num_dots[idx]:
                 #print(num_dots[idx] * ".", file=sys.stdout)
-                sys.stdout.write(num_dots[idx] * ".")
-                sys.stdout.flush()
+            sys.stdout.write(num_dots[idx] * ".")
+            sys.stdout.flush()
 
             related_objects = rel.RelatedObjects
             relating_classification = rel.RelatingClassification
@@ -105,6 +111,8 @@ def check_bsdd(ifc_fn, task_id):
 
                 if bsdd_response:
                     bsdd_content = json.loads(bsdd_response.text)
+                    domain_name = get_domain(bsdd_content["namespaceUri"]).json()[0]["name"]
+
                     if has_specifications(bsdd_content):
                         specifications = bsdd_content["classificationProperties"]
                         for constraint in specifications: 
@@ -113,6 +121,9 @@ def check_bsdd(ifc_fn, task_id):
                             bsdd_result.instance_id = instance_id
 
                             bsdd_result.bsdd_classification_uri = bsdd_content["namespaceUri"]
+                            bsdd_result.classification_name = bsdd_content["name"]
+                            bsdd_result.classification_code = bsdd_content["code"]
+                            bsdd_result.classification_domain = domain_name
                             bsdd_result.bsdd_type_constraint = ";".join(bsdd_content["relatedIfcEntityNames"])
                             bsdd_result.bsdd_property_constraint = json.dumps(constraint)
                             bsdd_result.bsdd_property_uri = constraint["propertyNamespaceUri"]
