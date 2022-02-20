@@ -7,7 +7,7 @@ RUN wget https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
 RUN tar -xf pypy3.8-v7.3.7-linux64.tar.bz2
 ENV PATH="/pypy3.8-v7.3.7-linux64/bin:${PATH}"
 
-RUN echo ${PATH}
+RUN /pypy3.8-v7.3.7-linux64/bin/python3 -m ensurepip                                                                                                                        64/bin/python3 -m ensurepip"
 
 RUN python3 -m pip install --upgrade pip
 
