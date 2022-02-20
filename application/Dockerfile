@@ -34,6 +34,8 @@ WORKDIR /www
 COPY application/*.py /www/
 COPY application/templates /www/templates
 
+COPY application/checks /www/checks
+
 COPY application/*.yml /www/
 
 COPY .git/HEAD /tmp/.git/HEAD
