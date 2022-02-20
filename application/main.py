@@ -131,7 +131,7 @@ def login_required(f):
             if not "oauth_token" in session.keys():
                 return redirect(url_for('login'))
             with database.Session() as db_session:
-                user = db_session.query(database.user).filter(database.user.id == decoded["sub"]).all()
+                user = db_session.query(database.user).filter(database.user.id == session['decoded']["sub"]).all()
                 if len(user) == 0:
                      return redirect(url_for('login'))
             return f(session['decoded'],*args, **kwargs)
