@@ -3,6 +3,9 @@ FROM debian:buster-slim
 WORKDIR /
 RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev npm python3-setuptools python3-dev python3-wheel supervisor
 
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 RUN wget https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
 RUN tar -xf pypy3.8-v7.3.7-linux64.tar.bz2
 ENV PATH="/pypy3.8-v7.3.7-linux64/bin:${PATH}"
@@ -30,18 +33,6 @@ RUN wget  -O `python3 -c 'import site; print(site.getusersitepackages())'`/ifcop
 WORKDIR /www
 COPY application/*.py /www/
 COPY application/templates /www/templates
-
-# COPY application/checks /www/checks
-# RUN unzip -d  /www/checks /tmp/ifcopenshell_python.zip
-
-
-# RUN mkdir -p /www/checks/ifcopenshell/mvd
-# RUN echo 1
-# RUN git clone https://github.com/opensourceBIM/python-mvdxml /www/checks/ifcopenshell/mvd
-
-# RUN ls www/checks/ifcopenshell/
-# RUN mv python-mvdxml/* www/checks/ifcopenshell/mvd
-# RUN ls www/checks/ifcopenshell/
 
 COPY .git/HEAD /tmp/.git/HEAD
 COPY .git/refs/ /tmp/.git/refs/
