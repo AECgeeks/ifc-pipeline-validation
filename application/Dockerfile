@@ -34,6 +34,8 @@ WORKDIR /www
 COPY application/*.py /www/
 COPY application/templates /www/templates
 
+COPY application/*.yml /www/
+
 COPY .git/HEAD /tmp/.git/HEAD
 COPY .git/refs/ /tmp/.git/refs/
 RUN /bin/bash -c '(cat /tmp/.git/$(cat /tmp/.git/HEAD | cut -d \  -f 2)) || cat /tmp/.git/HEAD' > /version
