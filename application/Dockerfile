@@ -11,7 +11,7 @@ RUN /pypy3.8-v7.3.7-linux64/bin/python3 -m ensurepip
 
 RUN python3 -m pip install --upgrade pip
 
-RUN python3 -m pip install flask flask-cors numpy Pillow gunicorn rq redis SQLAlchemy==1.3.24 psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests flask-dropzone lark-parser pyparsing XlsxWriter fuzzywuzzy python-Levenshtein requests_oauthlib Authlib requests argparse --upgrade
+RUN python3 -m pip install flask flask-cors numpy gunicorn rq redis SQLAlchemy==1.3.24 psycopg2 sqlalchemy-utils Flask-BasicAuth flasgger requests lark-parser pyparsing XlsxWriter requests_oauthlib Authlib requests argparse --upgrade
 RUN npm install -g jsdoc gltf-pipeline requirejs npx uglify-js
 
 # IfcConvert v0.6.0
