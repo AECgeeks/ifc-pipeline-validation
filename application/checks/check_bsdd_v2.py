@@ -26,7 +26,7 @@ def validate_ifc_classification_reference(relating_classification):
         return bsdd_response
 
 def has_specifications(bsdd_response_content):
-    if bsdd_response_content["classificationProperties"]:
+    if "classificationProperties" in bsdd_response_content.keys():
         return 1
     else:
         return 0
