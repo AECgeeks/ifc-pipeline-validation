@@ -31,13 +31,13 @@ WORKDIR /www
 COPY application/*.py /www/
 COPY application/templates /www/templates
 
-COPY application/checks /www/checks
-RUN unzip -d  /www/checks /tmp/ifcopenshell_python.zip
+# COPY application/checks /www/checks
+# RUN unzip -d  /www/checks /tmp/ifcopenshell_python.zip
 
 
-RUN mkdir -p /www/checks/ifcopenshell/mvd
-RUN echo 1
-RUN git clone https://github.com/opensourceBIM/python-mvdxml /www/checks/ifcopenshell/mvd
+# RUN mkdir -p /www/checks/ifcopenshell/mvd
+# RUN echo 1
+# RUN git clone https://github.com/opensourceBIM/python-mvdxml /www/checks/ifcopenshell/mvd
 
 # RUN ls www/checks/ifcopenshell/
 # RUN mv python-mvdxml/* www/checks/ifcopenshell/mvd
