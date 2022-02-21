@@ -590,8 +590,9 @@ def view_report2(decoded, id):
 
             instances = session.query(database.ifc_instance).filter(
                 database.ifc_instance.file == model.id).all()
+           
             instances = {instance.id: instance.serialize() for instance in instances}
-
+            
             results["bsdd_results"]["instances"] = instances 
 
     return render_template("report_v2.html",
