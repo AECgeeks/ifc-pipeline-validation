@@ -146,23 +146,23 @@
         <table>
 
             <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-                <td colspan="2"
+                <td colspan="7"
                     style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">Syntax checking</td>
 
             </tr>
 
             <tr>
                 {% if results["syntax_result"] %}
-                    <td colspan="2">{{results["syntax_result"]["msg"]}}</td>
+                    <td colspan="7">{{results["syntax_result"]["msg"]}}</td>
                 {% else %}
-                    <td colspan="2">Not checked</td>
+                    <td colspan="7">Not checked</td>
                 {% endif %}
             </tr>
 
 
 
             <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-                <td colspan="2"
+                <td colspan="7"
                     style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">IFC schema checking</td>
 
             </tr>
@@ -172,14 +172,14 @@
 
                 {% for msg in results["schema_result"]["msg"]%}
                 <tr>
-                    <td colspan="2">{{msg}}</td>
+                    <td colspan="7">{{msg}}</td>
                 </tr>
                         
                 {% endfor %}
               
             {% else %}
                 <tr>
-                    <td colspan="2">Not checked</td>
+                    <td colspan="7">Not checked</td>
                 </tr>
         
             {% endif %}
