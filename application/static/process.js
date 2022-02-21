@@ -65,13 +65,14 @@ function completeTable(i) {
     var rows = table.rows;
 
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
-        ['syntaxlog', 'schemalog', 'mvdlog', 'bsddlog'].forEach((x, i) => {
-            var icon = icons[r["results"][x]];
-            rows[row_index].cells[i].className = `${icon} material-icons`;
+        ['syntax', 'schema', 'mvd', 'bsdd'].forEach((x, i) => {
+            var icon = icons[r["results"][`${x}log`]];
+            
+            rows[row_index].cells[toColumnComplete[x]].className = `${icon} material-icons`;
           });
 
-        rows[row_index].cells[8].innerHTML = r["time"];
-        rows[row_index].cells[8].className = "model_time";
+        rows[row_index].cells[toColumnComplete["date"]].innerHTML = r["time"];
+        rows[row_index].cells[toColumnComplete["date"]].className = "model_time";
 
     });
 
