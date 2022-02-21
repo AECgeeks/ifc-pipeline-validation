@@ -89,7 +89,9 @@ class syntax_validation_task(task):
 
     def execute(self, directory, id):
         check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
-        proc = subprocess.Popen(["pypy3", check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # try if there is pypy in the path, otherwise default to the current
+        # python interpreter.
+        proc = subprocess.Popen([shutil.which("pypy3") or sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == id).all()[0]
