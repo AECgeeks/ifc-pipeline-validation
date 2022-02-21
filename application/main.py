@@ -156,7 +156,7 @@ def index(decoded):
                                             str(decoded["name"])))
                 db_session.commit()
 
-    return render_template('index.html', decoded=decoded)
+    return render_template('index.html', decoded=decoded, username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
 @application.route('/login', methods=['GET'])
@@ -172,8 +172,12 @@ def login():
 def callback():
     bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=[
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
-    t = bs.fetch_token(token_url, client_secret=client_secret,
-                       authorization_response=request.url, response_type="token")
+    try:
+        t = bs.fetch_token(token_url, client_secret=client_secret,
+                           authorization_response=request.url, response_type="token")
+    except:
+        return redirect(url_for(login))
+        
     BS_DISCOVERY_URL = (
         "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
     )
@@ -397,7 +401,7 @@ def dashboard(decoded):
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
 
-    return render_template('dashboard.html', saved_models=saved_models)
+    return render_template('dashboard.html', saved_models=saved_models, username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
 @application.route('/valprog/<id>', methods=['GET'])

@@ -1,56 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>buildingSMART IFC Validation Service</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
-
-    <script>
-        var isIE = !!window.MSInputMethodContext;
-        if (isIE) {
-            FileList.prototype.map = function (fn) { var r = []; for (var i = 0; i < this.length; ++i) { r.push(fn(this[i])); } return r; }
-        }
-    </script>
-
-    <script>
-        var decoded = {{ decoded| tojson}}
-        console.log(decoded);
-
-
-        function goToDashboard() {
-            window.location = "/dashboard";
-        }
-
-    </script>
-
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='index.css') }}">
-
-<body>
-
-    <div class="full-screen">
-        <div class="header">
-
-            <a href="/" style="padding-left: 5px;" id="logo">
-                <img class="bsdd-logo"
-                    src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
-            </a>
-
-            <div id="logo" style="margin-right:10px; display: flex;flex-direction: row; align-items: center;
-            justify-content: center; align-content: space-between; gap: 12px;">
-
-                <button onclick="goToDashboard();" style="height: 40px;width: 150px;">DASHBOARD >></button>
-                <button
-                    style="height: 50px;width: 50px;border-radius: 50%;background-image: url(static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
-                <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
-            </div>
-
-        </div>
-
-        <div class="main">
-
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+{% endblock %}
+{% block link %}
+    <a href="/dashboard"><i class='material-icons'>account_circle</i><span id='username'>{{ username }}</span><span>go to dashboard</span></a>
+{% endblock %}
+{% block content %}
             <div class="tabs"">
 
                 <!-- <button class=" w3-bar-item w3-button tab" id="ifc_button" onclick="changeTab('ifc_tab')">IFC</button> -->
@@ -62,8 +17,12 @@
 
             <div class="submit-area" id="ifc_tab">
 
-                <form action="{{url_for('put_main')}}" class="dropzone" id="ifc_dropzone"></form>
+                <form action="{{url_for('put_main')}}" class="dropzone" id="ifc_dropzone">
+                    <div class="dz-message" data-dz-message><span><i class='material-icons'>file_upload</i> Click or drop files here to upload for validation</span></div>
 
+                </form>
+                
+                
 
                 <div id="config">
                     <div>
@@ -128,11 +87,6 @@
 
             </script>
 
-        </div>
-
-    </div>
-
-
     <script>
         Dropzone.autoDiscover = false;
         var dz = new Dropzone("#ifc_dropzone",
@@ -143,7 +97,7 @@
                 maxFiles: 100,
                 maxFilesize: 8 * 1024,
                 autoProcessQueue: false,
-                addRemoveLinks: true
+                addRemoveLinks: true,
             });
 
         dz.on("addedfile", file => { console.log("new file") });
@@ -208,6 +162,4 @@
 
     </script>
 
-</body>
-
-</html>
+{% endblock %}
