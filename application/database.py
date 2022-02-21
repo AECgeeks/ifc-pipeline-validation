@@ -200,6 +200,9 @@ class bsdd_result(Base, Serializable):
     task_id = Column(Integer, ForeignKey('bSDD_validation_tasks.id'))
     instance_id = Column(Integer, ForeignKey('instances.id'))
 
+    domain_file = Column(String)
+    classification_file = Column(String)
+
     classification_name = Column(String)
     classification_code = Column(String)
     classification_domain = Column(String)

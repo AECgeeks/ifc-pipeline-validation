@@ -131,7 +131,7 @@
         <table>
 
             <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-                <td colspan="7"
+                <td colspan="9"
                     style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">Syntax checking</td>
 
             </tr>
@@ -147,7 +147,7 @@
 
 
             <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-                <td colspan="7"
+                <td colspan="9"
                     style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">IFC schema checking</td>
 
             </tr>
@@ -171,13 +171,15 @@
 
 
             <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-                <td colspan="7"
+                <td colspan="9"
                     style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">bSDD consistency</td>
 
             </tr>
 
             
             <tr style="font-style: bold;text-align:center;">
+                <td>Domain detected</td>
+                <td>Classification reference detected</td>
                 <td>Domain</td>
                 <td>Classification</td>
                 <td>Code</td>
@@ -188,75 +190,106 @@
             </tr>
 
 
-          
-            {%if results["bsdd_results"]["task"]%}
-                {%for bsdd_result in results["bsdd_results"]["bsdd"]%}
-                    {% if  bsdd_result['bsdd_classification_uri'] != 'classification not found' %}
-                        {% set constraints = bsdd_result['bsdd_property_constraint']%}
-                        
-
-                        <!-- IFC entity type -->
-                        <tr style="font-style: bold;text-align:center;">
-                            <td>{{bsdd_result['classification_domain']}}</td>
-                            <td>{{bsdd_result['classification_name']}}</td>
-                            <td>{{bsdd_result['classification_code']}}</td>
-                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
-                            <td>IFC entity type</td>
-                            <td>{{bsdd_result['bsdd_type_constraint']}}</td>
-                            <td>{{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['ifc_type']}}</td>
-                        </tr>
-
-                        <!-- Property set -->
-                        <tr style="font-style: bold;text-align:center;">
-                            <td>{{bsdd_result['classification_domain']}}</td>
-                            <td>{{bsdd_result['classification_name']}}</td>
-                            <td>{{bsdd_result['classification_code']}}</td>
-                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
-                            <td>propertySet</td>
-                            <td>{{bsdd_result['bsdd_property_constraint']['name']}}</td>
-                            <td>{{bsdd_result['ifc_property_set']}}</td>
-                        </tr>
-
-                        <!-- Property name -->
-                        <tr style="font-style: bold;text-align:center;">
-                            <td>{{bsdd_result['classification_domain']}}</td>
-                            <td>{{bsdd_result['classification_name']}}</td>
-                            <td>{{bsdd_result['classification_code']}}</td>
-                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
-                            <td>property Name</td>
-                            <td>{{bsdd_result['bsdd_property_constraint']['name']}}</td>
-                            <td>{{bsdd_result['ifc_property_name']}}</td>
-                        </tr>
-
-                        
-                        <!-- Property value type -->
-                        <tr style="font-style: bold;text-align:center;">
-                            <td>{{bsdd_result['classification_domain']}}</td>
-                            <td>{{bsdd_result['classification_name']}}</td>
-                            <td>{{bsdd_result['classification_code']}}</td>
-                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
-                            <td>property value type</td>
-                            <td>{{bsdd_result['bsdd_property_constraint']['dataType']}}</td>
-                            <td>{{bsdd_result['ifc_property_type']}}</td>
-                        </tr>
-
-                        <!-- Property value -->
-                        <tr style="font-style: bold;text-align:center;">
-                            <td>{{bsdd_result['classification_domain']}}</td>
-                            <td>{{bsdd_result['classification_name']}}</td>
-                            <td>{{bsdd_result['classification_code']}}</td>
-                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
-                            <td>property value type</td>
-                            <td>{{bsdd_result['bsdd_property_constraint']['predefinedValue']}}</td>
-                            <td>{{bsdd_result['ifc_property_value']}}</td>
-                        </tr>
-
-                    {% endif %}
-
+        
+            {%for bsdd_result in results["bsdd_results"]["bsdd"]%}
                 
-                {% endfor %}
-        {% endif %}
-    
+                    {% set constraints = bsdd_result['bsdd_property_constraint']%}
+                    
+                
+                    <!-- IFC entity type -->
+                    <tr style="font-style: bold;text-align:center;">
+                        <td>{{bsdd_result['domain_file']}}</td>
+                        <td>{{bsdd_result['classification_file']}}</td>
+                        <td>{{bsdd_result['classification_domain']}}</td>
+                        <td>{{bsdd_result['classification_name']}}</td>
+                        <td>{{bsdd_result['classification_code']}}</td>
+                        {% if results["bsdd_results"]["instances"] %}
+                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
+                        {% else %}
+                            <td> Not instance classified</td>
+                        {% endif %}
+                        <td>IFC entity type</td>
+                        <td>{{bsdd_result['bsdd_type_constraint']}}</td>
+
+                        {% if results["bsdd_results"]["instances"] %}
+                            <td>{{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['ifc_type']}}</td>
+                        {% else %}
+                            <td> Not instance classified</td>
+                        {% endif %}
+                    </tr>
+
+                    <!-- Property set -->
+                    <tr style="font-style: bold;text-align:center;">
+                        <td>{{bsdd_result['domain_file']}}</td>
+                        <td>{{bsdd_result['classification_file']}}</td>
+                        <td>{{bsdd_result['classification_domain']}}</td>
+                        <td>{{bsdd_result['classification_name']}}</td>
+                        <td>{{bsdd_result['classification_code']}}</td>
+                        {% if results["bsdd_results"]["instances"] %}
+                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
+                        {% else %}
+                            <td> Not instance classified</td>
+                        {% endif %}
+
+                        <td>propertySet</td>
+                        <td>{{bsdd_result['bsdd_property_constraint']['name']}}</td>
+                        <td>{{bsdd_result['ifc_property_set']}}</td>
+                    </tr>
+
+                    <!-- Property name -->
+                    <tr style="font-style: bold;text-align:center;">
+                        <td>{{bsdd_result['domain_file']}}</td>
+                        <td>{{bsdd_result['classification_file']}}</td>
+                        <td>{{bsdd_result['classification_domain']}}</td>
+                        <td>{{bsdd_result['classification_name']}}</td>
+                        <td>{{bsdd_result['classification_code']}}</td>
+                        {% if results["bsdd_results"]["instances"] %}
+                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
+                        {% else %}
+                            <td> Not instance classified</td>
+                        {% endif %}
+                        <td>property Name</td>
+                        <td>{{bsdd_result['bsdd_property_constraint']['name']}}</td>
+                        <td>{{bsdd_result['ifc_property_name']}}</td>
+                    </tr>
+
+                    
+                    <!-- Property value type -->
+                    <tr style="font-style: bold;text-align:center;">
+                        <td>{{bsdd_result['domain_file']}}</td>
+                        <td>{{bsdd_result['classification_file']}}</td>
+                        <td>{{bsdd_result['classification_domain']}}</td>
+                        <td>{{bsdd_result['classification_name']}}</td>
+                        <td>{{bsdd_result['classification_code']}}</td>
+                        {% if results["bsdd_results"]["instances"] %}
+                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
+                        {% else %}
+                            <td> Not instance classified</td>
+                        {% endif %}
+                        <td>property value type</td>
+                        <td>{{bsdd_result['bsdd_property_constraint']['dataType']}}</td>
+                        <td>{{bsdd_result['ifc_property_type']}}</td>
+                    </tr>
+
+                    <!-- Property value -->
+                    <tr style="font-style: bold;text-align:center;">
+                        <td>{{bsdd_result['domain_file']}}</td>
+                        <td>{{bsdd_result['classification_file']}}</td>
+                        <td>{{bsdd_result['classification_domain']}}</td>
+                        <td>{{bsdd_result['classification_name']}}</td>
+                        <td>{{bsdd_result['classification_code']}}</td>
+                        {% if results["bsdd_results"]["instances"] %}
+                            <td> {{results["bsdd_results"]["instances"][bsdd_result["instance_id"]]['global_id']}}</td>
+                        {% else %}
+                            <td> Not instance classified</td>
+                        {% endif %}
+                        <td>property value type</td>
+                        <td>{{bsdd_result['bsdd_property_constraint']['predefinedValue']}}</td>
+                        <td>{{bsdd_result['ifc_property_value']}}</td>
+                    </tr>
+  
+            {% endfor %}
+  
     </div>
 
 
