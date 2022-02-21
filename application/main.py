@@ -594,11 +594,10 @@ def view_report2(decoded, id):
 
             results["bsdd_results"]["instances"] = instances 
 
-    user_id = decoded['sub']
     return render_template("report_v2.html",
                            model=m,
                            results=results,
-                           user_id=user_id)
+                           username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
 @application.route('/download/<id>', methods=['GET'])

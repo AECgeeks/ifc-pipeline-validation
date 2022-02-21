@@ -1,31 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report</title>
+{% extends "base.html" %}
+{% block css %}
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}"> -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report_consistency.css') }}">
-</head>
+{% endblock %}
+{% block link %}
+    <a href="/dashboard"><i class='material-icons'>account_circle</i><span id='username'>{{ username }}</span><span>go to dashboard</span></a>
+{% endblock %}
+{% block content %}
 
 
-<body>
 
-    <div class="header">
-
-        <a href="/" style="padding-left: 5px;" id="logo">
-            <img class="bsdd-logo" src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
-        </a>
-        <div id="logo" style="margin-right:10px; display: flex;flex-direction: row; align-items: center;
-            justify-content: center; align-content: space-between; gap: 12px;">
-
-            <button onclick="goToDashboard();" style="height: 40px;width: 150px;"> BACK TO DASHBOARD</button>
-            <button
-                style="height: 50px;width: 50px;border-radius: 50%;background-image: url(/static/icons/bs.JPG);background-repeat: no-repeat;border: none;background-size:cover;"></button>
-            <!-- <img src="{{url_for('static', filename='navbar/BuildingSmart-login.png')}}" /> -->
-        </div>
-    </div>
     <script>
         var results = {{results | tojson}} 
         
@@ -266,202 +251,13 @@
                             <td>{{bsdd_result['ifc_property_value']}}</td>
                         </tr>
 
+                    {% endif %}
 
-
-                    
-
-
-<!--                     
-                        <tr style="font-style: bold;text-align:center;">
-                            <td colspan="2">
-                                IFC instance <span style="color:blue;">{{results['bsdd_results']['instances'][bsdd_result['instance_id']]['global_id']}}
-                                </span>
-                            </td>
-                        </tr>
-                        <tr style="font-style: bold;text-align:center;">
-                            <td colspan="2">
-                                SPECIFICATIONS
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Classification URI
-                            </td>
-                            <td>
-                                {{bsdd_result['bsdd_classification_uri']}}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                IFC entity type
-                            </td>
-                            <td>
-                                {{bsdd_result['bsdd_type_constraint']}}
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                Property set
-                            </td>
-                            <td>
-                                {{constraints['propertySet']}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Property name
-                            </td>
-                            <td>
-                                {{constraints['name']}}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Data type
-                            </td>
-                            <td>
-                                {{constraints['dataType']}}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Predefined value
-                            </td>
-                            <td>
-                                {{constraints['predefinedValue']}}
-                            </td>
-                        </tr>
-
-
-
-
-
-                        <tr>
-                            <td colspan="2" style="text-align:center;">
-                                RESULTS
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                Entity type of the instance
-                            </td>
-
-                            <td>
-                                {{results['bsdd_results']['instances'][bsdd_result['instance_id']]['ifc_type']}}
-                            </td>
-
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Property set
-                            </td>
-
-                            <td>
-                                {{bsdd_result['ifc_property_set']}}
-                            </td>
-
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                Property name
-                            </td>
-
-                            <td>
-                                {{bsdd_result['ifc_property_name']}}
-                            </td>
-
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                Property value type
-                            </td>
-
-                            <td>
-                                {{bsdd_result['ifc_property_type']}}
-                            </td>
-
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                Value
-                            </td>
-
-                            <td>
-                                {{bsdd_result['ifc_property_value']}}
-                            </td>
-
-                        </tr>
-
-
-
-
-                        <tr>
-                            <td colspan=2 style="background-color: lightgray;">&nbsp;</td>
-                        </tr> -->
-                    
-                    {% else %}
-
-
-                        <tr>
-                            <td>
-                                Value
-                            </td>
-
-                            <td>
-                                {{bsdd_result['bsdd_classification_uri']}}
-                            </td>
-
-                        </tr>
-                    {% endif%}
-
+                
                 {% endfor %}
-
-
-            {% else %}
-            <tr>
-                <td >Not checked</td>
-            </tr>
-
-            
-            {% endif %}
-
-        </table>
-
-
-
+        {% endif %}
+    
     </div>
 
 
-
-
-
-
-
-    </div>
-
-
-
-
-
-
-
-
-</body>
-
-
-</html>
+{% endblock %}
