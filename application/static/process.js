@@ -33,11 +33,13 @@ function createLicenseInput(licensTypes, row, model){
 }
 
 function createInput(type, row, model){
+    if (toColumnComplete[type]) {
     var input = document.createElement("INPUT")
     input.id = `${type}_${model.code}`;
     input.addEventListener("change", sendInfo);
     input.value = (type=="hours" ? model.hours : model.details);
     row.cells[toColumnComplete[type]].appendChild(input);
+    }
 }
 
 function replaceInCell(type, cell, modelId, replace=0){
@@ -64,10 +66,8 @@ function completeTable(i) {
 
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
         ['syntaxlog', 'schemalog', 'mvdlog', 'bsddlog'].forEach((x, i) => {
-            var img = document.createElement("img");
             var icon = icons[r["results"][x]];
-            rows[row_index].cells[i].className = icon;
-            img.src = "/static/icons/" + icons[r["results"][x]] + ".png";
+            rows[row_index].cells[i].className = `${icon} material-icons`;
           });
 
         rows[row_index].cells[8].innerHTML = r["time"];
@@ -133,7 +133,9 @@ else{
                 var attr = "status_" + checks_type[j];
                 var status_result = model[attr];
                 var icon = icons[status_result];
-                row.cells[toColumnComplete[checks_type[j]]].className = icon;       
+                if (toColumnComplete[checks_type[j]]) {
+                    row.cells[toColumnComplete[checks_type[j]]].className = `material-icons ${icon}`;
+                }
             }
     
             var repText = document.createElement("a");
