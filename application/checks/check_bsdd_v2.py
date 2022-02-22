@@ -31,23 +31,7 @@ def has_specifications(bsdd_response_content):
     else:
         return 0
 
-def validate_instance(constraints,ifc_file, instance):
-
-    constraint = {
-        "specified_pset_name":constraints["propertySet"],
-        "specified_property_name" : constraints["name"],
-        "specified_datatype" : constraints["dataType"],
-        "specified_predefined_value" : constraints["predefinedValue"],
-    }
-
-    # Translate datatypes and values
-    if constraint["specified_datatype"] == "Boolean":
-        constraint["specified_datatype"] = "bool"
-        if constraint["specified_predefined_value"] == "TRUE":
-            constraint["specified_predefined_value"] = 1
-        elif constraint["specified_predefined_value"] == "FALSE":
-            constraint["specified_predefined_value"] = 0
-
+def validate_instance(constraints, instance):
     to_validate = ["pset_name", "property_name", "datatype", "value"]
     validation_results = dict((el,0) for el in to_validate)
 
@@ -56,14 +40,24 @@ def validate_instance(constraints,ifc_file, instance):
         for definition in instance.IsDefinedBy:
             if definition.is_a() == "IfcRelDefinesByProperties": 
                 pset = definition.RelatingPropertyDefinition
-                if pset.Name == constraint["specified_pset_name"]:
+                if pset.Name == constraints["propertySet"]:
                     result = dict((el,"property not found") for el in to_validate)
                     result["pset_name"] = pset.Name
                     validation_results["pset_name"] = 1
                     for property in pset.HasProperties:
-                        if property.Name == constraint["specified_property_name"]:
+                        if property.Name == constraints["name"]:
                             result["property_name"] = property.Name
                             validation_results["property_name"] = 1
+            
+                            # Translate datatypes and values
+                            if constraints["dataType"] == "Boolean":
+                                constraints["dataType"] = "bool"
+
+                            if constraints["predefinedValue"] == "TRUE":
+                                constraints["predefinedValue"] = 1
+                            elif constraints["predefinedValue"]  == "FALSE":
+                                constraints["predefinedValue"]  = 0
+
                             if isinstance(property.NominalValue, ifcopenshell.entity_instance):
                                 result["value"] = property.NominalValue[0]   
                             else:
@@ -71,8 +65,8 @@ def validate_instance(constraints,ifc_file, instance):
                             
                             result["datatype"] = type(property.NominalValue[0]).__name__
                             
-                            validation_results["datatype"] = (result["datatype"] == constraint["specified_datatype"])
-                            validation_results["value"] = (result["value"] == constraint["specified_predefined_value"])
+                            validation_results["datatype"] = (result["datatype"] == constraints["dataType"])
+                            validation_results["value"] = (result["value"] == constraints["predefinedValue"])
 
     else:
         result["pset_name"] = "no pset in constraints"
@@ -80,7 +74,7 @@ def validate_instance(constraints,ifc_file, instance):
         result["datatype"] = "no pset in constraints"
         result["value"] = "no pset in constraints"
 
-    return {"constraint":constraint,"result":result, "validation_results":validation_results}
+    return {"result":result, "validation_results":validation_results}
 
 
 def check_bsdd(ifc_fn, task_id):
@@ -141,7 +135,7 @@ def check_bsdd(ifc_fn, task_id):
                                 bsdd_result.bsdd_property_constraint = json.dumps(constraint)
                                 bsdd_result.bsdd_property_uri = constraint["propertyNamespaceUri"]
 
-                                val_output = validate_instance(constraint, ifc_file, ifc_instance)
+                                val_output = validate_instance(constraint, ifc_instance)
 
                                 results = val_output["result"]
                                 bsdd_result.ifc_property_set = results["pset_name"]
