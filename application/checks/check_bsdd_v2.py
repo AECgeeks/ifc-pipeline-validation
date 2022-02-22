@@ -184,6 +184,10 @@ def check_bsdd(ifc_fn, task_id):
             bsdd_result = database.bsdd_result(task_id)
             bsdd_result.domain_file = "no IfcClassification"
             bsdd_result.classification_file = "no IfcClassificationReference"
+            bsdd_result.classification_name = "file not classified"
+            bsdd_result.classification_code = "file not classified"
+            bsdd_result.classification_domain = "file not classified"
+
             model = session.query(database.model).filter(database.model.code == file_code)[0]
             model.status_bsdd = 'v'
             session.add(bsdd_result)
