@@ -566,7 +566,9 @@ def view_report2(decoded, id):
             results["schema_result"] = schema_result.serialize() 
 
             results["schema_result"]["msg"] = [json.loads(msg) for msg in results["schema_result"]["msg"].split("\n") ]
+        
 
+        hierarchical_bsdd_results = {}
         if m["status_bsdd"] != 'n':
             bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
                 database.bsdd_validation_task.validated_file == model.id).all()[0]
@@ -582,8 +584,15 @@ def view_report2(decoded, id):
                 else:
                     bsdd_result["bsdd_property_constraint"] = 0
 
-            
-            results["bsdd_results"]["bsdd"] = bsdd_results
+                if bsdd_result["domain_file"] not in hierarchical_bsdd_results.keys():
+                    hierarchical_bsdd_results[bsdd_result["domain_file"]]= {}
+
+                if bsdd_result["classification_file"] not in hierarchical_bsdd_results[bsdd_result["domain_file"]].keys():
+                    hierarchical_bsdd_results[bsdd_result["domain_file"]][bsdd_result["classification_file"]] = []
+               
+                hierarchical_bsdd_results[bsdd_result["domain_file"]][bsdd_result["classification_file"]].append(bsdd_result)
+                
+            results["bsdd_results"]["bsdd"] = hierarchical_bsdd_results
             bsdd_validation_task = bsdd_validation_task.serialize()
 
             results["bsdd_results"]["task"] = bsdd_validation_task
@@ -594,6 +603,7 @@ def view_report2(decoded, id):
             instances = {instance.id: instance.serialize() for instance in instances}
             
             results["bsdd_results"]["instances"] = instances 
+
 
     return render_template("report_v2.html",
                            model=m,
