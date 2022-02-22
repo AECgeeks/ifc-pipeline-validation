@@ -69,7 +69,7 @@ def validate_instance(constraints,ifc_file, instance):
                             else:
                                 result["value"] = property.NominalValue
                             
-                            result["datatype"] = type(property.NominalValue[0])
+                            result["datatype"] = type(property.NominalValue[0]).__name__
                             
                             validation_results["datatype"] = (result["datatype"] == constraint["specified_datatype"])
                             validation_results["value"] = (result["value"] == constraint["specified_predefined_value"])
