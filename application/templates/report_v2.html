@@ -179,31 +179,31 @@
             </tr>
 
             
-            <tr style="font-style: bold;text-align:center;">
-                <td>Domain detected</td>
-                <td>Classification reference detected</td>
-                <td>Domain</td>
-                <td>Classification</td>
-                <td>Code</td>
-                <td>Instance</td>
-                <td>Requirement</td>
-                <td>Required</td>
-                <td>Observed</td>
-            </tr>
-
+      
             {% if results["bsdd_results"]["bsdd"] %}
 
 
             {% for domain, classification_dicts in results["bsdd_results"]["bsdd"].items() %}
-                <tr><td colspan="9">{{domain}}</td></tr>
+                <tr><td colspan="9">Domain: {{domain}}</td></tr>
                 {% for classification, bsdds in classification_dicts.items() %}
-                <tr><td colspan="9">{{classification}}</td></tr>
+                <tr><td colspan="9">Classification reference: {{classification}}</td></tr>
 
 
                 {%for bsdd_result in bsdds%}
                     
                         {% set constraints = bsdd_result['bsdd_property_constraint']%}
-                        
+                        <tr style="font-style: bold;text-align:center;">
+                            <td>Domain detected</td>
+                            <td>Classification reference detected</td>
+                            <td>Domain</td>
+                            <td>Classification</td>
+                            <td>Code</td>
+                            <td>Instance</td>
+                            <td>Requirement</td>
+                            <td>Required</td>
+                            <td>Observed</td>
+                        </tr>
+            
                     
                         <!-- IFC entity type -->
                         <tr style="font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_ifc_type']]}};">
