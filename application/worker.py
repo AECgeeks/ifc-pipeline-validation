@@ -135,8 +135,8 @@ class ifc_validation_task(task):
     est_time = 15
 
     def execute(self, directory, id):
-        check_program = "ifcopenshell.validate"
-        proc = subprocess.Popen(["python","-m", check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        check_program = os.path.join(os.getcwd() + "/checks", "validate.py")
+        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == id).all()[0]
