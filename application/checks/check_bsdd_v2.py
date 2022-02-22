@@ -146,8 +146,8 @@ def check_bsdd(ifc_fn, task_id):
                                 results = val_output["result"]
                                 bsdd_result.ifc_property_set = results["pset_name"]
                                 bsdd_result.ifc_property_name = results["property_name"]
-                                if not isinstance(results["datatype"], str):
-                                    bsdd_result.ifc_property_type = results["datatype"].__name__
+                                
+                                bsdd_result.ifc_property_type = results["datatype"]
                                 bsdd_result.ifc_property_value = results["value"]
                           
                                 val_results = val_output["validation_results"]

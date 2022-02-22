@@ -27,7 +27,6 @@ from xmlrpc.client import Boolean
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
-
 if not DEVELOPMENT:
     from psycopg2cffi import compat
     compat.register()
