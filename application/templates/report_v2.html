@@ -36,7 +36,7 @@
             });
             element.className = "folded"
             var cell = element.cells[0]
-            cell.innerHTML = `&#9660; Classification reference: ${classification}`
+            cell.innerHTML = `&#9654; Classification reference: ${classification}`
 
         }
         else if(element.className == "folded"){
@@ -46,7 +46,7 @@
 
             element.className = "unfolded"
             var cell = element.cells[0]
-            cell.innerHTML = `&#9650; Classification reference: ${classification}`
+            cell.innerHTML = `&#9660; Classification reference: ${classification}`
 
         }
 
@@ -217,7 +217,7 @@
             {% for domain, classification_dicts in results["bsdd_results"]["bsdd"].items() %}
                 <tr><td colspan="9">Domain: {{domain}}</td></tr>
                 {% for classification, bsdds in classification_dicts.items() %}
-                <tr id="{{classification}}" class="folded" onclick="xFold(this)"><td colspan="9" >&#9660;Classification reference: {{classification}}</td></tr>
+                <tr id="{{classification}}" class="folded" onclick="xFold(this)"><td colspan="9" >&#9654; Classification reference: {{classification}}</td></tr>
 
 
                 {%for bsdd_result in bsdds%}
