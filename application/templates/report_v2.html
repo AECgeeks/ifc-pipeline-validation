@@ -140,13 +140,12 @@
             "syntax",
             "schema",
             "mvd",
-            "bsdd",
-            "ids",
+            "bsdd"
             ]
             %}
 
 
-            {% set validation_colors = {0:'rgb(255, 204, 204)', 1:'rgb(217, 242, 217)'} %} 
+            {% set validation_colors = {0:'rgb(255, 204, 204)', 1:'rgb(217, 242, 217)', 2:'rgb(242, 242, 242)'}%} 
           
             {%for check_type in check_types%}
             <tr>
@@ -174,7 +173,7 @@
                 {% if results["syntax_result"] %}
                     <td colspan="9">{{results["syntax_result"]["msg"]}}</td>
                 {% else %}
-                    <td colspan="9">Not checked</td>
+                <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
                 {% endif %}
             </tr>
 
@@ -197,7 +196,7 @@
               
             {% else %}
                 <tr>
-                    <td colspan="9">Not checked</td>
+                    <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
                 </tr>
         
             {% endif %}
@@ -338,7 +337,7 @@
             {% else %}
               
                  <tr>
-                    <td colspan="9">Not checked</td>
+                    <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
                 </tr>
 
             {% endif %}
