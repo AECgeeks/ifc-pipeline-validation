@@ -22,6 +22,37 @@
         }
     </script>
 
+    
+<script>
+    function xFold(element){
+
+        
+        var classification = element.id;
+        var children = document.getElementsByClassName(classification);
+
+        if(element.className == "unfolded"){
+            children.forEach(function (item, index) {
+                item.style.display = "none";                
+            });
+            element.className = "folded"
+            var cell = element.cells[0]
+            cell.innerHTML = `&#9660; Classification reference: ${classification}`
+
+        }
+        else if(element.className == "folded"){
+            children.forEach(function (item, index) {
+                item.style.display = "";                     
+            });
+
+            element.className = "unfolded"
+            var cell = element.cells[0]
+            cell.innerHTML = `&#9650; Classification reference: ${classification}`
+
+        }
+
+    }
+</script>
+
 
 
     {% set header_bg = "rgb(230, 242, 255)" %}
@@ -186,13 +217,13 @@
             {% for domain, classification_dicts in results["bsdd_results"]["bsdd"].items() %}
                 <tr><td colspan="9">Domain: {{domain}}</td></tr>
                 {% for classification, bsdds in classification_dicts.items() %}
-                <tr><td colspan="9">Classification reference: {{classification}}</td></tr>
+                <tr id="{{classification}}" class="folded" onclick="xFold(this)"><td colspan="9" >&#9660;Classification reference: {{classification}}</td></tr>
 
 
                 {%for bsdd_result in bsdds%}
                     
                         {% set constraints = bsdd_result['bsdd_property_constraint']%}
-                        <tr style="font-style: bold;text-align:center;">
+                        <tr class="{{classification}}" style="display:none; font-style: bold;text-align:center; visibility: none;">
                             <td>Domain detected</td>
                             <td>Classification reference detected</td>
                             <td>Domain</td>
@@ -206,7 +237,7 @@
             
                     
                         <!-- IFC entity type -->
-                        <tr style="font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_ifc_type']]}};">
+                        <tr class="{{classification}}" style="display: none; font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_ifc_type']]}};">
                             <td>{{bsdd_result['domain_file']}}</td>
                             <td>{{bsdd_result['classification_file']}}</td>
                             <td>{{bsdd_result['classification_domain']}}</td>
@@ -228,7 +259,7 @@
                         </tr>
 
                         <!-- Property set -->
-                        <tr style="font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_property_set']]}};">
+                        <tr class="{{classification}}" style="display: none; font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_property_set']]}};">
                             <td>{{bsdd_result['domain_file']}}</td>
                             <td>{{bsdd_result['classification_file']}}</td>
                             <td>{{bsdd_result['classification_domain']}}</td>
@@ -246,7 +277,7 @@
                         </tr>
 
                         <!-- Property name -->
-                        <tr style="font-style: bold;text-align:center; background-color:{{validation_colors[bsdd_result['val_property_name']]}};">
+                        <tr class="{{classification}}" style="display: none; font-style: bold;text-align:center; background-color:{{validation_colors[bsdd_result['val_property_name']]}};">
                             <td>{{bsdd_result['domain_file']}}</td>
                             <td>{{bsdd_result['classification_file']}}</td>
                             <td>{{bsdd_result['classification_domain']}}</td>
@@ -264,7 +295,7 @@
 
                         
                         <!-- Property value type -->
-                        <tr style="font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_property_type']]}};">
+                        <tr class="{{classification}}" style="display: none; font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_property_type']]}};">
                             <td>{{bsdd_result['domain_file']}}</td>
                             <td>{{bsdd_result['classification_file']}}</td>
                             <td>{{bsdd_result['classification_domain']}}</td>
@@ -281,7 +312,7 @@
                         </tr>
 
                         <!-- Property value -->
-                        <tr style="font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_property_value']]}};">
+                        <tr class="{{classification}}" style="display: none; font-style: bold;text-align:center;background-color:{{validation_colors[bsdd_result['val_property_value']]}};">
                             <td>{{bsdd_result['domain_file']}}</td>
                             <td>{{bsdd_result['classification_file']}}</td>
                             <td>{{bsdd_result['classification_domain']}}</td>
@@ -297,7 +328,7 @@
                             <td>{{bsdd_result['ifc_property_value']}}</td>
                         </tr>
 
-                        <tr style="background-color: rgb(242, 242, 242)">
+                        <tr class="{{classification}}" style="display: none; background-color: rgb(242, 242, 242)">
                             <td colspan=9></td>
                         </tr>        
                         {% endfor %}
@@ -313,6 +344,8 @@
             {% endif %}
 
     </div>
+
+
 
 
 {% endblock %}
