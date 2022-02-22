@@ -176,10 +176,11 @@ def check_bsdd(ifc_fn, task_id):
                         bsdd_result.classification_file = relating_classification.Name
                         bsdd_result.instance_id = instance_id
                         bsdd_result.bsdd_classification_uri = "classification not found"
+
                         session.add(bsdd_result)
                         session.commit()
                     
-            #todo: implement scores that actually validate or not the model
+            
             model = session.query(database.model).filter(database.model.code == file_code)[0]
             model.status_bsdd = 'v'
             session.commit()
@@ -187,8 +188,8 @@ def check_bsdd(ifc_fn, task_id):
 
         else:
             bsdd_result = database.bsdd_result(task_id)
-            bsdd_result.domain_file = "no classification association in this file"
-            bsdd_result.classification_file = "no classification association in this file"
+            bsdd_result.domain_file = "no IfcClassification"
+            bsdd_result.classification_file = "no IfcClassificationReference"
             model = session.query(database.model).filter(database.model.code == file_code)[0]
             model.status_bsdd = 'v'
             session.add(bsdd_result)
