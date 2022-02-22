@@ -4,7 +4,11 @@
 {% endblock %}
 {% block link %}
     <a href="/"><i class='material-icons'>file_upload</i><span id='username'>Upload models</span><span>&nbsp;</span></a>
-    <a href="/dashboard"><i class='material-icons'>account_circle</i><span id='username'>{{ username }}</span><span><a href="/logout">logout</a></span></a>
+    <a href="/logout">
+        <i class='material-icons'>account_circle</i>
+        <span id='username'>{{ username }}</span>
+        <span>logout</span>
+    </a>
 {% endblock %}
 
 
