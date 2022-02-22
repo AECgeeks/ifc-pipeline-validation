@@ -23,6 +23,7 @@
 ##################################################################################
 
 import os
+from xmlrpc.client import Boolean
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
 
@@ -35,7 +36,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 from sqlalchemy.inspection import inspect
-from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Boolean, Integer, Float, String, DateTime, ForeignKey, Enum
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import relationship
 
@@ -216,6 +217,12 @@ class bsdd_result(Base, Serializable):
     ifc_property_name = Column(String)
     ifc_property_type = Column(String)
     ifc_property_value = Column(String)
+
+    val_ifc_type = Column(Boolean)
+    val_property_set = Column(Boolean)
+    val_property_name = Column(Boolean)
+    val_property_type = Column(Boolean)
+    val_property_value = Column(Boolean)
 
     def __init__(self, task_id):
         self.task_id = task_id

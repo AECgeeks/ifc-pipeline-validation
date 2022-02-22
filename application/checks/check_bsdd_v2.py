@@ -31,42 +31,56 @@ def has_specifications(bsdd_response_content):
     else:
         return 0
 
-def validate_instance(constraint,ifc_file, instance):
+def validate_instance(constraints,ifc_file, instance):
 
-    result = {"pset_name":"pset not found","property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
     constraint = {
-        "specified_pset_name":constraint["propertySet"],
-        "specified_property_name" : constraint["name"],
-        "specified_datatype" : constraint["dataType"],
-        "specified_predefined_value" : constraint["predefinedValue"],
+        "specified_pset_name":constraints["propertySet"],
+        "specified_property_name" : constraints["name"],
+        "specified_datatype" : constraints["dataType"],
+        "specified_predefined_value" : constraints["predefinedValue"],
     }
 
-    to_check = ["propertySet", "name", "dataType", "predefinedValue"]
+    # Translate datatypes and values
+    if constraint["specified_datatype"] == "Boolean":
+        constraint["specified_datatype"] = "bool"
+        if constraint["specified_predefined_value"] == "TRUE":
+            constraint["specified_predefined_value"] = 1
+        elif constraint["specified_predefined_value"] == "FALSE":
+            constraint["specified_predefined_value"] = 0
 
-    for definition in instance.IsDefinedBy:
-        if definition.is_a() == "IfcRelDefinesByProperties": 
-            pset = definition.RelatingPropertyDefinition
-            if pset.Name == constraint["specified_pset_name"]:
-                result["property_name"] = "property not found"
-                result["value"] = "property not found"
-                result["datatype"] = "property not found"
+    to_validate = ["pset_name", "property_name", "datatype", "value"]
+    validation_results = dict((el,0) for el in to_validate)
 
-                result = {"pset_name":pset.Name,"property_name":"pset not found","value":"pset not found","datatype":"pset not found" }
-                for property in pset.HasProperties:
-                    if property.Name == constraint["specified_property_name"]:
-                        result["property_name"] = property.Name
-
-                        if isinstance(property.NominalValue, ifcopenshell.entity_instance):
-                            result["value"] = property.NominalValue[0]
+    if "propertySet" in constraints.keys():
+        result = dict((el,"pset not found") for el in to_validate)
+        for definition in instance.IsDefinedBy:
+            if definition.is_a() == "IfcRelDefinesByProperties": 
+                pset = definition.RelatingPropertyDefinition
+                if pset.Name == constraint["specified_pset_name"]:
+                    result = dict((el,"property not found") for el in to_validate)
+                    result["pset_name"] = pset.Name
+                    validation_results["pset_name"] = 1
+                    for property in pset.HasProperties:
+                        if property.Name == constraint["specified_property_name"]:
+                            result["property_name"] = property.Name
+                            validation_results["property_name"] = 1
+                            if isinstance(property.NominalValue, ifcopenshell.entity_instance):
+                                result["value"] = property.NominalValue[0]   
+                            else:
+                                result["value"] = property.NominalValue
+                            
                             result["datatype"] = type(property.NominalValue[0])
-                        else:
-                            result["value"] = property.NominalValue
-                            result["datatype"] = type(property.NominalValue[0])
+                            
+                            validation_results["datatype"] = (result["datatype"] == constraint["specified_datatype"])
+                            validation_results["value"] = (result["value"] == constraint["specified_predefined_value"])
 
-                        
+    else:
+        result["pset_name"] = "no pset in constraints"
+        result["property_name"] = "no pset in constraints"
+        result["datatype"] = "no pset in constraints"
+        result["value"] = "no pset in constraints"
 
-    return {"constraint":constraint,"result":result}
-
+    return {"constraint":constraint,"result":result, "validation_results":validation_results}
 
 
 def check_bsdd(ifc_fn, task_id):
@@ -120,24 +134,29 @@ def check_bsdd(ifc_fn, task_id):
                                 bsdd_result.classification_name = bsdd_content["name"]
                                 bsdd_result.classification_code = bsdd_content["code"]
                                 bsdd_result.classification_domain = domain_name
+
+                                bsdd_result.val_ifc_type = sum(ifc_instance.is_a(t) for t in bsdd_content["relatedIfcEntityNames"]) >= 1
+
                                 bsdd_result.bsdd_type_constraint = ";".join(bsdd_content["relatedIfcEntityNames"])
                                 bsdd_result.bsdd_property_constraint = json.dumps(constraint)
                                 bsdd_result.bsdd_property_uri = constraint["propertyNamespaceUri"]
 
-                                
-                                results = validate_instance(constraint, ifc_file, ifc_instance)["result"]
+                                val_output = validate_instance(constraint, ifc_file, ifc_instance)
+
+                                results = val_output["result"]
                                 bsdd_result.ifc_property_set = results["pset_name"]
                                 bsdd_result.ifc_property_name = results["property_name"]
                                 if not isinstance(results["datatype"], str):
                                     bsdd_result.ifc_property_type = results["datatype"].__name__
                                 bsdd_result.ifc_property_value = results["value"]
-                            
-                                # bsdd_result.ifc_property_set = "no requirement"
-                                # bsdd_result.ifc_property_name = "no requirement"
-                                # bsdd_result.ifc_property_type = "no requirement"
-                                # bsdd_result.ifc_property_value ="no requirement"
+                          
+                                val_results = val_output["validation_results"]
+                                bsdd_result.val_property_set = val_results["pset_name"]
+                                bsdd_result.val_property_name = val_results["property_name"]
+                                bsdd_result.val_property_type = val_results["datatype"]
+                                bsdd_result.val_property_value = val_results["value"]
 
-
+                                #Validation output 
                                 session.add(bsdd_result)
                                 session.commit()
                         else:
