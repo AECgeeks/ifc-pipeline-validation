@@ -126,6 +126,9 @@ class syntax_validation_task(task):
                 i += 1
                 self.sub_progress(i)
 
+        if proc.poll() != 0:
+            raise RuntimeError()
+
 
 
 class ifc_validation_task(task):
@@ -161,6 +164,9 @@ class ifc_validation_task(task):
             if ch and ord(ch) == ord('.'):
                 i += 1
                 self.sub_progress(i)
+        
+        if proc.poll() != 0:
+            raise RuntimeError()
 
 
 class mvd_validation_task(task):
@@ -205,6 +211,8 @@ class bsdd_validation_task(task):
                 i += 1
                 self.sub_progress(i)
 
+        if proc.poll() != 0:
+            raise RuntimeError()
 
 class ids_validation_task(task):
     est_time = 10
