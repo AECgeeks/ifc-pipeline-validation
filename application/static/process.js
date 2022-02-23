@@ -82,6 +82,7 @@ function completeTable(i) {
     repText.className = "dashboard_link";
     repText.id = "report";
     repText.innerHTML = "View report";
+    repText.target = "_blank";
     repText.href = `/report2/${savedModels[i].code}`;
     rows[row_index].cells[toColumnComplete["report"]].appendChild(repText);
 
@@ -140,8 +141,9 @@ else{
             }
     
             var repText = document.createElement("a");
-            repText.id = "report"
-            repText.innerHTML = "View report"
+            repText.id = "report";
+            repText.innerHTML = "View report";
+            repText.target = "_blank";
             repText.href = `/report2/${model.code}`;
     
             row.cells[toColumnComplete["report"]].appendChild(repText)
