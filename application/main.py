@@ -50,9 +50,9 @@ import database
 import worker
 
 
-def send_simple_message(msg_content):
+def send_simple_message(msg_content, user_email):
     dom = os.getenv("MG_DOMAIN")
-    base_url = f"https://api.mailgun.net/v3/{dom}/messages"
+    base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
     from_ = f"Validation Service <bsdd_val@{dom}>"
     email = os.getenv("MG_EMAIL")
 
@@ -61,8 +61,8 @@ def send_simple_message(msg_content):
         auth=("api", os.getenv("MG_KEY")),
 
         data={"from": from_,
-              "to": [email],
-              "subject": "License update",
+              "to": [email, user_email],
+              "subject": "Validation service update",
               "text": msg_content})
 
 
@@ -289,7 +289,7 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
         user = session.query(database.user).filter(database.user.id == user_id).all()[0]
 
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-    send_simple_message(msg)
+    send_simple_message(msg, user.email)
 
     if DEVELOPMENT:
         for id in ids:
@@ -446,8 +446,7 @@ def update_info(decoded, code):
             user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
             if decoded_data["type"] == "license":
-                send_simple_message(
-                    f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
+                send_simple_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", user.email)
             session.commit()
         return jsonify( {"progress": data.decode("utf-8")})
     except:
