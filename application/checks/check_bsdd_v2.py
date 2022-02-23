@@ -92,8 +92,6 @@ def check_bsdd(ifc_fn, task_id):
             num_dots = [int(b) - int(a) for a, b in zip(percentages, percentages[1:])]
 
             for idx, rel in enumerate(ifc_file.by_type("IfcRelAssociatesClassification")):
-                # if num_dots[idx]:
-                    #print(num_dots[idx] * ".", file=sys.stdout)
                 sys.stdout.write(num_dots[idx] * ".")
                 sys.stdout.flush()
 
@@ -150,6 +148,9 @@ def check_bsdd(ifc_fn, task_id):
                                 bsdd_result.val_property_type = val_results["datatype"]
                                 bsdd_result.val_property_value = val_results["value"]
 
+                                if sum([bsdd_result.val_ifc_type,val_results["pset_name"],val_results["property_name"], val_results["datatype"]], val_results["value"]) != 5:
+                                    model.status_bsdd = 'i'
+
                                 #Validation output 
                                 session.add(bsdd_result)
                                 session.commit()
@@ -160,6 +161,8 @@ def check_bsdd(ifc_fn, task_id):
                             bsdd_result.classification_file = relating_classification.Name
                             bsdd_result.instance_id = instance_id
                             bsdd_result.bsdd_property_constraint = "no constraint"
+
+                            model.status_bsdd = 'v'
                             session.add(bsdd_result)
                             session.commit()
                     else:
@@ -171,13 +174,10 @@ def check_bsdd(ifc_fn, task_id):
                         bsdd_result.instance_id = instance_id
                         bsdd_result.bsdd_classification_uri = "classification not found"
 
+                        model.status_bsdd = 'v'
+
                         session.add(bsdd_result)
                         session.commit()
-                    
-            
-            model = session.query(database.model).filter(database.model.code == file_code)[0]
-            model.status_bsdd = 'v'
-            session.commit()
 
 
         else:
@@ -188,7 +188,6 @@ def check_bsdd(ifc_fn, task_id):
             bsdd_result.classification_code = "file not classified"
             bsdd_result.classification_domain = "file not classified"
 
-            model = session.query(database.model).filter(database.model.code == file_code)[0]
             model.status_bsdd = 'v'
             session.add(bsdd_result)
             session.commit()
