@@ -140,8 +140,7 @@ class ifc_validation_task(task):
 
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == id).all()[0]
-            model.status_schema = 'w'
-
+            
             validation_task = database.schema_validation_task(model.id)
             session.add(validation_task)
             session.commit()
@@ -149,6 +148,17 @@ class ifc_validation_task(task):
            
             output = proc.stderr.read()
             output = output.decode("utf-8").strip()
+
+            model.status_schema = 'v'
+            if len(output):
+                for result in output.split("\n"):
+                    res = json.loads(result)
+                    if res["level"] == "error":
+                        model.status_schema = 'i'
+                        break
+                    elif res["level"] == "warning":
+                        model.status_schema = 'w'
+
             schema_result = database.schema_result(validation_task_id)
             schema_result.msg = output
             session.add(schema_result)
