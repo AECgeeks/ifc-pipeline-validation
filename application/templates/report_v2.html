@@ -131,7 +131,7 @@
             'v': ['<p>&check;</p>', 'green'],
             'i': ['<p>&cross;</p>','red'],
             'n':['<p>&#9744;</p>', 'black'],
-            'w':['<p>&#9888;</p>','yellow']
+            'w':['<p>&#9888;</p>','rgb(255, 204, 0)']
             }
             %}
 
@@ -145,7 +145,7 @@
             %}
 
 
-            {% set validation_colors = {0:'rgb(255, 204, 204)', 1:'rgb(217, 242, 217)', 2:'rgb(242, 242, 242)'}%} 
+            {% set validation_colors = {0:'rgb(255, 204, 204)', 1:'rgb(217, 242, 217)', 2:'rgb(242, 242, 242)', "error":'rgb(255, 204, 204)', "warning":'rgb(255, 204, 0)', "valid":'rgb(217, 242, 217)'}%} 
           
             {%for check_type in check_types%}
             <tr>
@@ -171,9 +171,13 @@
 
             <tr>
                 {% if results["syntax_result"] %}
-                    <td colspan="9">{{results["syntax_result"]["msg"]}}</td>
+                    {% if results["syntax_result"]["msg"] == 'valid' %}
+                        <td style="text-align:center;background-color: {{validation_colors[1]}};" colspan="9">{{results["syntax_result"]["msg"]}}</td>
+                    {% else %}
+                        <td style="text-align:center;background-color: {{validation_colors[0]}};"colspan="9">{{results["syntax_result"]["msg"]}}</td>
+                    {% endif %}
                 {% else %}
-                <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
+                    <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
                 {% endif %}
             </tr>
 
@@ -189,7 +193,7 @@
 
                 {% for msg in results["schema_result"]["msg"]%}
                 <tr>
-                    <td colspan="9">{{msg}}</td>
+                    <td style="text-align:center;background-color: {{validation_colors[msg['level']]}};" colspan="9">{{msg["message"]}}</td>
                 </tr>
                         
                 {% endfor %}
