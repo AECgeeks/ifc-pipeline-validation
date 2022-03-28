@@ -8,29 +8,46 @@
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
     {% block css %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='all.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,600' rel='stylesheet' type='text/css'>
-<body>
+</head>
+
+
 
     <div class="full-screen">
-    
         <div class="header">
-
-            <div>
-                <a href="/" style="padding-left: 5px;" id="logo">
-                    <img class="bsdd-logo"
-                        src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
-                </a>
+            <img class="bsdd-logo"src="{{url_for('static', filename='navbar/buildingSMART_RGB_bSDD_service.png')}}" />
+            <div class="bar_info">
+                <div class="container" onclick="myFunction(this)">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
+                </div>
                 
-                <h1>validation service</h1>
-            </div>
+
+                <span class="material_container"><i class='material-icons' style="font-size: 250%;">account_circle</i></span>
+
+                <div class="bar_text">
+                    <a style=" text-decoration: none;">{{ username }}</a>
+                    {% block link %}{% endblock %}
+                    <!-- <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a> -->
+                    <a href="/logout" style=" text-decoration: none;">Log out</a>
+
+                    <!-- <u style=" text-decoration: none;">name</u>
+                    <u style=" text-decoration: none;">Go to dashboard</u>
+                    <u style=" text-decoration: none;">Log out</u> -->
+                    <!-- <li>name</li>
+                    <li>name</li> -->
 
 
-            <div id="header_link">
-            
-                {% block link %}{% endblock %}
 
+                    <!-- <u>name</u>
+                    <u>name</u> -->
+                    <!-- <p>Go to dashboard</p>
+                    <p>Log out</p> -->
+                </div>
+                <!-- <a href="/dashboard"><i class='material-icons'>account_circle</i><span id='username'>{{ username }}</span><span>go to dashboard</span></a> -->
+                  
             </div>
 
         </div>
@@ -38,7 +55,13 @@
         <div class="main">
             {% block content %}{% endblock %}        
         </div>
+
+        <div class="footer">
+            Footer 
+        </div>
     </div>
-</body>
+
+    
+
 
 </html>
