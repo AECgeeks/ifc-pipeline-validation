@@ -50,9 +50,9 @@ import database
 import worker
 
 
-def send_simple_message(msg_content):
+def send_simple_message(msg_content, user_email):
     dom = os.getenv("MG_DOMAIN")
-    base_url = f"https://api.mailgun.net/v3/{dom}/messages"
+    base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
     from_ = f"Validation Service <bsdd_val@{dom}>"
     email = os.getenv("MG_EMAIL")
 
@@ -61,8 +61,8 @@ def send_simple_message(msg_content):
         auth=("api", os.getenv("MG_KEY")),
 
         data={"from": from_,
-              "to": [email],
-              "subject": "License update",
+              "to": [email, user_email],
+              "subject": "Validation service update",
               "text": msg_content})
 
 
@@ -130,6 +130,10 @@ def login_required(f):
         if not DEVELOPMENT:
             if not "oauth_token" in session.keys():
                 return redirect(url_for('login'))
+            with database.Session() as db_session:
+                user = db_session.query(database.user).filter(database.user.id == session['decoded']["sub"]).all()
+                if len(user) == 0:
+                     return redirect(url_for('login'))
             return f(session['decoded'],*args, **kwargs)
         else:
             with open('decoded.json') as json_file:
@@ -141,7 +145,18 @@ def login_required(f):
 @application.route("/")
 @login_required
 def index(decoded):
-    return render_template('index.html', decoded=decoded)
+    if DEVELOPMENT:
+        with database.Session() as db_session:
+            user = db_session.query(database.user).filter(database.user.id == decoded["sub"]).all()
+            if len(user) == 0:
+                db_session.add(database.user(str(decoded["sub"]),
+                                            str(decoded["email"]),
+                                            str(decoded["family_name"]),
+                                            str(decoded["given_name"]),
+                                            str(decoded["name"])))
+                db_session.commit()
+
+    return render_template('index.html', decoded=decoded, username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
 @application.route('/login', methods=['GET'])
@@ -157,8 +172,12 @@ def login():
 def callback():
     bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=[
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
-    t = bs.fetch_token(token_url, client_secret=client_secret,
-                       authorization_response=request.url, response_type="token")
+    try:
+        t = bs.fetch_token(token_url, client_secret=client_secret,
+                           authorization_response=request.url, response_type="token")
+    except:
+        return redirect(url_for(login))
+        
     BS_DISCOVERY_URL = (
         "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
     )
@@ -270,7 +289,45 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
         user = session.query(database.user).filter(database.user.id == user_id).all()[0]
 
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-    send_simple_message(msg)
+    send_simple_message(msg, user.email)
+
+    if DEVELOPMENT:
+        for id in ids:
+            t = threading.Thread(target=lambda: worker.process(
+                id, validation_config, callback_url))
+            t.start()
+    else:
+        for id in ids:
+            q.enqueue(worker.process, id, validation_config, callback_url)
+
+    return ids
+
+
+@application.route('/reprocess/<id>', methods=['POST'])
+@login_required
+def reprocess(decoded,id):
+    ids = []
+    filenames = []
+
+    # with database.Session() as session:
+
+    #     model = session.query(database.model).filter(database.model.id == id).all()[0]
+    #     for file in files:
+    #         fn = file.filename
+    #         filenames.append(fn)
+    #         def filewriter(fn): return file.save(fn)
+    #         id = utils.generate_id()
+    #         ids.append(id)
+    #         d = utils.storage_dir_for_id(id)
+    #         os.makedirs(d)
+    #         filewriter(os.path.join(d, id+".ifc"))
+    #         session.add(database.model(id, fn, user_id))
+    #         session.commit()
+
+    #     user = session.query(database.user).filter(database.user.id == user_id).all()[0]
+
+    # msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
+    # send_simple_message(msg)
 
     if DEVELOPMENT:
         for id in ids:
@@ -319,7 +376,7 @@ def put_main(decoded):
         idstr += i
 
     if VALIDATION:
-        url = url_for('dashboard', user_id=user_id)
+        url = url_for('dashboard')
 
     elif VIEWER:
         url = url_for('check_viewer', id=idstr)
@@ -344,7 +401,7 @@ def dashboard(decoded):
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
 
-    return render_template('dashboard.html', user_id=user_id, saved_models=saved_models)
+    return render_template('dashboard.html', saved_models=saved_models, username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
 @application.route('/valprog/<id>', methods=['GET'])
@@ -389,8 +446,7 @@ def update_info(decoded, code):
             user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
             if decoded_data["type"] == "license":
-                send_simple_message(
-                    f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}")
+                send_simple_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", user.email)
             session.commit()
         return jsonify( {"progress": data.decode("utf-8")})
     except:
@@ -495,29 +551,65 @@ def view_report2(decoded, id):
             database.model.code == id).all()[0]
         m = model.serialize()
 
-        bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
-            database.bsdd_validation_task.validated_file == model.id).all()[0]
+        results = { "syntax_result":0, "schema_result":0, "bsdd_results":{"tasks":0, "bsdd":0, "instances":0}}
 
-        bsdd_results = session.query(database.bsdd_result).filter(
-            database.bsdd_result.task_id == bsdd_validation_task.id).all()
-        bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+        if m["status_syntax"] != 'n':
+            syntax_validation_task = session.query(database.syntax_validation_task).filter(database.syntax_validation_task.validated_file == model.id).all()[0]
+            syntax_result = session.query(database.syntax_result).filter(database.syntax_result.task_id == syntax_validation_task.id).all()[0]
+            results["syntax_result"] = syntax_result.serialize() 
 
-        for bsdd_result in bsdd_results:
-            bsdd_result["bsdd_property_constraint"] = json.loads(
-                bsdd_result["bsdd_property_constraint"])
+        if m["status_schema"] != 'n':
+            schema_validation_task = session.query(database.schema_validation_task).filter(
+            database.schema_validation_task.validated_file == model.id).all()[0]
+            schema_result = session.query(database.schema_result).filter(database.schema_result.task_id == schema_validation_task.id).all()[0]
+            results["schema_result"] = schema_result.serialize() 
 
-        bsdd_validation_task = bsdd_validation_task.serialize()
-        instances = session.query(database.ifc_instance).filter(
-            database.ifc_instance.file == model.id).all()
-        instances = {instance.id: instance.serialize() for instance in instances}
-    
-    user_id = decoded['sub']
+            if not len( results["schema_result"]['msg']):
+                results["schema_result"]['msg'] = [{"level":"valid", "message":"valid"}]
+            else:
+                results["schema_result"]["msg"] = [json.loads(msg) for msg in results["schema_result"]["msg"].split("\n") ]
+            
+        hierarchical_bsdd_results = {}
+        if m["status_bsdd"] != 'n':
+            bsdd_validation_task = session.query(database.bsdd_validation_task).filter(
+                database.bsdd_validation_task.validated_file == model.id).all()[0]
+
+            bsdd_results = session.query(database.bsdd_result).filter(
+                database.bsdd_result.task_id == bsdd_validation_task.id).all()
+            bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
+
+            for bsdd_result in bsdd_results:
+                if bsdd_result["bsdd_property_constraint"]:
+                    bsdd_result["bsdd_property_constraint"] = json.loads(
+                        bsdd_result["bsdd_property_constraint"])
+                else:
+                    bsdd_result["bsdd_property_constraint"] = 0
+
+                if bsdd_result["domain_file"] not in hierarchical_bsdd_results.keys():
+                    hierarchical_bsdd_results[bsdd_result["domain_file"]]= {}
+
+                if bsdd_result["classification_file"] not in hierarchical_bsdd_results[bsdd_result["domain_file"]].keys():
+                    hierarchical_bsdd_results[bsdd_result["domain_file"]][bsdd_result["classification_file"]] = []
+               
+                hierarchical_bsdd_results[bsdd_result["domain_file"]][bsdd_result["classification_file"]].append(bsdd_result)
+                
+            results["bsdd_results"]["bsdd"] = hierarchical_bsdd_results
+            bsdd_validation_task = bsdd_validation_task.serialize()
+
+            results["bsdd_results"]["task"] = bsdd_validation_task
+
+            instances = session.query(database.ifc_instance).filter(
+                database.ifc_instance.file == model.id).all()
+           
+            instances = {instance.id: instance.serialize() for instance in instances}
+            
+            results["bsdd_results"]["instances"] = instances 
+
+
     return render_template("report_v2.html",
                            model=m,
-                           bsdd_validation_task=bsdd_validation_task,
-                           bsdd_results=bsdd_results,
-                           instances=instances,
-                           user_id=user_id)
+                           results=results,
+                           username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
 @application.route('/download/<id>', methods=['GET'])
