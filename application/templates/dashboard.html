@@ -2,94 +2,119 @@
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='validation.css') }}">
 {% endblock %}
-{% block link %}
-    <a href="/"><i class='material-icons'>file_upload</i><span id='username'>Upload models</span><span>&nbsp;</span></a>
-    <a href="/logout">
-        <i class='material-icons'>account_circle</i>
-        <span id='username'>{{ username }}</span>
-        <span>logout</span>
-    </a>
-{% endblock %}
 
+
+
+{% block link %}<a href="/" style=" text-decoration: none;">Upload new files</a>{% endblock %}
 
 {% block content %}
-    <script>
-        var savedModels = {{ saved_models| tojson}};
+
+<div class="hidden_menu">
+    <a style=" text-decoration: none;">{{ username }}</a>
+    <a href="/" style=" text-decoration: none;">Upload new files</a>
+    <a href="/logout" style=" text-decoration: none;">Log out</a>
+</div>
+
+<script>
+
+
+    var savedModels = {{ saved_models| tojson}};
+
+    var columnsUncomplete = [
+        "file_format",
+        "file_name",
+        "syntax",
+        "schema",
+        "mvd",
+        "bsdd",
+        //"ids",
+        "report",
+        "progress",
+        "advancement",
+        "stop",
+        "geoms",
+        "props",
+        "license",
+        "hours",
+        "details",
+    ];
+    var columnsComplete = [
+        "file_format",
+        "file_name",
+        "syntax",
+        "schema",
+        "mvd",
+        "bsdd",
+        //"ids",
+        "report",
+        "date",
+        "download",
+        "delete",
+        "geoms",
+        "props",
+        "license",
+        "hours",
+        "details",
+    ];
+    var toColumnUncomplete = {};
+    var toColumnComplete = {};
+    columnsUncomplete.forEach((v, i) => { toColumnUncomplete[v] = i; });
+    columnsComplete.forEach((v, i) => { toColumnComplete[v] = i; });
+</script>
+
  
-        var columnsUncomplete = [
-            "file_format",
-            "file_name",
-            "syntax",
-            "schema",
-            "mvd",
-            "bsdd",
-            //"ids",
-            "report",
-            "progress",
-            "advancement",
-            "stop",
-            "geoms",
-            "props",
-            "license",
-            "hours",
-            "details",
-        ];
-        var columnsComplete = [
-            "file_format",
-            "file_name",
-            "syntax",
-            "schema",
-            "mvd",
-            "bsdd",
-            //"ids",
-            "report",
-            "date",
-            "download",
-            "delete",
-            "geoms",
-            "props",
-            "license",
-            "hours",
-            "details",
-        ];
-        var toColumnUncomplete = {};
-        var toColumnComplete = {};
-        columnsUncomplete.forEach((v, i) => { toColumnUncomplete[v] = i; });
-        columnsComplete.forEach((v, i) => { toColumnComplete[v] = i; });
+
+    <table id="saved_models">
+        <tr>
+            <th>File format</th>
+            <th></th>
+            
+            <th>Syntax</th>
+            <th>Schema</th>
+            <th>MVD</th>
+            <th>bSDD</th>
+            <!--<th>IDS</th>-->
+
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th># geometries</th>
+            <th># properties</th>
+
+            <th>License</th>
+            <th style="text-align: center;">Production hours</th>
+            <th>Additional details</th>
+
+        </tr>
 
 
-    </script>
+        <script type="text/javascript" src="{{ url_for('static', filename='process.js') }}"></script>
 
-    <div id="main">
+    </table>
 
-        <table id="saved_models">
-            <tr>
-                <th>File format</th>
-                <th></th>
-                
-                <th>Syntax</th>
-                <th>Schema</th>
-                <th>MVD</th>
-                <th>bSDD</th>
-                <!--<th>IDS</th>-->
-
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th># geometries</th>
-                <th># properties</th>
-
-                <th>License</th>
-                <th style="text-align: center;">Production hours</th>
-                <th>Additional details</th>
-
-            </tr>
-
-
-            <script type="text/javascript" src="{{ url_for('static', filename='process.js') }}"></script>
-
-        </table>
+    <div class="hidden_menu">
+        <a style=" text-decoration: none;">{{ username }}</a>
+        <a href="/" style=" text-decoration: none;">Upload new files</a>
+        <a href="/logout" style=" text-decoration: none;">Log out</a>
     </div>
+    
+<script>
+    function myFunction(x) {
+            x.classList.toggle("change");
+
+            var main = document.getElementsByClassName("main")[0];
+            var menu = main.children[0];
+
+            console.log("menu", menu)
+
+            if(menu.className =="hidden_menu"){
+                menu.className = "visible_menu";
+            }
+            else if(menu.className=="visible_menu"){
+                menu.className = "hidden_menu";
+            }
+        }
+    </script>
     
 {% endblock %}
