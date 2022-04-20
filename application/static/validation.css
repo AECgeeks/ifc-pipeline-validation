@@ -1,5 +1,3 @@
-
-
 a:visited {
   color: inherit;
   text-decoration: none;
@@ -15,14 +13,15 @@ table, th, td {
 
 td, th {
   text-align: center;
-  padding:1.5px;
+  padding: 1.5px;
   max-width: 150px;
 }
 
-input{
-width: 40px;
+input {
+  width: 40px;
 
 }
+
 .filename {
   text-align: left;
 }
@@ -359,11 +358,11 @@ full-screen>.footer {
 /* Phones landscape */
 
 @media only screen and (max-width: 600px) and (orientation : landscape) {
-
+/* 
   .main {
     background-color: #ff64b9;
 
-  }
+  } */
 
   .bar_text {
     display: none;
@@ -414,7 +413,7 @@ full-screen>.footer {
     display: block;
   }
 
-  
+
 
 
   .full-screen>.main {
@@ -423,7 +422,7 @@ full-screen>.footer {
 
   }
 
-  
+
 
   .bar_text {
     display: none;
@@ -434,7 +433,7 @@ full-screen>.footer {
     height: 55%;
   }
 
-  dropzone{
+  dropzone {
     width: 100%;
   }
 
