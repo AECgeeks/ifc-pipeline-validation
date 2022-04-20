@@ -223,7 +223,7 @@ full-screen>.footer {
 
 /* Add an active class to highlight the current page */
 .header a.active {
-  background-color: #04AA6D;
+  /* background-color: #04AA6D; */
   color: white;
 }
 
@@ -237,9 +237,9 @@ full-screen>.footer {
 /* Phones */
 @media only screen and (max-width: 600px) {
 
-  .main {
+  /* .main {
     background-color: #64ff98;
-  }
+  } */
 
   .bar_text {
     display: none;
@@ -275,10 +275,10 @@ full-screen>.footer {
 /* Phones landscape */
 @media only screen and (max-width: 600px) and (orientation : landscape) {
 
-  .main {
+  /* .main {
     background-color: #ff64b9;
 
-  }
+  } */
 
   .bar_text {
     display: none;
@@ -324,11 +324,11 @@ full-screen>.footer {
 
 /* Tablets */
 @media only screen and (max-width: 925px) and (orientation : landscape) {
-  .main {
+  /* .main {
     background-color: #6488ff;
 
 
-  }
+  } */
 
   .bar_text {
     display: none;
