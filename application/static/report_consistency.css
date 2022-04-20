@@ -268,7 +268,7 @@ th {
 
 #unfolded {
   grid-area: main;
-  background-color: #64ff98;
+  /* background-color: #64ff98; */
   display: flex;
   align-items: center;
   justify-content: start;
@@ -362,10 +362,10 @@ table {
 
 @media only screen and (max-width: 600px) and (orientation : landscape) {
 
-  .main {
-    background-color: #ff64b9;
+  /* .main {
+    /* background-color: #ff64b9; */
 
-  }
+  } */
 
   .bar_text {
     display: none;
@@ -389,7 +389,7 @@ table {
   .bar_info {
     height: 100%;
     width: 65px;
-    background-color: #04AA6D;
+    /* background-color: #04AA6D; */
     display: flex;
     /* flex-direction: column; */
     justify-content: center;
