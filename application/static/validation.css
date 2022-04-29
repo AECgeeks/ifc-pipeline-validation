@@ -163,11 +163,6 @@ table {
 
 @media only screen and (max-width: 600px) and (orientation : landscape) {
 
-  .main {
-    background-color: #ff64b9;
-
-  }
-
   .bar_text {
     display: none;
   }
