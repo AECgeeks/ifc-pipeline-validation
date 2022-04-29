@@ -1,113 +1,7 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
-
-html, body, .full-screen {
-  height: 100%;
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.full-screen {
-  display: grid;
-  width: 100%;
-  min-height: 100vh;
-  grid-template-areas: "head"
-    "main"
-    "foot";
-  grid-template-rows: 60px 1fr 30px;
-  grid-template-columns: 1fr;
-}
-
-.full-screen>.header {
-  grid-area: head;
-  /* background-color: aqua; */
-  padding: 5px;
-
-  display: flex;
-  justify-content: space-between;
-
-}
-
-.full-screen>.main {
-  grid-area: main;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.full-screen>.footer {
-  grid-area: foot;
-  text-align: center;
-}
-
-.bsdd-logo {
-  height: 100%;
-}
-
-.bar_info {
-  background-color: #b3b3b3;
-  height: 100%;
-  width: 200px;
-  display: flex;
-
-}
-
-.bar_text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  font-size: 0.8em;
-  text-decoration: none;
-}
-
-.material_container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hidden_menu {
-  min-height: 10%;
-  width: 100%;
-  background-color: aliceblue;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  visibility: hidden;
-}
-
-
-.visible_menu {
-  min-height: 10%;
-  width: 100%;
-  background-color: aliceblue;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  visibility: visible;
-}
-
+@import url("base.css");
 
 .main {
-  grid-area: main;
   background-image: url('./icons/background2.jpg');
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-
 }
 
 .submit-area {
@@ -121,62 +15,6 @@ html, body {
   background-color: rgb(239, 239, 239);
 }
 
-#unfolded_button {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-
-  width: 100%;
-  display: none;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  justify-content: center;
-  visibility: hidden;
-  display: none;
-}
-
-.bar1, .bar2, .bar3 {
-  width: 35px;
-  height: 5px;
-  background-color: #333;
-  margin: 3px 0;
-  transition: 0.4s;
-
-}
-
-.change .bar1 {
-  -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-  transform: rotate(-45deg) translate(-9px, 6px);
-}
-
-.change .bar2 {
-  opacity: 0;
-}
-
-.change .bar3 {
-  -webkit-transform: rotate(45deg) translate(-8px, -8px);
-  transform: rotate(45deg) translate(-8px, -8px);
-}
-
-
-#unfolded {
-  grid-area: main;
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  flex-direction: column;
-}
-
-full-screen>.footer {
-  grid-area: foot;
-  text-align: center;
-}
-
 .submit-area {
   height: 400px;
   width: 250px;
@@ -184,7 +22,6 @@ full-screen>.footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* background-color: rgb(255, 255, 255); */
   padding: 10px;
   justify-content: space-evenly;
   gap: 15px;
@@ -200,38 +37,6 @@ full-screen>.footer {
   width: 100%;
   background-color: rgb(210 237 240);
 }
-
-
-.header {
-  /* background-color: #333; */
-  overflow: hidden;
-}
-
-/* Style the links inside the navigation bar */
-.header a {
-  float: left;
-  display: block;
-  color: #f2f2f2;
-  text-decoration: none;
-}
-
-/* Change the color of links on hover */
-.header a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-/* Add an active class to highlight the current page */
-.header a.active {
-  background-color: #04AA6D;
-  color: white;
-}
-
-/* Hide the link that should open and close the topnav on small screens */
-.header .icon {
-  display: none;
-}
-
 
 
 /* Phones */
