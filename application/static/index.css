@@ -1,14 +1,12 @@
 @import url("base.css");
 
+
+
 .main {
   background-image: url('./icons/background2.jpg');
 }
 
-.submit-area {
-  height: 400px;
-  width: 250px;
-  background-color: #c7c7c732;
-}
+
 
 .dropzone {
   width: 100%;
@@ -16,6 +14,7 @@
 }
 
 .submit-area {
+  font-family: var(--main-font-family);
   height: 400px;
   width: 250px;
   background-color: #ffffff;
