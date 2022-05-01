@@ -1,3 +1,7 @@
+:root {
+  --main-font-family: Calibri;
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -20,13 +24,14 @@ html, body {
   .header {
     /* background-color: #333; */
     overflow: hidden;
+    border-bottom:1px solid rgb(235, 235, 235);
   }
 
   /* Style the links inside the navigation bar */
 .header a {
     float: left;
     display: block;
-    color: #f2f2f2;
+    /* color: #f2f2f2; */
     text-decoration: none;
   }
   
@@ -59,6 +64,7 @@ html, body {
   }
   
   .full-screen>.header {
+    font-family: var(--main-font-family);
     grid-area: head;
     /* background-color: aqua; */
     padding: 5px;
@@ -85,6 +91,13 @@ html, body {
   .full-screen>.footer {
     grid-area: foot;
     text-align: center;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 400;
+    line-height: 1.45;
+    font-size: 0.7em;
   }
 
 
@@ -95,8 +108,9 @@ html, body {
   .bar_info {
     height: 100%;
     width: 200px;
-    background-color: #b3b3b3;
+    /* background-color: #b3b3b3; */
     display: flex;
+    gap:7px;
   
   }
   
@@ -107,6 +121,7 @@ html, body {
     height: 100%;
     font-size: 0.8em;
     text-decoration: none;
+    color: black;
   }
   
   .material_container {
@@ -134,6 +149,7 @@ html, body {
     flex-direction: column;
     text-align: center;
     visibility: visible;
+    font-family: var(--main-font-family);
   }
 
   #unfolded_button {

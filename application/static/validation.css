@@ -160,9 +160,7 @@ table {
 
 
 /* Phones landscape */
-
 @media only screen and (max-width: 600px) and (orientation : landscape) {
-
   .bar_text {
     display: none;
   }
@@ -179,8 +177,6 @@ table {
   #unfolded_button {
     display: inline;
   }
-
-
 
   .bar_info {
     height: 100%;
@@ -212,16 +208,11 @@ table {
     display: block;
   }
 
-  
-
-
   .full-screen>.main {
     overflow: scroll;
     display: block;
 
   }
-
-  
 
   .bar_text {
     display: none;
@@ -237,14 +228,12 @@ table {
   }
 
   .visible_menu {
-    /* min-height: 5%; */
     width: 100%;
 
 
   }
 
   .hidden_menu {
-    /* min-height: 5%; */
     width: 100%;
 
 

@@ -26,7 +26,6 @@ h1 {
   font-family: calibri;
 }
 
-
 .box-title {
   display: flex;
   font-family: calibri;
@@ -62,8 +61,6 @@ tr {
   opacity: 1;
   transition: 3s all ease;
 }
-
-
 
 td {
   width: 50%;
@@ -119,76 +116,6 @@ th {
   justify-content: space-between;
 
 }
-
-.full-screen>.main {
-  grid-area: main;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.full-screen>.footer {
-  grid-area: foot;
-  text-align: center;
-}
-
-.bsdd-logo {
-  height: 100%;
-}
-
-.bar_info {
-  height: 100%;
-  width: 200px;
-  background-color: #b3b3b3;
-  display: flex;
-
-}
-
-.bar_text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  font-size: 0.8em;
-  text-decoration: none;
-}
-
-.material_container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hidden_menu {
-  /* min-height: 10%; */
-  width: 100%;
-  background-color: aliceblue;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  visibility: hidden;
-}
-
-
-.visible_menu {
-  /* min-height: 10%; */
-  width: 100%;
-  background-color: aliceblue;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  visibility: visible;
-}
-
-
-.main {
-  grid-area: main;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: column;
-}
-
 
 /* Style the links inside the navigation bar */
 .header a {
