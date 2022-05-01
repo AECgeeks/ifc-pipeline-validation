@@ -37,6 +37,9 @@
   background-color: rgb(210 237 240);
 }
 
+.submit-button{
+  height: 40px;
+}
 
 /* Phones */
 @media only screen and (max-width: 600px) {
