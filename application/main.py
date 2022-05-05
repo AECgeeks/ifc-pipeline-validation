@@ -452,7 +452,23 @@ def update_info(decoded, code):
     except:
         return jsonify( {"progress": "an error happened"})
 
+@application.route('/error/<code>/', methods=['GET'])
+@login_required
+def error(decoded, code):
+    # with database.Session() as session:
+    #     model = session.query(database.model).filter(database.model.code == code).all()[0]
+    #     original_license = model.license
+    #     data = request.get_data()
+    #     decoded_data = json.loads(data)
 
+    #     property = decoded_data["type"]
+    #     setattr(model, property, decoded_data["val"])
+
+    #     user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
+    
+    # send_simple_message(f"There was an error processing the file {model.filename} of user {user.name} ({user.email})")    
+    return render_template('error.html',username=f"{decoded['given_name']} {decoded['family_name']}")
+   
 @application.route('/pp/<id>', methods=['GET'])
 def get_progress(id):
     if not utils.validate_id(id):
