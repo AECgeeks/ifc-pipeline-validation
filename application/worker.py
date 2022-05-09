@@ -80,7 +80,7 @@ class general_info_task(task):
     est_time = 1
     
     def execute(self, directory, id):
-        info_program = os.path.join(os.getcwd() + "/checks", "info.py")
+        info_program = os.path.join(os.getcwd(), "checks", "info.py")
         subprocess.call([sys.executable, info_program, id + ".ifc", os.path.join(os.getcwd())], cwd=directory)
 
 
@@ -88,10 +88,10 @@ class syntax_validation_task(task):
     est_time = 20
 
     def execute(self, directory, id):
-        check_program = os.path.join(os.getcwd() + "/checks/step-file-parser", "parse_file.py")
+        check_program = os.path.join(os.getcwd(), "checks", "step-file-parser", "main.py")
         # try if there is pypy in the path, otherwise default to the current
         # python interpreter.
-        proc = subprocess.Popen([shutil.which("pypy3") or sys.executable, check_program, id + ".ifc"], cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen([shutil.which("pypy3") or sys.executable, check_program, id + ".ifc", "--progress"], cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == id).all()[0]
@@ -107,7 +107,7 @@ class syntax_validation_task(task):
             syntax_result.msg = output
             session.add(syntax_result)
 
-            if output == 'valid':
+            if output.lower() == 'valid':
                 model.status_syntax = 'v'
             else:
                 model.status_syntax = 'i'  
@@ -135,8 +135,7 @@ class ifc_validation_task(task):
     est_time = 15
 
     def execute(self, directory, id):
-        check_program = os.path.join(os.getcwd() + "/checks", "validate.py")
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen([sys.executable, "-m", "ifcopenshell.validate", id + ".ifc"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == id).all()[0]
@@ -147,10 +146,13 @@ class ifc_validation_task(task):
             validation_task_id = str(validation_task.id)
            
             output = proc.stderr.read()
-            output = output.decode("utf-8").strip()
-
+            output = "\n".join(output.decode("utf-8").strip().split("\n")[1:])
+            
             model.status_schema = 'v'
             if len(output):
+                model.status_schema = 'i'
+                
+                """
                 for result in output.split("\n"):
                     res = json.loads(result)
                     if res["level"] == "error":
@@ -158,6 +160,7 @@ class ifc_validation_task(task):
                         break
                     elif res["level"] == "warning":
                         model.status_schema = 'w'
+                """
 
             schema_result = database.schema_result(validation_task_id)
             schema_result.msg = output

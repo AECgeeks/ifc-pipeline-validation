@@ -101,7 +101,9 @@ application.config['SWAGGER'] = {
 }
 swagger = Swagger(application)
 
-if not DEVELOPMENT:
+NO_REDIS = os.environ.get('NO_REDIS', '0').lower() in {'1', 'true'}
+
+if not DEVELOPMENT and not NO_REDIS:
     from redis import Redis
     from rq import Queue
 
@@ -176,7 +178,7 @@ def callback():
         t = bs.fetch_token(token_url, client_secret=client_secret,
                            authorization_response=request.url, response_type="token")
     except:
-        return redirect(url_for(login))
+        return redirect(url_for('login'))
         
     BS_DISCOVERY_URL = (
         "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
@@ -227,7 +229,7 @@ def process_upload(filewriter, callback_url=None):
     session.commit()
     session.close()
 
-    if DEVELOPMENT:
+    if DEVELOPMENT or NO_REDIS:
 
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
         t.start()
@@ -258,7 +260,7 @@ def process_upload_multiple(files, callback_url=None):
     session.commit()
     session.close()
 
-    if DEVELOPMENT:
+    if DEVELOPMENT or NO_REDIS:
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
 
         t.start()
@@ -291,7 +293,7 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
     send_simple_message(msg, user.email)
 
-    if DEVELOPMENT:
+    if DEVELOPMENT or NO_REDIS:
         for id in ids:
             t = threading.Thread(target=lambda: worker.process(
                 id, validation_config, callback_url))
@@ -579,11 +581,9 @@ def view_report2(decoded, id):
             database.schema_validation_task.validated_file == model.id).all()[0]
             schema_result = session.query(database.schema_result).filter(database.schema_result.task_id == schema_validation_task.id).all()[0]
             results["schema_result"] = schema_result.serialize() 
-
-            if not len( results["schema_result"]['msg']):
-                results["schema_result"]['msg'] = [{"level":"valid", "message":"valid"}]
-            else:
-                results["schema_result"]["msg"] = [json.loads(msg) for msg in results["schema_result"]["msg"].split("\n") ]
+            
+            if not results["schema_result"]['msg']:
+                results["schema_result"]['msg'] = "Valid"
             
         hierarchical_bsdd_results = {}
         if m["status_bsdd"] != 'n':

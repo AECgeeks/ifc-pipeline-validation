@@ -26,10 +26,13 @@ import os
 from xmlrpc.client import Boolean
 
 DEVELOPMENT = os.environ.get('environment', 'production').lower() == 'development'
+NO_POSTGRES = os.environ.get('NO_POSTGRES', '0').lower() in {'1', 'true'}
 
+"""
 if not DEVELOPMENT:
     from psycopg2cffi import compat
     compat.register()
+"""
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -42,7 +45,7 @@ from sqlalchemy.orm import relationship
 
 import datetime
 
-if DEVELOPMENT:
+if DEVELOPMENT or NO_POSTGRES:
     file_path = os.path.join(os.path.dirname(__file__), "ifc-pipeline.db") 
     engine = create_engine(f'sqlite:///{file_path}', connect_args={'check_same_thread': False})
 else:

@@ -6,13 +6,13 @@
 
 
 
-{% block link %}<a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>{% endblock %}
+{% block link %}<a href="/dashboard">Go to dashboard</a>{% endblock %}
 {% block content %}
 
             <div class="hidden_menu">
-                <a style=" text-decoration: none;">{{ username }}</a>
-                <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>
-                <a href="/logout" style=" text-decoration: none;">Log out</a>
+                <span>{{ username }}</span>
+                <a href="/dashboard">Go to dashboard</a>
+                <a href="/logout">Log out</a>
             </div>
 
             <div class="submit-area" id="ifc_tab">
@@ -23,12 +23,12 @@
                 
                 <div class="config" id="config">
                     <div>
-                        <input type="checkbox" id="syntax_outside" name="syntax">
+                        <input type="checkbox" id="syntax_outside" name="syntax" checked>
                         <label for="Syntax">Syntax</label>
                     </div>
 
                     <div>
-                        <input type="checkbox" id="schema_outside" name="schema">
+                        <input type="checkbox" id="schema_outside" name="schema" checked>
                         <label for="Schema">Schema</label>
                     </div>
 
@@ -51,9 +51,9 @@
 
 
             <div class="hidden_menu">
-                <a class="username" style="text-decoration: none;">{{ username }}</a>
-                <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>
-                <a href="/logout" style=" text-decoration: none;">Log out</a>
+                <span class="username">{{ username }}</span>
+                <a href="/dashboard">Go to dashboard</a>
+                <a href="/logout">Log out</a>
             </div>
 
     <script>
