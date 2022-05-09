@@ -5,14 +5,14 @@
 
 
 
-{% block link %}<a href="/" style=" text-decoration: none;">Upload new files</a>{% endblock %}
+{% block link %}<a href="/">Upload new files</a>{% endblock %}
 
 {% block content %}
 
 <div class="hidden_menu">
-    <a style=" text-decoration: none;">{{ username }}</a>
-    <a href="/" style=" text-decoration: none;">Upload new files</a>
-    <a href="/logout" style=" text-decoration: none;">Log out</a>
+    <span>{{ username }}</span>
+    <a href="/">Upload new files</a>
+    <a href="/logout">Log out</a>
 </div>
 
 <script>
@@ -94,9 +94,9 @@
     </table>
 
     <div class="hidden_menu">
-        <a style=" text-decoration: none;">{{ username }}</a>
-        <a href="/" style=" text-decoration: none;">Upload new files</a>
-        <a href="/logout" style=" text-decoration: none;">Log out</a>
+        <span>{{ username }}</span>
+        <a href="/">Upload new files</a>
+        <a href="/logout">Log out</a>
     </div>
     
 <script>
