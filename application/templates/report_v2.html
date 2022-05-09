@@ -6,12 +6,12 @@
 {% endblock %}
 
     {% set header_bg = "rgb(230, 242, 255)" %}
-    {% block link %}<a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>{% endblock %}
+    {% block link %}<a href="/dashboard">Go to dashboard</a>{% endblock %}
     {% block content %}
     <div class="hidden_menu">
-        <a style=" text-decoration: none;">{{ username }}</a>
-        <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>
-        <a href="/logout" style=" text-decoration: none;">Log out</a>
+        <span>{{ username }}</span>
+        <a href="/dashboard">Go to dashboard</a>
+        <a href="/logout">Log out</a>
     </div>
 
     <script>
@@ -125,16 +125,17 @@
         {
         'v': ['&check;', 'green'],
         'i': ['&cross;','red'],
-        'n':['&#9744;', 'black'],
+        'n':['&#9744;', 'gray'],
         'w':['&#9888;','rgb(255, 204, 0)']
         }
         %}
+
+        {# ("mvd", "MVD"), #}
 
         {% set check_types=
         [
         ("syntax", "Syntax"),
         ("schema", "Schema"),
-        ("mvd", "MVD"),
         ("bsdd", "bSDD")
         ]
         %}
@@ -165,47 +166,37 @@
 
         <tr>
             {% if results["syntax_result"] %}
-                {% if results["syntax_result"]["msg"] == 'valid' %}
-                    <td style="text-align:center;background-color: {{validation_colors[1]}};" colspan=9>{{results["syntax_result"]["msg"]}}</td>
-                {% else %}
-                    <td style="text-align:center;background-color: {{validation_colors[0]}};"colspan=9><pre>{{results["syntax_result"]["msg"]}}</pre></td>
-                {% endif %}
+                {% set syntax_valid = results['syntax_result']['msg'].lower() == 'valid' %}
+                <td style="text-align:center;background-color: {{validation_colors[syntax_valid]}};" colspan=9>
+                    {{- ('' if syntax_valid else '<pre>')|safe -}}
+                    {{- results["syntax_result"]["msg"] -}}
+                    {{- ('' if syntax_valid else '</pre>')|safe -}}
+                </td>
             {% else %}
                 <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan=9>Not checked</td>
             {% endif %}
         </tr>
 
-
-
         <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
             <td colspan=9 class="rowheader">Schema</td>
         </tr>
 
-
+        <tr>
         {% if results["schema_result"] %}
-
-            {% for msg in results["schema_result"]["msg"]%}
-            <tr>
-                <td style="text-align:center;background-color: {{validation_colors[msg['level']]}};" colspan=4>{{msg["instance"]}}</td>
-                <td style="text-align:center;background-color: {{validation_colors[msg['level']]}};" colspan=5>{{msg["message"]}}</td>
-            </tr>
-                    
-            {% endfor %}
-            
+            {% set schema_valid = results['schema_result']['msg'].lower() == 'valid' %}
+            <td style="text-align:center;background-color: {{validation_colors[schema_valid]}};" colspan=9>
+                    {{- ('' if schema_valid else '<pre>')|safe -}}
+                    {{- results["schema_result"]["msg"] -}}
+                    {{- ('' if schema_valid else '</pre>')|safe -}}
+            </td>
         {% else %}
-            <tr>
-                <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
-            </tr>
-    
+            <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan="9">Not checked</td>
         {% endif %}
-
+        </tr>
 
         <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
             <td colspan=9 class="rowheader">bSDD</td>
-
         </tr>
-
-        
     
         {% if results["bsdd_results"]["bsdd"] %}
             {% for domain, classification_dicts in results["bsdd_results"]["bsdd"].items() %}
@@ -350,9 +341,9 @@
     </table>
 
     <div class="hidden_menu">
-        <a style=" text-decoration: none;">{{ username }}</a>
-        <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>
-        <a href="/logout" style=" text-decoration: none;">Log out</a>
+        <span>{{ username }}</span>
+        <a href="/dashboard">Go to dashboard</a>
+        <a href="/logout">Log out</a>
     </div>
     
     <script>

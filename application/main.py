@@ -581,11 +581,9 @@ def view_report2(decoded, id):
             database.schema_validation_task.validated_file == model.id).all()[0]
             schema_result = session.query(database.schema_result).filter(database.schema_result.task_id == schema_validation_task.id).all()[0]
             results["schema_result"] = schema_result.serialize() 
-
-            if not len( results["schema_result"]['msg']):
-                results["schema_result"]['msg'] = [{"level":"valid", "message":"valid"}]
-            else:
-                results["schema_result"]["msg"] = [json.loads(msg) for msg in results["schema_result"]["msg"].split("\n") ]
+            
+            if not results["schema_result"]['msg']:
+                results["schema_result"]['msg'] = "Valid"
             
         hierarchical_bsdd_results = {}
         if m["status_bsdd"] != 'n':
