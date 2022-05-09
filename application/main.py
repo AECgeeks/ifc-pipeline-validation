@@ -176,7 +176,7 @@ def callback():
         t = bs.fetch_token(token_url, client_secret=client_secret,
                            authorization_response=request.url, response_type="token")
     except:
-        return redirect(url_for(login))
+        return redirect(url_for('login'))
         
     BS_DISCOVERY_URL = (
         "https://buildingSMARTservices.b2clogin.com/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/v2.0/.well-known/openid-configuration"
