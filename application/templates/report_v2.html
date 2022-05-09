@@ -62,9 +62,7 @@
 
     <table>
         <tr>
-            <td colspan="2"
-                style="font-style: italic; font-size: 30px;text-align:center; background-color:{{header_bg}};">
-                General information about the file checked</td>
+            <td colspan="2" class="rowheader">General</td>
             <!-- <td >&nbsp;</td>
                 <td></td> -->
         </tr>
@@ -119,36 +117,34 @@
     <table>
 
         <tr>
-            <td colspan="2"
-                style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">
-                Overall results of the validation</td>
+            <td colspan="2" class="rowheader">Overview</td>
         </tr>
 
 
         {% set validation_symbols =
         {
-        'v': ['<p>&check;</p>', 'green'],
-        'i': ['<p>&cross;</p>','red'],
-        'n':['<p>&#9744;</p>', 'black'],
-        'w':['<p>&#9888;</p>','rgb(255, 204, 0)']
+        'v': ['&check;', 'green'],
+        'i': ['&cross;','red'],
+        'n':['&#9744;', 'black'],
+        'w':['&#9888;','rgb(255, 204, 0)']
         }
         %}
 
         {% set check_types=
         [
-        "syntax",
-        "schema",
-        "mvd",
-        "bsdd"
+        ("syntax", "Syntax"),
+        ("schema", "Schema"),
+        ("mvd", "MVD"),
+        ("bsdd", "bSDD")
         ]
         %}
 
 
         {% set validation_colors = {0:'rgb(255, 204, 204)', 1:'rgb(217, 242, 217)', 2:'rgb(242, 242, 242)', "error":'rgb(255, 204, 204)', "warning":'rgb(255, 204, 0)', "valid":'rgb(217, 242, 217)'}%} 
         
-        {%for check_type in check_types%}
+        {%for check_type, label in check_types%}
         <tr>
-            <td>{{check_type}}</td>
+            <td>{{label}}</td>
             <td style="color:{{ validation_symbols[model['status_'+check_type]][1]}}">
                 {{ validation_symbols[model['status_'+check_type]][0]|safe}}
             </td>
@@ -163,8 +159,7 @@
     <table>
 
         <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-            <td colspan=9
-                style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">Syntax checking</td>
+            <td colspan=9 class="rowheader">Syntax</td>
 
         </tr>
 
@@ -173,7 +168,7 @@
                 {% if results["syntax_result"]["msg"] == 'valid' %}
                     <td style="text-align:center;background-color: {{validation_colors[1]}};" colspan=9>{{results["syntax_result"]["msg"]}}</td>
                 {% else %}
-                    <td style="text-align:center;background-color: {{validation_colors[0]}};"colspan=9>{{results["syntax_result"]["msg"]}}</td>
+                    <td style="text-align:center;background-color: {{validation_colors[0]}};"colspan=9><pre>{{results["syntax_result"]["msg"]}}</pre></td>
                 {% endif %}
             {% else %}
                 <td style="text-align:center;background-color: {{validation_colors[2]}};" colspan=9>Not checked</td>
@@ -183,8 +178,7 @@
 
 
         <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-            <td colspan=9
-                style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">IFC schema checking</td>
+            <td colspan=9 class="rowheader">Schema</td>
         </tr>
 
 
@@ -207,8 +201,7 @@
 
 
         <tr data-current="bsdd" data-state="on" data-level=1 onclick="xPlay(this)">
-            <td colspan=9
-                style="font-style: italic; font-size: 30px;text-align:center;background-color:{{header_bg}};">bSDD consistency</td>
+            <td colspan=9 class="rowheader">bSDD</td>
 
         </tr>
 
