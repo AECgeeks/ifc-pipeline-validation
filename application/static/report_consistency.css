@@ -73,11 +73,12 @@ table, th, td {
   border-left: none;
   border-right: none;
   align-self: center;
+  padding: 0.5em 0;
 }
 
-table, th, td {
-  border: 1px solid black;
-  padding: 10px;
+td.rowheader {
+  border-color: black;
+  font-weight: bold;
 }
 
 th {
@@ -224,4 +225,10 @@ table {
   }
 
 
+}
+
+table pre {
+    text-align: left;
+    padding: 0 0 0 10%;
+    margin: 0;
 }
