@@ -101,7 +101,9 @@ application.config['SWAGGER'] = {
 }
 swagger = Swagger(application)
 
-if not DEVELOPMENT:
+NO_REDIS = os.environ.get('NO_REDIS', '0').lower() in {'1', 'true'}
+
+if not DEVELOPMENT and not NO_REDIS:
     from redis import Redis
     from rq import Queue
 
@@ -227,7 +229,7 @@ def process_upload(filewriter, callback_url=None):
     session.commit()
     session.close()
 
-    if DEVELOPMENT:
+    if DEVELOPMENT or NO_REDIS:
 
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
         t.start()
@@ -258,7 +260,7 @@ def process_upload_multiple(files, callback_url=None):
     session.commit()
     session.close()
 
-    if DEVELOPMENT:
+    if DEVELOPMENT or NO_REDIS:
         t = threading.Thread(target=lambda: worker.process(id, callback_url))
 
         t.start()
@@ -291,7 +293,7 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
     send_simple_message(msg, user.email)
 
-    if DEVELOPMENT:
+    if DEVELOPMENT or NO_REDIS:
         for id in ids:
             t = threading.Thread(target=lambda: worker.process(
                 id, validation_config, callback_url))
