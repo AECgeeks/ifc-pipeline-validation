@@ -1,14 +1,11 @@
 @import url("base.css");
 
 h1 {
-  font-family: Calibri;
-  font-size: 50px;
-  margin-bottom: 20px;
-  text-align: center;
+  padding: 0;
+  margin: 0;
 }
 
 .result {
-  font-family: calibri;
   width: 70%;
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
@@ -23,25 +20,21 @@ h1 {
   display: flex;
   gap: 2px;
   font-size: 35px;
-  font-family: calibri;
 }
 
 .box-title {
   display: flex;
-  font-family: calibri;
   font-size: 27px;
   gap: 2px;
 }
 
 .box-specific {
-  font-family: calibri;
   font-size: 20px;
   margin-left: 5px;
   text-indent: 20px;
 }
 
 .box-status {
-  font-family: calibri;
   font-size: 20px;
   margin-left: 5px;
   text-indent: 25px;
@@ -66,19 +59,26 @@ td {
   width: 50%;
 }
 
-table, th, td {
-  border: 1px solid rgba(161, 161, 161, 0.24);
+table {
   border-collapse: collapse;
-  font-family: 'Calibri';
+}
+
+td {
+  border: 1px solid rgba(161, 161, 161, 0.24);
   border-left: none;
   border-right: none;
   align-self: center;
   padding: 0.5em 0;
 }
 
+table tr:first-child td {
+    border-top: none;
+}
+
 td.rowheader {
   border-color: black;
   font-weight: bold;
+  padding-top: 2em;
 }
 
 th {

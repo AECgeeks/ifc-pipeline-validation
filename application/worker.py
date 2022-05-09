@@ -107,7 +107,7 @@ class syntax_validation_task(task):
             syntax_result.msg = output
             session.add(syntax_result)
 
-            if output == 'valid':
+            if output.lower() == 'valid':
                 model.status_syntax = 'v'
             else:
                 model.status_syntax = 'i'  
@@ -135,8 +135,7 @@ class ifc_validation_task(task):
     est_time = 15
 
     def execute(self, directory, id):
-        check_program = os.path.join(os.getcwd() + "/checks", "validate.py")
-        proc = subprocess.Popen([sys.executable, check_program, id + ".ifc", "--json"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen([sys.executable, "-m", "ifcopenshell.validate", id + ".ifc"], cwd=directory,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == id).all()[0]
@@ -147,10 +146,13 @@ class ifc_validation_task(task):
             validation_task_id = str(validation_task.id)
            
             output = proc.stderr.read()
-            output = output.decode("utf-8").strip()
-
+            output = "\n".join(output.decode("utf-8").strip().split("\n")[1:])
+            
             model.status_schema = 'v'
             if len(output):
+                model.status_schema = 'i'
+                
+                """
                 for result in output.split("\n"):
                     res = json.loads(result)
                     if res["level"] == "error":
@@ -158,6 +160,7 @@ class ifc_validation_task(task):
                         break
                     elif res["level"] == "warning":
                         model.status_schema = 'w'
+                """
 
             schema_result = database.schema_result(validation_task_id)
             schema_result.msg = output

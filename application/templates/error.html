@@ -7,9 +7,9 @@
 {% block link %}<a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>{% endblock %}
 {% block content %}
     <div class="hidden_menu">
-        <a style=" text-decoration: none;">{{ username }}</a>
-        <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>
-        <a href="/logout" style=" text-decoration: none;">Log out</a>
+        <span>{{ username }}</span>
+        <a href="/dashboard">Go to dashboard</a>
+        <a href="/logout">Log out</a>
     </div>
     
     <div style='padding: 100px'>
@@ -18,9 +18,9 @@
     </div>
         
     <div class="hidden_menu">
-        <a class="username" style="text-decoration: none;">{{ username }}</a>
-        <a href="/dashboard" style=" text-decoration: none;">Go to dashboard</a>
-        <a href="/logout" style=" text-decoration: none;">Log out</a>
+        <span class="username">{{ username }}</span>
+        <a href="/dashboard">Go to dashboard</a>
+        <a href="/logout">Log out</a>
     </div>
 
 <script>
