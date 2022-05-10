@@ -399,7 +399,10 @@ def dashboard(decoded):
     user_id = decoded['sub']
     # Retrieve user data
     with database.Session() as session:
-        saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
+        if str(decoded["email"]) == os.getenv("ADMIN_EMAIL"):
+            saved_models = session.query(database.model).all()
+        else:
+            saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
 
