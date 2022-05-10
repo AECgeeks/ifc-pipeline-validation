@@ -399,7 +399,7 @@ def dashboard(decoded):
     user_id = decoded['sub']
     # Retrieve user data
     with database.Session() as session:
-        if str(decoded["email"]) == os.getenv("ADMIN_EMAIL"):
+        if str(decoded["email"]) in [os.getenv("ADMIN_EMAIL"), os.getenv("DEV_EMAIL")]:
             saved_models = session.query(database.model).all()
         else:
             saved_models = session.query(database.model).filter(database.model.user_id == user_id).all()
