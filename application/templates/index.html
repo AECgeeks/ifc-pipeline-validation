@@ -57,6 +57,13 @@
             </div>
 
     <script>
+
+        const beforeUnloadListener = (event) => {
+            event.preventDefault();
+            return event.returnValue = "Are you sure you want to exit?";
+        };
+
+
         Dropzone.autoDiscover = false;
         var dz = new Dropzone("#ifc_dropzone",
             {
@@ -68,6 +75,14 @@
                 autoProcessQueue: false,
                 addRemoveLinks: true,
             });
+
+        dz.on("input", (event) => {
+            if (event.target.value !== "") {
+                addEventListener("beforeunload", beforeUnloadListener, {capture: true});
+            } else {
+                removeEventListener("beforeunload", beforeUnloadListener, {capture: true});
+            }
+        });
 
         dz.on("addedfile", file => { console.log("new file") });
 
@@ -92,6 +107,8 @@
             }
 
         });
+
+
 
 
 
