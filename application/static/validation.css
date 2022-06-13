@@ -1,6 +1,19 @@
 @import url("base.css");
 
 
+
+.submit-area{
+  width: 75%;
+}
+
+.submit-button{
+  margin-bottom: 1%;
+  margin-top: 1%;
+  margin-left: 50%;
+  text-align: center;
+  
+}
+
 table, th, td {
   border: 1px solid rgba(161, 161, 161, 0.24);
   border-collapse: collapse;
