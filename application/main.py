@@ -592,13 +592,14 @@ def view_report2(decoded, id):
                 validation_results = [bsdd_result[subsection] for subsection in validation_subsections]
                            
                 if sum(validation_results) != len(validation_results):
-                    validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue"]
+                    validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue", "possibleValues"]
 
                     validation_constraints= [bsdd_result['bsdd_type_constraint']]
 
                     for subsection in validation_constraints_subsections:
                         constraint = json.loads(bsdd_result["bsdd_property_constraint"])
-                        validation_constraints.append(constraint[subsection])
+                        if subsection in constraint.keys():
+                            validation_constraints.append(constraint[subsection])
             
                     error = Error(bsdd_result["domain_file"],
                                 bsdd_result["classification_file"],
