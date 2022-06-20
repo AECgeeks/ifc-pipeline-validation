@@ -50,13 +50,16 @@ def validate_instance(constraints, instance):
                             validation_results["property_name"] = 1
 
                             # Translate datatypes and values
-                            if constraints["dataType"] == "Boolean":
+                            if constraints["dataType"].lower() == "boolean":
                                 constraints["dataType"] = "bool"
+                            
+                            if constraints["dataType"].lower() == "string":
+                                constraints["dataType"] = "str"
 
                             if "predefinedValue" in constraints.keys():
-                                if constraints["predefinedValue"] == "TRUE":
+                                if constraints["predefinedValue"].lower() == "true":
                                     constraints["predefinedValue"] = 1
-                                elif constraints["predefinedValue"]  == "FALSE":
+                                elif constraints["predefinedValue"].lower()  == "false":
                                     constraints["predefinedValue"]  = 0
                             
                             if isinstance(property.NominalValue, ifcopenshell.entity_instance):
