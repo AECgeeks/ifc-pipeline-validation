@@ -71,12 +71,12 @@ def validate_instance(constraints, instance):
                             
                             validation_results["datatype"] = (result["datatype"] == constraints["dataType"])
 
+                            validation_results["value"] = 1
                             if "predefinedValue" in constraints.keys():
                                 validation_results["value"] = (result["value"] == constraints["predefinedValue"])
-                            if "possibleValues" in constraints.keys():
+                            elif "possibleValues" in constraints.keys():
                                 possible_values = constraints["possibleValues"]
-                                validation_results["value"] = 1
-
+                            
                                 for possible_value in possible_values:
                                     to_check = possible_value["value"]
                                     if possible_value["value"].lower() == "true":
@@ -86,7 +86,7 @@ def validate_instance(constraints, instance):
                                     if result["value"] != to_check:
                                         validation_results["value"] = 0
                                         break
-    else:
+    else:   
         result["pset_name"] = "no pset in constraints"
         result["property_name"] = "no pset in constraints"
         result["datatype"] = "no pset in constraints"
