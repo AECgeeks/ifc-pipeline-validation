@@ -639,7 +639,7 @@ def view_report2(decoded, id):
             instances = {instance.id: instance.serialize() for instance in instances}
             
             results["bsdd_results"]["instances"] = instances 
-
+    
     return render_template("report_v2.html",
                            model=m,
                            results=results,

@@ -287,7 +287,20 @@
                                         <td> Not instance classified</td>
                                     {% endif %}
                                     <td>property value</td>
-                                    <td>{{bsdd_result['bsdd_property_constraint']['predefinedValue']}}</td>
+                                    {% if 'predefinedValue' in bsdd_result['bsdd_property_constraint'].keys() %}
+                                        <td>{{bsdd_result['bsdd_property_constraint']['predefinedValue']}}</td>
+                                    {% elif 'possibleValues' in bsdd_result['bsdd_property_constraint'].keys() %}
+                                        <td>
+                                            
+                                            {% for possible_value in bsdd_result['bsdd_property_constraint']['possibleValues'] %}
+                                                <span style="display:block;">{{possible_value['value']}} ({{possible_value['code']}})</span>
+                                            {% endfor %}
+                                        </td>
+                                    {% else %}
+                                        <td>No specification</td>
+                                    {% endif %}
+
+
                                     <td>{{bsdd_result['ifc_property_value']}}</td>
                                 </tr>
                             {% endif %}
