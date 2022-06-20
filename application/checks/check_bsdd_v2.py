@@ -48,16 +48,17 @@ def validate_instance(constraints, instance):
                         if property.Name == constraints["name"]:
                             result["property_name"] = property.Name
                             validation_results["property_name"] = 1
-            
+
                             # Translate datatypes and values
                             if constraints["dataType"] == "Boolean":
                                 constraints["dataType"] = "bool"
 
-                            if constraints["predefinedValue"] == "TRUE":
-                                constraints["predefinedValue"] = 1
-                            elif constraints["predefinedValue"]  == "FALSE":
-                                constraints["predefinedValue"]  = 0
-
+                            if "predefinedValue" in constraints.keys():
+                                if constraints["predefinedValue"] == "TRUE":
+                                    constraints["predefinedValue"] = 1
+                                elif constraints["predefinedValue"]  == "FALSE":
+                                    constraints["predefinedValue"]  = 0
+                            
                             if isinstance(property.NominalValue, ifcopenshell.entity_instance):
                                 result["value"] = property.NominalValue[0]   
                             else:
@@ -66,8 +67,22 @@ def validate_instance(constraints, instance):
                             result["datatype"] = type(property.NominalValue[0]).__name__
                             
                             validation_results["datatype"] = (result["datatype"] == constraints["dataType"])
-                            validation_results["value"] = (result["value"] == constraints["predefinedValue"])
 
+                            if "predefinedValue" in constraints.keys():
+                                validation_results["value"] = (result["value"] == constraints["predefinedValue"])
+                            if "possibleValues" in constraints.keys():
+                                possible_values = constraints["possibleValues"]
+                                validation_results["value"] = 1
+
+                                for possible_value in possible_values:
+                                    to_check = possible_value["value"]
+                                    if possible_value["value"].lower() == "true":
+                                        to_check = 1
+                                    if possible_value["value"].lower() == "false":
+                                        to_check = 0
+                                    if result["value"] != to_check:
+                                        validation_results["value"] = 0
+                                        break
     else:
         result["pset_name"] = "no pset in constraints"
         result["property_name"] = "no pset in constraints"

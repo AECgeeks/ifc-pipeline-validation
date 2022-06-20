@@ -29,6 +29,7 @@ from __future__ import print_function
 import os
 import json
 import ast
+
 import threading
 from functools import wraps
 
@@ -309,27 +310,6 @@ def process_upload_validation(files, validation_config, user_id, callback_url=No
 @login_required
 def reprocess(decoded,id):
     ids = []
-    filenames = []
-
-    # with database.Session() as session:
-
-    #     model = session.query(database.model).filter(database.model.id == id).all()[0]
-    #     for file in files:
-    #         fn = file.filename
-    #         filenames.append(fn)
-    #         def filewriter(fn): return file.save(fn)
-    #         id = utils.generate_id()
-    #         ids.append(id)
-    #         d = utils.storage_dir_for_id(id)
-    #         os.makedirs(d)
-    #         filewriter(os.path.join(d, id+".ifc"))
-    #         session.add(database.model(id, fn, user_id))
-    #         session.commit()
-
-    #     user = session.query(database.user).filter(database.user.id == user_id).all()[0]
-
-    # msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-    # send_simple_message(msg)
 
     if DEVELOPMENT:
         for id in ids:
@@ -459,19 +439,7 @@ def update_info(decoded, code):
 
 @application.route('/error/<code>/', methods=['GET'])
 @login_required
-def error(decoded, code):
-    # with database.Session() as session:
-    #     model = session.query(database.model).filter(database.model.code == code).all()[0]
-    #     original_license = model.license
-    #     data = request.get_data()
-    #     decoded_data = json.loads(data)
-
-    #     property = decoded_data["type"]
-    #     setattr(model, property, decoded_data["val"])
-
-    #     user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
-    
-    # send_simple_message(f"There was an error processing the file {model.filename} of user {user.name} ({user.email})")    
+def error(decoded, code): 
     return render_template('error.html',username=f"{decoded['given_name']} {decoded['family_name']}")
    
 @application.route('/pp/<id>', methods=['GET'])
@@ -562,6 +530,21 @@ def log_results(decoded, i, ids):
     return jsonify(response)
 
 
+class Error:
+    def __init__(self, domain, classification, validation_constraints, validation_results):
+        self.domain = domain
+        self.classification = classification
+        self.validation_constraints = validation_constraints
+        self.validation_results = validation_results
+        self.instances = []
+
+    def __eq__(self, other):
+        return (self.domain == other.domain) and \
+               (self.classification == other.classification) and \
+               (self.validation_constraints == other.validation_constraints) and \
+               (self.validation_results == other.validation_results)
+
+
 @application.route('/report2/<id>')
 @login_required
 def view_report2(decoded, id):
@@ -597,7 +580,38 @@ def view_report2(decoded, id):
                 database.bsdd_result.task_id == bsdd_validation_task.id).all()
             bsdd_results = [bsdd_result.serialize() for bsdd_result in bsdd_results]
 
+            errors = {}
             for bsdd_result in bsdd_results:
+                if bsdd_result["domain_file"] not in errors.keys():
+                    errors[bsdd_result["domain_file"]]= {}
+
+                if bsdd_result["classification_file"] not in errors[bsdd_result["domain_file"]].keys():
+                    errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]] = []
+
+                validation_subsections = ["val_ifc_type", "val_property_set", "val_property_name", "val_property_type", "val_property_value"]
+                validation_results = [bsdd_result[subsection] for subsection in validation_subsections]
+                           
+                if sum(validation_results) != len(validation_results):
+                    validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue"]
+
+                    validation_constraints= [bsdd_result['bsdd_type_constraint']]
+
+                    for subsection in validation_constraints_subsections:
+                        constraint = json.loads(bsdd_result["bsdd_property_constraint"])
+                        validation_constraints.append(constraint[subsection])
+            
+                    error = Error(bsdd_result["domain_file"],
+                                bsdd_result["classification_file"],
+                                validation_constraints,
+                                validation_results)
+                    
+                    if error not in errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]] :
+                        
+                        errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]].append(error)
+                    
+                    errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]][-1].instances.append(bsdd_result["instance_id"])
+
+                
                 if bsdd_result["bsdd_property_constraint"]:
                     bsdd_result["bsdd_property_constraint"] = json.loads(
                         bsdd_result["bsdd_property_constraint"])
@@ -609,7 +623,8 @@ def view_report2(decoded, id):
 
                 if bsdd_result["classification_file"] not in hierarchical_bsdd_results[bsdd_result["domain_file"]].keys():
                     hierarchical_bsdd_results[bsdd_result["domain_file"]][bsdd_result["classification_file"]] = []
-               
+
+
                 hierarchical_bsdd_results[bsdd_result["domain_file"]][bsdd_result["classification_file"]].append(bsdd_result)
                 
             results["bsdd_results"]["bsdd"] = hierarchical_bsdd_results
@@ -624,10 +639,10 @@ def view_report2(decoded, id):
             
             results["bsdd_results"]["instances"] = instances 
 
-
     return render_template("report_v2.html",
                            model=m,
                            results=results,
+                           errors=errors,
                            username=f"{decoded['given_name']} {decoded['family_name']}")
 
 
