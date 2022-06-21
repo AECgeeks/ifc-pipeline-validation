@@ -590,27 +590,29 @@ def view_report2(decoded, id):
 
                 validation_subsections = ["val_ifc_type", "val_property_set", "val_property_name", "val_property_type", "val_property_value"]
                 validation_results = [bsdd_result[subsection] for subsection in validation_subsections]
-                           
-                if sum(validation_results) != len(validation_results):
-                    validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue", "possibleValues"]
+                
+                # For now handles the case when the classification is not retrieved from the API 
+                if len(validation_results):
+                    if sum(validation_results) != len(validation_results):
+                        validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue", "possibleValues"]
 
-                    validation_constraints= [bsdd_result['bsdd_type_constraint']]
+                        validation_constraints= [bsdd_result['bsdd_type_constraint']]
 
-                    for subsection in validation_constraints_subsections:
-                        constraint = json.loads(bsdd_result["bsdd_property_constraint"])
-                        if subsection in constraint.keys():
-                            validation_constraints.append(constraint[subsection])
-            
-                    error = Error(bsdd_result["domain_file"],
-                                bsdd_result["classification_file"],
-                                validation_constraints,
-                                validation_results)
-                    
-                    if error not in errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]] :
+                        for subsection in validation_constraints_subsections:
+                            constraint = json.loads(bsdd_result["bsdd_property_constraint"])
+                            if subsection in constraint.keys():
+                                validation_constraints.append(constraint[subsection])
+                
+                        error = Error(bsdd_result["domain_file"],
+                                    bsdd_result["classification_file"],
+                                    validation_constraints,
+                                    validation_results)
                         
-                        errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]].append(error)
-                    
-                    errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]][-1].instances.append(bsdd_result["instance_id"])
+                        if error not in errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]] :
+                            
+                            errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]].append(error)
+                        
+                        errors[bsdd_result["domain_file"]][bsdd_result["classification_file"]][-1].instances.append(bsdd_result["instance_id"])
 
                 
                 if bsdd_result["bsdd_property_constraint"]:
