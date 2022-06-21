@@ -592,7 +592,7 @@ def view_report2(decoded, id):
                 validation_results = [bsdd_result[subsection] for subsection in validation_subsections]
                 
                 # For now handles the case when the classification is not retrieved from the API 
-                if None in validation_results:
+                if None not in validation_results:
                     if sum(validation_results) != len(validation_results):
                         validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue", "possibleValues"]
 
