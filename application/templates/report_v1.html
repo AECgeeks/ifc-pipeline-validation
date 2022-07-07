@@ -57,6 +57,7 @@ function getChildren(el, children = [], it=0){
         
        
         if(to_unfold){
+            element.cells[0] = "&#9660" + element.cells[0];
             v_children.forEach(function (item, index) {
                 item.style.display = "";
 
@@ -264,28 +265,65 @@ function getChildren(el, children = [], it=0){
                         <tr class="folded {{classification.replace(' ', '_')}}_ {{domain.replace(' ', '_')}}" onclick="fold(this)"><td colspan=9 >&#9654; Classification reference: {{classification}}</td></tr>
  
                         {% for error in errors[domain][classification] %}
+                         <!-- ERROR -->
+                            {% set error_index = loop.index|string %}
+                            {% set classname = "error_" + error_index +"_" %}
+                            <tr class="folded {{classname}} {{classification.replace(' ', '_')}}" style="display:none; font-style: bold;" onclick="fold(this)"><td>Error {{loop.index}}</td></tr>
+
+
+                            {% set values = error.validation_constraints %}
+                        
+                            {% set pset = error.validation_constraints[1] %}
+                            {% set pname = error.validation_constraints[2] %}
+                           
+
+                            {% if error.validation_results[3] == False or error.validation_results[4] == False %}
+                                {% if error.validation_results[4] == False and error.validation_results[3] == False%}
+                                    {% set msg = "Required " +  values|string+ "(" + error.validation_constraints[3]|string+ ")" %}
+                                    {% set item = 'i' %}
+                                    {% set color = red %}
+                                {% elif error.validation_results[4] == False and  error.validation_results[4] == True %}
+                                    {% set msg = "Required (" + error.validation_constraints[3]|string %}
+                                    {% set item = 'i' %}
+                                    {% set color = red %}
+                                {% else %}
+                                    {% set item = 'i' %}
+                                    {% set color = red %}
+                                    {% set msg = "Required " + values|string %}
+
+                                {% endif %}
+                            {% else %}
+                                {% set item = 'v' %}
+                                {% set color = green %}
+                                {% set msg = ""%}
+                            {% endif %}
+
+
+                            <tr class="folded instance {{classname[:-1]}}" style="display:none; font-style: bold;" onclick="fold(this)">
+                                {% if item == 'v' %}
+                                    <td style="color:green; text-align: center;"> {{ validation_symbols[item][0]|safe}}</td>
+                                {% else %}
+                                    <td style="color:red; text-align: center;"> {{ validation_symbols[item][0]|safe}}</td>
+                                {% endif %}
+                                <td>{{pset}}.{{pname}}</td>
+                                <td>{{msg}}</td>
+                              
+                                <!-- <td>{{error.validation_results}}</td>
+                                <td>{{error.validation_constraints}}</td>
+
+                                <td>{{error.validation_results[3]}}</td>
+                                <td>{{error.validation_results[4]}}</td> -->
+                            </tr>
+
+                            <tr class="folded instance {{classname[:-1]}}" style="display:none; font-style: bold;" onclick="fold(this)"></tr>
+                            <tr class="folded instance {{classname[:-1]}}" style="display:none; font-style: bold;" onclick="fold(this)"><td>On {{error.instances|length}} instance(s):</td></tr>
+
+
                             {% for instance in error.instances %}
-                                <!-- ERROR -->
-                                <tr class="folded error_{{loop.index}}_ {{classification.replace(' ', '_')}}" style="display:none; font-style: bold;" onclick="fold(this)"><td>Error {{loop.index}}</td></tr>
-                                <tr class="folded instance_ error_{{loop.index}}" style="display:none; font-style: bold;text-align:center;">
-                                    <td>{{results["bsdd_results"]["instances"][instance]['global_id']}}</td>
-                                    <td>{{results["bsdd_results"]["instances"][instance]['ifc_type']}}</td>
-                                    <td>{{error.validation_results}}</td>
+                                <tr class="folded instance {{classname[:-1]}}" style="display:none; font-style: bold;" onclick="fold(this)">
+                                    <td></td>
+                                    <td>{{results["bsdd_results"]["instances"][instance]['ifc_type']}} ({{results["bsdd_results"]["instances"][instance]['global_id']}})</td>
                                 </tr>
-                                <tr class="folded instance_ error_{{loop.index}}" style="display:none; font-style: bold;text-align:center;">
-                                    <td>{{results["bsdd_results"]["instances"][instance]['global_id']}}</td>
-                                    <td>{{results["bsdd_results"]["instances"][instance]['ifc_type']}}</td>
-                                    <td>{{error.validation_results}}</td>
-                                </tr>
-                                <tr class="folded instance_ error_{{loop.index}}" style="display:none; font-style: bold;text-align:center;">
-                                    <td>{{results["bsdd_results"]["instances"][instance]['global_id']}}</td>
-                                    <td>{{results["bsdd_results"]["instances"][instance]['ifc_type']}}</td>
-                                    <td>{{error.validation_results}}</td>
-                                </tr>
-                                
-
-
-
                             {% endfor %}
                         {% endfor %}
 
