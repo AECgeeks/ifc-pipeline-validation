@@ -578,7 +578,7 @@ def view_report2(decoded, id):
             schema_validation_task = session.query(database.schema_validation_task).filter(
             database.schema_validation_task.validated_file == model.id).all()[0]
             schema_result = session.query(database.schema_result).filter(database.schema_result.task_id == schema_validation_task.id).all()[0]
-            results["schema_result"] = schema_result.serialize() 
+            results["schema_result"] = schema_result.serialize()
             
             if not results["schema_result"]['msg']:
                 results["schema_result"]['msg'] = "Valid"
