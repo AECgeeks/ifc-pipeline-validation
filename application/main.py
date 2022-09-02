@@ -50,9 +50,6 @@ import utils
 import database
 import worker
 
-import logging    
-logging.getLogger('werkzeug').disabled = True
-
 
 def send_simple_message(msg_content, user_email):
     dom = os.getenv("MG_DOMAIN")
