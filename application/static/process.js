@@ -72,6 +72,18 @@ function replaceInCell(type, cell, modelId, replace=0){
 }
 
 function computeRelativeDates(modelDate){
+    var offset = modelDate.getTimezoneOffset();
+    modelDate = new Date(
+        Date.UTC(
+            modelDate.getUTCFullYear(),
+            modelDate.getUTCMonth(),
+            modelDate.getUTCDate(),
+            modelDate.getUTCHours(),
+            modelDate.getUTCMinutes() - offset,
+            modelDate.getUTCSeconds()
+        )
+    );
+
     var now = new Date();
     difference = (now - modelDate) / 1000; // convert from ms to s
     let [divisor, unit] = [[3600*24*8, null], [3600*24*7, "weeks"], [3600*24, "days"], [3600, "hours"], [60, "minutes"], [1, "seconds"]].filter(a => difference / a[0] > 1.)[0];
@@ -92,13 +104,13 @@ function completeTable(i) {
     var rows = table.rows;
 
     fetch("/reslogs/" + i + "/" + unsavedConcat).then(function (r) { return r.json(); }).then(function (r) {
-        ['syntax', 'schema', 'mvd', 'bsdd', 'ia', 'ip'].forEach((x, i) => {
+        ['syntax', 'schema', 'bsdd', 'ia', 'ip'].forEach((x, i) => {
             var icon = icons[r["results"][`${x}log`]];
             
             rows[row_index].cells[toColumnComplete[x]].className = `${icon} material-icons`;
           });
 
-        rows[row_index].cells[toColumnComplete["date"]].innerHTML = computeRelativeDates(new Date(`${r["time"]} UTC`));
+        rows[row_index].cells[toColumnComplete["date"]].innerHTML = computeRelativeDates(new Date(r["time"]));
         rows[row_index].cells[toColumnComplete["date"]].className = "model_time";
 
     });
@@ -148,15 +160,8 @@ else{
         row.cells[toColumnComplete["file_name"]].innerHTML = model.filename;
         row.cells[toColumnComplete["file_name"]].className = "filename";
     
-        
-        var licensTypes = ["private", "CC", "MIT", "GPL", "LGPL"];
-    
-        createLicenseInput(licensTypes, row, model);
-        createInput("hours", row, model);
-        createInput("details", row, model);
-    
         if (model.progress == 100 || model.progress == -2) {
-            var checks_type = ["syntax", "schema", "mvd", "bsdd", "ids", "ia", "ip"];
+            var checks_type = ["syntax", "schema", "bsdd", "ids", "ia", "ip"];
 
             var icons = { 'v': 'valid', 'w': 'warning', 'i': 'invalid', 'n': 'not' };
             for (var j = 0; j < checks_type.length; j++) {
@@ -176,14 +181,11 @@ else{
     
             row.cells[toColumnComplete["report"]].appendChild(repText);
             row.cells[toColumnComplete["report"]].className = "model_report";
-            row.cells[toColumnComplete["date"]].innerHTML = computeRelativeDates(new Date(`${model.date} UTC`));     
+            row.cells[toColumnComplete["date"]].innerHTML = computeRelativeDates(new Date(model.date));     
             row.cells[toColumnComplete["date"]].className = "model_time";
     
             replaceInCell("download",row.cells[toColumnComplete["download"]], model.id);
             replaceInCell("delete",row.cells[toColumnComplete["delete"]], model.id);
-    
-            row.cells[toColumnComplete["geoms"]].innerHTML = model.number_of_geometries;
-            row.cells[toColumnComplete["props"]].innerHTML = model.number_of_properties;
     
         }
     
@@ -225,9 +227,7 @@ function poll(unsavedConcat) {
             var bar = document.getElementById("bar" + id)
 
             var file_row = document.getElementById(id)
-            file_row.cells[toColumnUncomplete["geoms"]].innerHTML = r["file_info"][i]["number_of_geometries"]
-            file_row.cells[toColumnUncomplete["props"]].innerHTML = r["file_info"][i]["number_of_properties"]
-
+         
             if (r.progress[i] === 100) {
 
                 if (!registered.has(i)) {

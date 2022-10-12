@@ -98,14 +98,34 @@ th {
   flex-direction: column;
 }
 
-
 table {
   width: 80%;
 }
 
+table pre {
+  max-width: 80vw;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
 /* Phones */
 @media only screen and (max-width: 600px) {
+  .hidden_banner{
+    align-content: center;
+    display:inline;
+  }
 
+  .banner{
+    display: none;
+  }
+
+  .full-screen>.main {
+    width: 100%;
+    overflow: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .bar_text {
     display: none;
   }
