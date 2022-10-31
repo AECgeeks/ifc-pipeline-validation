@@ -460,7 +460,8 @@ def send_notification(user_data, code):
         Please report any bug/inconsistency/comment to <a href="mailto:validate@buildingsmart.org">validate@buildingsmart.org</a>.<br>\
         </br>\
         Best regards,<br>\
-        The validation service team</div>'
+        The validation service team</div><br>\
+        <img src="static/navbar/BuildingSMART_CMYK_validation_service.png"/>'
         email_text = "File checked."
         user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
         send_simple_message(email_text, user.email, html_notification)
