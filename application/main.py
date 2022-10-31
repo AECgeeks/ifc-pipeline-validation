@@ -457,7 +457,7 @@ def send_notification(user_data, code):
         html_notification = f'<div>\
         Dear user of the Validation Service,<br> \
         <br>\
-        Your file {filename} has been uploaded and checked by the Validation Service.<br>\
+        Your file <b>{filename}</b> has been uploaded and checked by the Validation Service.<br>\
         <br>\
         The validation report is available <a href="{os.getenv("SERVER_NAME")}/report2/{code}">here</a>.<br>\
         Please report any bug/inconsistency/comment to <a href="mailto:validate@buildingsmart.org">validate@buildingsmart.org</a>.<br>\
