@@ -61,3 +61,19 @@ def validate_id(id):
 
 def unconcatenate_ids(id):
     return [id[i:i+32] for i in range(0, len(id), 32)]
+
+
+def send_message(msg_content, user_email, html=None):
+    dom = os.getenv("SERVER_NAME")
+    base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
+    from_ = f"Validation Service <validate@{dom}>"
+    
+    return requests.post(
+        base_url,
+        auth=("api", os.getenv("MG_KEY")),
+
+        data={"from": from_,
+              "to": [user_email],
+              "html":html,
+              "subject": "Validation Service update",
+              "text": msg_content})

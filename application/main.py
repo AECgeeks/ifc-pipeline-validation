@@ -50,21 +50,6 @@ import database
 import worker
 import pr_manager
 
-def send_simple_message(msg_content, user_email, html=None):
-    dom = os.getenv("SERVER_NAME")
-    base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
-    from_ = f"Validation Service <validate@{dom}>"
-    
-    return requests.post(
-        base_url,
-        auth=("api", os.getenv("MG_KEY")),
-
-        data={"from": from_,
-              "to": [user_email],
-              "html":html,
-              "subject": "Validation Service update",
-              "text": msg_content})
-
 
 application = Flask(__name__)
 
@@ -329,7 +314,7 @@ def process_upload_validation(files, validation_config, user_id, commit_id=None,
         user = session.query(database.user).filter(database.user.id == user_id).all()[0]
 
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-    send_simple_message(msg, os.getenv("DEV_EMAIL"))
+    utils.send_message(msg, os.getenv("DEV_EMAIL"))
 
     if DEVELOPMENT or NO_REDIS:
         for id in ids:
@@ -447,28 +432,6 @@ def get_validation_progress(user_data, id):
 
     return jsonify({"progress": model_progresses, "filename": model.filename, "file_info": file_info})
 
-@application.route('/notify/<code>', methods=['GET'])
-@login_required
-def send_notification(user_data, code):
-    with database.Session() as session:
-        model = session.query(database.model).filter(database.model.code == code).all()[0]
-        filename = model.filename
-        html_notification = f'<div>\
-        Dear user of the Validation Service,<br> \
-        <br>\
-        Your file <b>{filename}</b> has been uploaded and checked by the Validation Service.<br>\
-        <br>\
-        The validation report is available <a href="{os.getenv("SERVER_NAME")}/report2/{code}">here</a>.<br>\
-        Please report any bug/inconsistency/comment to <a href="mailto:validate@buildingsmart.org">validate@buildingsmart.org</a>.<br>\
-        <br>\
-        Best regards,<br>\
-        The Validation Service team</div><br>\
-        <img src="{os.getenv("SERVER_NAME")}/static/navbar/BuildingSMART_CMYK_validation_service.png" width="250px" height="60px"/>'
-        email_text = "File checked."
-        user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
-        send_simple_message(email_text, user.email, html_notification)
-    
-    return jsonify({"status":"success"})
 
 @application.route('/update_info/<code>', methods=['POST'])
 @login_required
@@ -486,7 +449,7 @@ def update_info(user_data, code):
             user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
             if user_data_data["type"] == "license":
-                send_simple_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", os.getenv("DEV_EMAIL"))
+                utils.send_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", os.getenv("DEV_EMAIL"))
             session.commit()
         return jsonify( {"progress": data.decode("utf-8")})
     except:
