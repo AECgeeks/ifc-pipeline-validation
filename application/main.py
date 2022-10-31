@@ -461,7 +461,7 @@ def send_notification(user_data, code):
         </br>\
         Best regards,<br>\
         The validation service team</div><br>\
-        <img src="{os.getenv("SERVER_NAME")}/static/navbar/BuildingSMART_CMYK_validation_service.png"/>'
+        <img src="{os.getenv("SERVER_NAME")}/static/navbar/BuildingSMART_CMYK_validation_service.png" width="250px" height="60px"/>'
         email_text = "File checked."
         user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
         send_simple_message(email_text, user.email, html_notification)
