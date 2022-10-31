@@ -25,6 +25,7 @@
 import os
 import string
 import tempfile
+import requests
 
 from random import SystemRandom
 choice = lambda seq: SystemRandom().choice(seq)
