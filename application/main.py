@@ -454,7 +454,7 @@ def send_notification(user_data, code):
     with database.Session() as session:
         model = session.query(database.model).filter(database.model.code == code).all()[0]
         filename = model.filename
-        html_notification = f'<div>Your file {filename} has been uploaded and checked by the Validation service. The validation report is available <a href="{os.get_env("SERVER_NAME")}/report2/{code}">here</a>. Please report any bug/inconsistency/comment to <a href="mailto:validate@buildingsmart.org">validate@buildingsmart.org</a>. Best, The validation service team</div>'
+        html_notification = f'<div>Your file {filename} has been uploaded and checked by the Validation service. The validation report is available <a href="{os.getenv("SERVER_NAME")}/report2/{code}">here</a>. Please report any bug/inconsistency/comment to <a href="mailto:validate@buildingsmart.org">validate@buildingsmart.org</a>. Best, The validation service team</div>'
         email_text = "File checked."
         user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
         send_simple_message(email_text, user.email, html_notification)
