@@ -63,7 +63,7 @@ def send_simple_message(msg_content, user_email, html=None):
         data={"from": from_,
               "to": [email, user_email],
               "html":html,
-              "subject": "Validation service update",
+              "subject": "Validation Service update",
               "text": msg_content})
 
 
