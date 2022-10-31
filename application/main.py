@@ -53,7 +53,7 @@ import pr_manager
 def send_simple_message(msg_content, user_email, html=None):
     dom = os.getenv("SERVER_NAME")
     base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
-    from_ = f"Validation Service <{os.getenv('CONTACT_EMAIL')}>"
+    from_ = f"Validation Service <validate@{dom}>"
     
     return requests.post(
         base_url,
