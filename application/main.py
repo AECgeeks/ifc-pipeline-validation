@@ -50,7 +50,7 @@ import database
 import worker
 import pr_manager
 
-def send_simple_message(msg_content, user_email):
+def send_simple_message(msg_content, user_email, html=None):
     dom = os.getenv("SERVER_NAME")
     base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
     from_ = f"Validation Service <bsdd_val@{dom}>"
@@ -62,6 +62,7 @@ def send_simple_message(msg_content, user_email):
 
         data={"from": from_,
               "to": [email, user_email],
+              "html":html,
               "subject": "Validation service update",
               "text": msg_content})
 
@@ -447,6 +448,18 @@ def get_validation_progress(user_data, id):
 
     return jsonify({"progress": model_progresses, "filename": model.filename, "file_info": file_info})
 
+@application.route('/notify/<code>', methods=['GET'])
+@login_required
+def send_notification(user_data, code):
+    with database.Session() as session:
+        model = session.query(database.model).filter(database.model.code == code).all()[0]
+        filename = model.filename
+        html_notification = f'<div>Your file {filename} has been uploaded and checked by the Validation service. The validation report is available <a href="{os.get_env("SERVER_NAME")}/report2/{code}">here</a>. Please report any bug/inconsistency/comment to <a href="mailto:validate@buildingsmart.org">validate@buildingsmart.org</a>. Best, The validation service team</div>'
+        email_text = "File checked."
+        user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
+        send_simple_message(email_text, user.email, html_notification)
+    
+    return jsonify({"status":"success"})
 
 @application.route('/update_info/<code>', methods=['POST'])
 @login_required

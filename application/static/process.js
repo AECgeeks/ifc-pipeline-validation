@@ -236,6 +236,13 @@ function poll(unsavedConcat) {
 
                     bar.style.width = 100 * 2 + 'px';
                     percentage.innerHTML = "100%"
+
+                    fetch("/notify/" + modelCode[i], {
+                        method: "GET"
+                    }).then(function (r) { return r.json(); }).then(function (r) {
+                        console.log(r);
+                    })
+
                     completeTable(i);
 
                 }
