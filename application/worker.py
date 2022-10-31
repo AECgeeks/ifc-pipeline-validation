@@ -488,7 +488,7 @@ def do_process(id, validation_config, commit_id, ids_spec):
         email_text = "File checked."
         user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
         utils.send_message(email_text, user.email, html_notification)
-        print(f'email sent to {user.email} with content {html_notification}')
+        print(f'for file {id} email sent to {user.email} with content {html_notification}')
 
     elapsed = 100
     set_progress(id, elapsed)
