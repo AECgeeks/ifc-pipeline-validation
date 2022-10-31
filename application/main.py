@@ -53,7 +53,7 @@ import pr_manager
 def send_simple_message(msg_content, user_email, html=None):
     dom = os.getenv("SERVER_NAME")
     base_url = f"https://api.eu.mailgun.net/v3/{dom}/messages"
-    from_ = f"Validation Service <bsdd_val@{dom}>"
+    from_ = f"Validation Service <{os.getenv('CONTACT_EMAIL')}>"
     
     return requests.post(
         base_url,
@@ -329,7 +329,7 @@ def process_upload_validation(files, validation_config, user_id, commit_id=None,
         user = session.query(database.user).filter(database.user.id == user_id).all()[0]
 
     msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-    send_simple_message(msg, os.getenv("MG_EMAIL"))
+    send_simple_message(msg, os.getenv("DEV_EMAIL"))
 
     if DEVELOPMENT or NO_REDIS:
         for id in ids:
@@ -486,7 +486,7 @@ def update_info(user_data, code):
             user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
             if user_data_data["type"] == "license":
-                send_simple_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", os.getenv("MG_EMAIL"))
+                send_simple_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", os.getenv("DEV_EMAIL"))
             session.commit()
         return jsonify( {"progress": data.decode("utf-8")})
     except:
