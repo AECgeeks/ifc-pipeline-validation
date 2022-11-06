@@ -49,8 +49,6 @@ RUN npm run build
 WORKDIR /www
 COPY . /www
 
-RUN mv /www/ui/build/ /www/static
-
 COPY application/checks /www/checks
 
 COPY application/*.yml /www/
