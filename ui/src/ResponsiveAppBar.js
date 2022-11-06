@@ -15,8 +15,11 @@ import AdbIcon from '@mui/icons-material/Adb';
 
 
 const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
+const settings = [{"label":'Upload new file', "href":"/"},
+                  {"label":'Dashboard', "href":"/dashboard"}, 
+                  {"label":'Logout', "href":"/logout"} ]
+        
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -117,7 +120,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page["label"]}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
@@ -149,8 +152,8 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting["label"]} onClick={handleCloseUserMenu}>
+                  <a href={setting["href"]}><Typography textAlign="center">{setting["label"]}</Typography></a>
                 </MenuItem>
               ))}
             </Menu>
