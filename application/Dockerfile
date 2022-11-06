@@ -3,7 +3,7 @@ FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /
-RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools python3-dev python3-wheel supervisor
+RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools python3-dev python3-wheel supervisor nodejs npm 
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
@@ -32,6 +32,14 @@ RUN wget -O /tmp/ifcopenshell_python.zip https://s3.amazonaws.com/ifcopenshell-b
 RUN mkdir -p `python3 -c 'import site; print(site.getusersitepackages())'`
 RUN unzip -d `python3 -c 'import site; print(site.getusersitepackages())'` /tmp/ifcopenshell_python.zip
 
+
+# Build react project
+WORKDIR /www
+RUN mkdir ui
+WORKDIR /ui
+COPY ../ui/* /www/ui
+RUN npm install
+RUN npm build
 
 # Server
 WORKDIR /www
