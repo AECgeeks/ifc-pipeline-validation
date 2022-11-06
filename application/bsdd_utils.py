@@ -5,16 +5,17 @@ def get_hierarchical_bsdd(id):
     with database.Session() as session:
         model = session.query(database.model).filter(
             database.model.code == id).all()[0]
-
+        
+        bsdd_task = [task for task in model.tasks if task.task_type == "bsdd_validation_task"][0]
         hierarchical_bsdd_results = {}
         if model.status_bsdd != 'n':
-            for bsdd_result in model.tasks[2].results:
+            for bsdd_result in bsdd_task.results:
                 
                 bsdd_result = bsdd_result.serialize()
              
                 if bsdd_result["instance_id"]:
-                    bsdd_result['global_id'] = session.query(database.ifc_instance).filter(database.ifc_instance.id == bsdd_result["instance_id"]).all()[0].global_id
-                    bsdd_result['ifc_type'] = session.query(database.ifc_instance).filter(database.ifc_instance.id == bsdd_result["instance_id"]).all()[0].ifc_type
+                    inst = session.query(database.ifc_instance).filter(database.ifc_instance.id == bsdd_result["instance_id"]).all()[0]
+                    bsdd_result['global_id'], bsdd_result['ifc_type'] = inst.global_id, inst.ifc_type
 
                 validation_subsections = ["val_ifc_type", "val_property_set", "val_property_name", "val_property_type", "val_property_value"]
                 validation_results = [bsdd_result[subsection] for subsection in validation_subsections]

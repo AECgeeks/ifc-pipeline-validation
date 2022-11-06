@@ -597,7 +597,7 @@ def view_report2(user_data, id):
             results["bsdd_results"]["bsdd"] = hierarchical_bsdd_results
             bsdd_validation_task = tasks["bsdd_validation_task"]
             results["bsdd_results"]["task"] = bsdd_validation_task
-            results["bsdd_results"]["instances"] = any(model.instances)
+            results["bsdd_results"]["instances"] = len(model.instances) > 0
             
     # if 'errors' in locals():
     #     return render_template("report_v1.html",
