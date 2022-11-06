@@ -53,6 +53,9 @@ COPY application/checks /www/checks
 
 COPY application/*.yml /www/
 
+RUN mv /www/ui/build /www/application/static
+
+
 COPY .git/HEAD /tmp/.git/HEAD
 COPY .git/refs/ /tmp/.git/refs/
 RUN /bin/bash -c '(cat /tmp/.git/$(cat /tmp/.git/HEAD | cut -d \  -f 2)) || cat /tmp/.git/HEAD' > /version
