@@ -1,10 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
 import Dz from './Dz'
+import ResponsiveAppBar from './ResponsiveAppBar'
 
 function App() {
   return (
     <div className="App">
+      <ResponsiveAppBar/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
