@@ -34,7 +34,6 @@ RUN unzip -d `python3 -c 'import site; print(site.getusersitepackages())'` /tmp/
 
 
 # Build react project
-RUN mkdir /www/ui
 WORKDIR /www/ui
 COPY ../ui/* /www/ui
 RUN npm install
