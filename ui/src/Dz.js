@@ -19,10 +19,10 @@ function Dz() {
         dz.on("addedfile", file => { console.log("new file") });
 
 
-        dz.on("success", function (file, response) {
-            window.location = response.url;
+        // dz.on("success", function (file, response) {
+        //     window.location = response.url;
 
-        });
+        // });
 
         var submitButton = document.querySelector("#submit");
         submitButton.addEventListener("click", function () {
