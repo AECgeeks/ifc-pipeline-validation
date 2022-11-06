@@ -36,12 +36,7 @@ RUN unzip -d `python3 -c 'import site; print(site.getusersitepackages())'` /tmp/
 # Build react project
 WORKDIR /www/ui
 COPY ../ui /www/ui
-RUN echo 1
-RUN echo "debugging"
-RUN echo 1
-RUN ls -al
-RUN echo 1
-RUN echo "debugging"
+
 RUN npm install
 RUN npm run build
 
@@ -54,7 +49,6 @@ COPY application/checks /www/checks
 COPY application/*.yml /www/
 
 RUN mv /www/ui/build /www/application/static
-
 
 COPY .git/HEAD /tmp/.git/HEAD
 COPY .git/refs/ /tmp/.git/refs/
