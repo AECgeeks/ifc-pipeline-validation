@@ -35,7 +35,7 @@ RUN unzip -d `python3 -c 'import site; print(site.getusersitepackages())'` /tmp/
 
 # Build react project
 WORKDIR /www/ui
-COPY ../ui/* /www/ui
+COPY ../ui /www/ui
 RUN echo 1
 RUN echo "debugging"
 RUN echo 1
