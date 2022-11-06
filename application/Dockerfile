@@ -43,7 +43,7 @@ RUN ls -al
 RUN echo 1
 RUN echo "debugging"
 RUN npm install
-RUN npm build
+RUN npm run build
 
 # Server
 WORKDIR /www
