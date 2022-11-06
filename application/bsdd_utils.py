@@ -1,8 +1,13 @@
 import database
 import json
+import functools
 
 def get_hierarchical_bsdd(id):
     with database.Session() as session:
+        @functools.lru_cache(maxsize=128)
+        def get_inst(instance_id):
+            return session.query(database.ifc_instance).filter(database.ifc_instance.id == instance_id).all()[0]
+
         model = session.query(database.model).filter(
             database.model.code == id).all()[0]
         
@@ -14,31 +19,9 @@ def get_hierarchical_bsdd(id):
                 bsdd_result = bsdd_result.serialize()
              
                 if bsdd_result["instance_id"]:
-                    inst = session.query(database.ifc_instance).filter(database.ifc_instance.id == bsdd_result["instance_id"]).all()[0]
+                    inst = get_inst(bsdd_result["instance_id"])
                     bsdd_result['global_id'], bsdd_result['ifc_type'] = inst.global_id, inst.ifc_type
 
-                validation_subsections = ["val_ifc_type", "val_property_set", "val_property_name", "val_property_type", "val_property_value"]
-                validation_results = [bsdd_result[subsection] for subsection in validation_subsections]
-
-                file_values = [ 
-                            bsdd_result["bsdd_type_constraint"],
-                            bsdd_result["ifc_property_set"],
-                            bsdd_result["ifc_property_name"],
-                            bsdd_result["ifc_property_type"],
-                            bsdd_result["ifc_property_value"]
-                ]
-                
-                if None not in validation_results:
-                    if sum(validation_results) != len(validation_results):
-                        validation_constraints_subsections = ["propertySet","name","dataType", "predefinedValue", "possibleValues"]
-
-                        validation_constraints= [bsdd_result['bsdd_type_constraint']]
-
-                        for subsection in validation_constraints_subsections:
-                            constraint = json.loads(bsdd_result["bsdd_property_constraint"])
-                            if subsection in constraint.keys():
-                                validation_constraints.append(constraint[subsection])
-                
                 if bsdd_result["bsdd_property_constraint"]:
                     bsdd_result["bsdd_property_constraint"] = json.loads(
                         bsdd_result["bsdd_property_constraint"])
