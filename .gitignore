@@ -1,7 +1,8 @@
 __pycache__/
 *.py[cod]
 *.ifc
-*.json
+application/config.json
+application/decoded.json
 *.cover
 docker-volumes
 !application/config.json
