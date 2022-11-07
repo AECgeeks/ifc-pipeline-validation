@@ -3,7 +3,7 @@ import './App.css';
 import Dz from './Dz'
 import ResponsiveAppBar from './ResponsiveAppBar'
 
-function App() {
+function Dashboard() {
   return (
     <div className="App">
       <ResponsiveAppBar/>
@@ -12,4 +12,4 @@ function App() {
   );
 }
 
-export default App;
+export default Dashboard;
