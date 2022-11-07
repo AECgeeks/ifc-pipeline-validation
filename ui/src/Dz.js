@@ -37,7 +37,7 @@ function Dz() {
     return (
         <div>
             <div className="submit-area" id="ifc_tab">
-                <form action="http://localhost:5000/" className="dropzone" id="ifc_dropzone">
+                <form action="/" className="dropzone" id="ifc_dropzone">
                     <div className="dz-message" data-dz-message><span><i className="material-icons"></i> Click or drop files here to upload for validation</span></div>
                 </form>
                 <button className="submit-button" id="submit">Start validation</button>
