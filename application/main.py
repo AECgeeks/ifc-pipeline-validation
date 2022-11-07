@@ -406,7 +406,34 @@ def dashboard(user_data, pr_title, commit_id=None):
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
 
-    return render_template('dashboard.html', commit_id=commit_id, pr_title=pr_title, saved_models=saved_models, username=f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}")
+    return render_template('dashboard.html',
+                           commit_id=commit_id,
+                           pr_title=pr_title,
+                           saved_models=saved_models,
+                           username=f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}"
+                           )
+
+@application.route('/sandbox/<commit_id>/models', methods=['GET'])
+@application.route('/models', methods=['GET'])
+@login_required
+@with_sandbox
+def models(user_data, pr_title, commit_id=None):
+    user_id = user_data['sub']
+    # Retrieve user data
+    with database.Session() as session:
+        if str(user_data["email"]) in [os.getenv("ADMIN_EMAIL"), os.getenv("DEV_EMAIL")]:
+            saved_models = session.query(database.model).filter(database.model.deleted!=1).all()
+        else:
+            saved_models = session.query(database.model).filter(database.model.user_id == user_id, database.model.deleted!=1).all()
+        saved_models.sort(key=lambda m: m.date, reverse=True)
+        saved_models = [model.serialize() for model in saved_models]
+
+    return jsonify({
+                    "commit_id":commit_id,
+                    "pr_title":pr_title,
+                    "saved_models":saved_models,
+                    "username":f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}"
+                    })
 
 
 @application.route('/valprog/<id>', methods=['GET'])
@@ -612,6 +639,40 @@ def view_report2(user_data, id):
                     results=results,
                     username=f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}")
 
+
+@application.route('/results/<id>')
+@login_required
+def results(user_data, id):
+    with database.Session() as session:
+        session = database.Session()
+
+        model = session.query(database.model).filter(
+            database.model.code == id).all()[0]
+
+        tasks = {t.task_type: t for t in model.tasks}
+
+        results = { "syntax_result":0, "schema_result":0, "bsdd_results":{"tasks":0, "bsdd":0, "instances":0}}
+  
+        if model.status_syntax != 'n':
+            results["syntax_result"] = tasks["syntax_validation_task"].results[0].serialize()
+
+        if model.status_schema != 'n':
+            results["schema_result"] = tasks["schema_validation_task"].results[0].serialize()
+            if not results["schema_result"]['msg']:
+                results["schema_result"]['msg'] = "Valid"
+    
+        hierarchical_bsdd_results = {}
+        if model.status_bsdd != 'n':
+            hierarchical_bsdd_results = bsdd_utils.get_hierarchical_bsdd(model.code)
+            results["bsdd_results"]["bsdd"] = hierarchical_bsdd_results
+            bsdd_validation_task = tasks["bsdd_validation_task"]
+            results["bsdd_results"]["task"] = bsdd_validation_task
+            results["bsdd_results"]["instances"] = len(model.instances) > 0
+  
+    return jsonify({"model":model,
+                    "tasks":tasks,
+                    "results":results,
+                    "username":f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}"})
 
 
 @application.route('/download/<id>', methods=['GET'])
