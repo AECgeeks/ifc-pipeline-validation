@@ -427,14 +427,8 @@ def models(user_data, pr_title, commit_id=None):
             saved_models = session.query(database.model).filter(database.model.user_id == user_id, database.model.deleted!=1).all()
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
-
-    return jsonify({
-                    "commit_id":commit_id,
-                    "pr_title":pr_title,
-                    "saved_models":saved_models,
-                    "username":f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}"
-                    })
-
+    return jsonify({"models":saved_models})
+  
 
 @application.route('/valprog/<id>', methods=['GET'])
 @login_required

@@ -7,7 +7,7 @@ import {useEffect, useState} from 'react';
 function Dashboard() {
 
   useEffect(() => {
-    fetch('/models')
+    fetch('http://localhost:5000/models')
       .then(response => response.json())
       .then((response) => {
         console.log("response", response);
