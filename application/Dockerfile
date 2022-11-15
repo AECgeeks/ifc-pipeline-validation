@@ -58,3 +58,5 @@ RUN rm -rf /tmp/.git
 COPY application/queue.conf /etc/supervisord.conf
 
 WORKDIR /www/application
+
+FROM nginx:latest AS test
