@@ -58,6 +58,7 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./docker-volumes/certbot/conf:/etc/letsencrypt
       - ./docker-volumes/certbot/www:/var/www/certbot
+      - ./docker-volumes/build/:/www/build
     entrypoint: "/bin/sh -c \"nginx -g 'daemon off;' & while true; do nginx -t && nginx -s reload; sleep 1h; done\""
     
   

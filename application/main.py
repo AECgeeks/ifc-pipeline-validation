@@ -729,7 +729,9 @@ def get_model(fn):
     else:
         return send_file(path)
 
-
+@application.route('/api/test', methods=['GET'])
+def test_hello_world():
+    return 'Hello world'
 """
 # Create a file called routes.py with the following
 # example content to add application-specific routes
