@@ -3,7 +3,7 @@ FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /
-RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools python3-dev python3-wheel supervisor nodejs npm 
+RUN apt-get -y update && apt-get -y --no-install-recommends --no-install-suggests install git python3 python3-pip unzip wget libpq-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools python3-dev python3-wheel supervisor
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
@@ -33,13 +33,6 @@ RUN mkdir -p `python3 -c 'import site; print(site.getusersitepackages())'`
 RUN unzip -d `python3 -c 'import site; print(site.getusersitepackages())'` /tmp/ifcopenshell_python.zip
 
 
-# Build react project
-WORKDIR /www/ui
-COPY ../ui /www/ui
-
-RUN npm install
-RUN npm run build
-
 # Server
 WORKDIR /www
 COPY . /www
@@ -54,9 +47,6 @@ RUN /bin/bash -c '(cat /tmp/.git/$(cat /tmp/.git/HEAD | cut -d \  -f 2)) || cat 
 RUN sed -i "4i<script>console.log('pipeline version: $(cat /version)');</script>" /www/application/templates/*.html
 RUN rm -rf /tmp/.git
 
-
 COPY application/queue.conf /etc/supervisord.conf
 
 WORKDIR /www/application
-
-FROM nginx:latest AS test
