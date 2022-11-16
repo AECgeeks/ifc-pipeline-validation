@@ -15,7 +15,9 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="App">
+    <div>
+      <ResponsiveAppBar/>
+      <h1>Dashboard</h1>
       <Dz/>
     </div>
   );
