@@ -414,7 +414,7 @@ def dashboard(user_data, pr_title, commit_id=None):
                            )
 
 @application.route('/sandbox/<commit_id>/models', methods=['GET'])
-@application.route('/models', methods=['GET'])
+@application.route('/api/models', methods=['GET'])
 @login_required
 @with_sandbox
 def models(user_data, pr_title, commit_id=None):
