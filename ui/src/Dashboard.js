@@ -5,22 +5,27 @@ import ResponsiveAppBar from './ResponsiveAppBar'
 import DashboardTable from './DashboardTable'
 import {useEffect, useState} from 'react';
 
+
 function Dashboard() {
 
+  const [models, setModels] = useState([]);
+  
   useEffect(() => {
-    fetch('http://localhost:5000/api/models')
+    fetch('/api/models')
       .then(response => response.json())
-      .then((response) => {
-        console.log("response", response);
+      .then((data) => {
+        setModels(data.models);
       })
-  }, []);
+  });
 
   return (
     <div>
+
       <ResponsiveAppBar/>
       <h1>Dashboard</h1>
-      <Dz/>
-      <DashboardTable />
+      <Dz />
+      <DashboardTable models={models}/>
+      
     </div>
   );
 }

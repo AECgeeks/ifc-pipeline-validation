@@ -22,31 +22,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 
-function createData(name, calories, fat, carbs, protein) {
+function createData(format, filename, syntax, schema, bsdd) {
   return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
+    format,
+    filename,
+    syntax,
+    schema,
+    bsdd,
   };
 }
-
-const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -80,35 +64,71 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'name',
+    id: 'format',
     numeric: false,
     disablePadding: true,
-    label: 'Dessert (100g serving)',
+    label: 'File format',
   },
   {
-    id: 'calories',
+    id: 'filename',
     numeric: true,
     disablePadding: false,
-    label: 'Calories',
+    label: 'File name',
   },
   {
-    id: 'fat',
+    id: 'syntax',
     numeric: true,
     disablePadding: false,
-    label: 'Fat (g)',
+    label: 'Syntax',
   },
   {
-    id: 'carbs',
+    id: 'schema',
     numeric: true,
     disablePadding: false,
-    label: 'Carbs (g)',
+    label: 'Schema',
   },
   {
-    id: 'protein',
+    id: 'bsdd',
     numeric: true,
     disablePadding: false,
-    label: 'Protein (g)',
+    label: 'bSDD',
   },
+  {
+    id: 'ia',
+    numeric: true,
+    disablePadding: false,
+    label: 'IA',
+  },
+  {
+    id: 'ip',
+    numeric: true,
+    disablePadding: false,
+    label: 'IP',
+  },
+  {
+    id: 'report',
+    numeric: true,
+    disablePadding: false,
+    label: 'Report',
+  },
+  {
+    id: 'date',
+    numeric: true,
+    disablePadding: false,
+    label: 'Date',
+  },
+  {
+    id: 'download',
+    numeric: true,
+    disablePadding: false,
+    label: 'Download',
+  },
+  {
+    id: 'delete',
+    numeric: true,
+    disablePadding: false,
+    label: 'Delete',
+  }
 ];
 
 function EnhancedTableHead(props) {
@@ -222,7 +242,10 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function DashboardTable({models}) {
+
+  const rows = models;
+  
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -238,19 +261,19 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
+      const newSelected = rows.map((n) => n.filename);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, filename) => {
+    const selectedIndex = selected.indexOf(filename);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, filename);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -308,17 +331,17 @@ export default function EnhancedTable() {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row.filename);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, row.filename)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.filename}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -336,12 +359,18 @@ export default function EnhancedTable() {
                         scope="row"
                         padding="none"
                       >
-                        {row.name}
+                       IFC
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right">{row.filename}</TableCell>
+                      <TableCell align="right">{row.status_syntax}</TableCell>
+                      <TableCell align="right">{row.status_schema}</TableCell>
+                      <TableCell align="right">{row.status_bsdd}</TableCell>
+                      <TableCell align="right">{row.status_ia}</TableCell>
+                      <TableCell align="right">{row.status_ip}</TableCell>
+                      <TableCell align="right">View report</TableCell>
+                      <TableCell align="right">{row.progress}</TableCell>
+                      <TableCell align="right">Download</TableCell>
+                      <TableCell align="right">Delete</TableCell>
                     </TableRow>
                   );
                 })}

@@ -21,7 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject", 
-    "api" : "cd ../application && run_debug.bat"
+    "api" : "cd ../application && run_no_debug.bat"
   },
   "eslintConfig": {
     "extends": [
