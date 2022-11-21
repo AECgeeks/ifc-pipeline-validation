@@ -156,7 +156,7 @@ def with_sandbox(orig):
 
 
 @application.route("/sandbox/<commit_id>/")
-@application.route("/")
+@application.route("/api/")
 @login_required
 @with_sandbox
 def index(user_data, pr_title=None, commit_id=None):
@@ -175,16 +175,16 @@ def index(user_data, pr_title=None, commit_id=None):
 
 
 # @todo still requires sandbox parameters
-@application.route('/login', methods=['GET'])
+@application.route('/api/login', methods=['GET'])
 def login():
     bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
     authorization_url, state = bs.authorization_url(authorization_base_url)
     session['oauth_state'] = state
-    return redirect(authorization_url)
+    #return redirect(authorization_url)
+    return jsonify(dict(redirect=authorization_url))
 
-
-@application.route("/callback")
+@application.route("/api/callback")
 def callback():
     bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=[
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
@@ -224,7 +224,7 @@ def callback():
         del session['commit_id']
         return redirect(url_for('index', commit_id=cid))
     else:
-        return redirect(url_for('index'))
+        return redirect("https://validate-bsi-staging.aecgeeks.com/")
 
 
 @application.route("/logout")

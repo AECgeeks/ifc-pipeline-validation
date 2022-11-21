@@ -13,6 +13,7 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App/>} />
+      <Route path="/callback" element={<App/>} />
       <Route path="/dashboard" element={<Dashboard/>}/>
     </Routes>
 </BrowserRouter>
