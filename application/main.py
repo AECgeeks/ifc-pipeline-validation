@@ -122,7 +122,7 @@ def login_required(f):
             with database.Session() as db_session:
                 user = db_session.query(database.user).filter(database.user.id == session['user_data']["sub"]).all()
                 if len(user) == 0:
-                     return redirect(url_for('login'))
+                    return redirect(url_for('login'))
             user_data = session['user_data']
         else:
             try:
@@ -181,16 +181,26 @@ def login():
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
     authorization_url, state = bs.authorization_url(authorization_base_url)
     session['oauth_state'] = state
-    #return redirect(authorization_url)
-    return jsonify(dict(redirect=authorization_url))
+    return jsonify({"redirect":authorization_url})
 
-@application.route("/api/callback")
-def callback():
+@application.route('/api/me', methods=['GET'])
+def me():
+    bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
+                    "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
+    authorization_url, state = bs.authorization_url(authorization_base_url)
+    session['oauth_state'] = state
+
+    if not "oauth_token" in session.keys():   
+        return jsonify({"redirect":authorization_url})
+    else:
+        return jsonify({"user_data":session["user_data"]})
+   
+@application.route("/api/callback/<code>")
+def callback(code):
     bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=[
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
     try:
-        t = bs.fetch_token(token_url, client_secret=client_secret,
-                           authorization_response=request.url, response_type="token")
+        t = bs.fetch_token(token_url, client_secret=client_secret, code=code, response_type="token")
     except:
         return redirect(url_for('login'))
         
@@ -205,39 +215,37 @@ def callback():
     key = requests.get(discovery_response['jwks_uri']).content.decode("utf-8")
     id_token = t['id_token']
 
+
     user_data = jwt.decode(id_token, key=key)
     session['user_data'] = user_data
 
-    with database.Session() as db_session:
-        user = db_session.query(database.user).filter(database.user.id == user_data["sub"]).all()
-        if len(user) == 0:
-            db_session.add(database.user(str(user_data["sub"]),
-                                        str(user_data.get('email', '')),
-                                        str(user_data.get('family_name', '')),
-                                        str(user_data.get('given_name', '')),
-                                        str(user_data.get('name', ''))))
-            db_session.commit()
+    # with database.Session() as db_session:
+    #     user = db_session.query(database.user).filter(database.user.id == user_data["sub"]).all()
+    #     if len(user) == 0:
+    #         db_session.add(database.user(str(user_data["sub"]),
+    #                                     str(user_data.get('email', '')),
+    #                                     str(user_data.get('family_name', '')),
+    #                                     str(user_data.get('given_name', '')),
+    #                                     str(user_data.get('name', ''))))
+    # #         db_session.commit()
 
-    if cid := session.get('commit_id'):
-        # Restore and then discard the commit_id stored before
-        # redirecting to /login
-        del session['commit_id']
-        return redirect(url_for('index', commit_id=cid))
-    else:
-        return redirect("https://validate-bsi-staging.aecgeeks.com/")
+    # if cid := session.get('commit_id'):
+    #     # Restore and then discard the commit_id stored before
+    #     # redirecting to /login
+    #     del session['commit_id']
+    #     return redirect(url_for('index', commit_id=cid))
+    # else:
+    
+    return jsonify({"redirect":"https://validate-bsi-staging.aecgeeks.com/dashboard"})
 
-
-@application.route("/logout")
-@login_required
-def logout(user_data):
+@application.route("/api/logout")
+def logout():
     if DEVELOPMENT:
         return redirect(url_for('index'))
     else:
-        session.clear()  # Wipe out the user and the token cache from the session
-        return redirect(  # Also need to log out from the Microsoft Identity platform
-            "https://authentication.buildingsmart.org/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout"
-            "?post_logout_redirect_uri=" + url_for("index", _external=True))
-
+        session.clear()  # Wipe out the user and the token cache from the session 
+        # Also need to log out from the Microsoft Identity platform
+        return jsonify({"redirect":f"https://authentication.buildingsmart.org/buildingSMARTservices.onmicrosoft.com/b2c_1a_signupsignin_c/oauth2/v2.0/logout?post_logout_redirect_uri=https://{os.environ['SERVER_NAME']}/"})
 
 def process_upload(filewriter, callback_url=None):
 
@@ -392,7 +400,7 @@ def check_viewer(id):
 
 
 @application.route('/sandbox/<commit_id>/dashboard', methods=['GET'])
-@application.route('/dashboard', methods=['GET'])
+@application.route('/api/dashboard', methods=['GET'])
 @login_required
 @with_sandbox
 def dashboard(user_data, pr_title, commit_id=None):

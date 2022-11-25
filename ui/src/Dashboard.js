@@ -1,34 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
 import Dz from './Dz'
 import ResponsiveAppBar from './ResponsiveAppBar'
 import DashboardTable from './DashboardTable'
-import {useEffect, useState,useLayoutEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 
 function Dashboard() {
-
+  const [isLoggedIn, setLogin] = useState(false);
   const [models, setModels] = useState([]);
   
-  useLayoutEffect(() => {
-    fetch('/api/login')
+  useEffect(() => {
+    fetch('/api/me')
       .then(response => response.json())
       .then((data) => {
-        console.log(data.redirect);
-        window.location.href = data.redirect;
+        if(data["redirect"] !== undefined){
+          window.location.href = data.redirect;
+        }  
+        else{
+          setLogin(true)
+        }
       })
   },[]);
 
+if(isLoggedIn){
   return (
     <div>
-
       <ResponsiveAppBar/>
       <h1>Dashboard</h1>
       <Dz />
       <DashboardTable models={models}/>
-      
     </div>
-  );
+    );
+  }
 }
 
 export default Dashboard;
