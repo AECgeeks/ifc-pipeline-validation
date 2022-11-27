@@ -3,7 +3,7 @@ import ResponsiveAppBar from './ResponsiveAppBar'
 import DashboardTable from './DashboardTable'
 import {useEffect, useState} from 'react';
 
-
+console.log("env variable", process.env.NODE_ENV);
 function Dashboard() {
   const [isLoggedIn, setLogin] = useState(false);
   const [models, setModels] = useState([]);
@@ -18,6 +18,15 @@ function Dashboard() {
         else{
           setLogin(true)
         }
+      })
+  },[]);
+
+  useEffect(() => {
+    fetch('/api/models')
+      .then(response => response.json())
+      .then((data) => {
+       console.log("models ", data);
+       setModels(data.models);
       })
   },[]);
 

@@ -118,11 +118,13 @@ def login_required(f):
             if not "oauth_token" in session.keys():
                 # before redirect, capture the commit id
                 session['commit_id'] = kwargs.get('commit_id')
-                return redirect(url_for('login'))
+                # return redirect(url_for('login'))
+                abort(403)
             with database.Session() as db_session:
                 user = db_session.query(database.user).filter(database.user.id == session['user_data']["sub"]).all()
                 if len(user) == 0:
-                    return redirect(url_for('login'))
+                    abort(403)
+                    # return redirect(url_for('login'))
             user_data = session['user_data']
         else:
             try:
@@ -185,22 +187,21 @@ def login():
 
 @application.route('/api/me', methods=['GET'])
 def me():
-    bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
-                    "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
-    authorization_url, state = bs.authorization_url(authorization_base_url)
-    session['oauth_state'] = state
-
     if not "oauth_token" in session.keys():   
+        bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
+                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
+        authorization_url, state = bs.authorization_url(authorization_base_url)
+        session['oauth_state'] = state
         return jsonify({"redirect":authorization_url})
     else:
         return jsonify({"user_data":session["user_data"]})
    
-@application.route("/api/callback/<code>")
-def callback(code):
+@application.route("/callback/")
+def callback():
     bs = OAuth2Session(client_id, state=session['oauth_state'], redirect_uri=redirect_uri, scope=[
                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
     try:
-        t = bs.fetch_token(token_url, client_secret=client_secret, code=code, response_type="token")
+        t = bs.fetch_token(token_url, client_secret=client_secret, authorization_response=request.url, response_type="token")
     except:
         return redirect(url_for('login'))
         
@@ -236,8 +237,8 @@ def callback(code):
     #     return redirect(url_for('index', commit_id=cid))
     # else:
     
-    return jsonify({"redirect":"https://validate-bsi-staging.aecgeeks.com/dashboard"})
-
+    # return jsonify({"redirect":"https://validate-bsi-staging.aecgeeks.com/dashboard"})
+    return redirect("/dashboard")
 @application.route("/api/logout")
 def logout():
     if DEVELOPMENT:
@@ -354,7 +355,7 @@ def reprocess(user_data,id):
     return ids
 
 @application.route('/sandbox/<commit_id>/', methods=['POST'])
-@application.route('/', methods=['POST'])
+@application.route('/api/', methods=['POST'])
 @with_sandbox
 @login_required
 def put_main(user_data, pr_title, commit_id=None):
