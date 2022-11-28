@@ -28,7 +28,7 @@ def get_hierarchical_bsdd(id):
                         bsdd_result["bsdd_property_constraint"] = json.loads(
                             bsdd_result["bsdd_property_constraint"])
                     except:
-                        pass
+                        bsdd_result["bsdd_property_constraint"] = 0
                 else:
                     bsdd_result["bsdd_property_constraint"] = 0
 
