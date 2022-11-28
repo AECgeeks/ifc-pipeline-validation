@@ -2,6 +2,7 @@ import Dz from './Dz'
 import ResponsiveAppBar from './ResponsiveAppBar'
 import DashboardTable from './DashboardTable'
 import {useEffect, useState} from 'react';
+import { FETCH_PATH } from './environment'
 
 console.log("env variable", process.env.NODE_ENV);
 function Dashboard() {
@@ -9,7 +10,7 @@ function Dashboard() {
   const [models, setModels] = useState([]);
   
   useEffect(() => {
-    fetch('/api/me')
+    fetch(`${FETCH_PATH}/api/me`)
       .then(response => response.json())
       .then((data) => {
         if(data["redirect"] !== undefined){
@@ -22,7 +23,7 @@ function Dashboard() {
   },[]);
 
   useEffect(() => {
-    fetch('/api/models')
+    fetch(`${FETCH_PATH}/api/models`)
       .then(response => response.json())
       .then((data) => {
        console.log("models ", data);

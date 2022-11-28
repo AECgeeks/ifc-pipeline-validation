@@ -118,13 +118,11 @@ def login_required(f):
             if not "oauth_token" in session.keys():
                 # before redirect, capture the commit id
                 session['commit_id'] = kwargs.get('commit_id')
-                # return redirect(url_for('login'))
                 abort(403)
             with database.Session() as db_session:
                 user = db_session.query(database.user).filter(database.user.id == session['user_data']["sub"]).all()
                 if len(user) == 0:
                     abort(403)
-                    # return redirect(url_for('login'))
             user_data = session['user_data']
         else:
             try:
@@ -187,14 +185,23 @@ def login():
 
 @application.route('/api/me', methods=['GET'])
 def me():
-    if not "oauth_token" in session.keys():   
-        bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
-                        "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
-        authorization_url, state = bs.authorization_url(authorization_base_url)
-        session['oauth_state'] = state
-        return jsonify({"redirect":authorization_url})
+    if not DEVELOPMENT:
+        if not "oauth_token" in session.keys():   
+            bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
+                            "openid profile", "https://buildingSMARTservices.onmicrosoft.com/api/read"])
+            authorization_url, state = bs.authorization_url(authorization_base_url)
+            session['oauth_state'] = state
+            return jsonify({"redirect":authorization_url})
+        else:
+            return jsonify({"user_data":session["user_data"]})
     else:
-        return jsonify({"user_data":session["user_data"]})
+        return jsonify({
+                    'sub': 'development-id',
+                    'email': 'test@example.org',
+                    'family_name': 'User',
+                    'given_name': 'Test',
+                    'name': 'Test User',
+                })
    
 @application.route("/callback/")
 def callback():
@@ -220,25 +227,25 @@ def callback():
     user_data = jwt.decode(id_token, key=key)
     session['user_data'] = user_data
 
-    # with database.Session() as db_session:
-    #     user = db_session.query(database.user).filter(database.user.id == user_data["sub"]).all()
-    #     if len(user) == 0:
-    #         db_session.add(database.user(str(user_data["sub"]),
-    #                                     str(user_data.get('email', '')),
-    #                                     str(user_data.get('family_name', '')),
-    #                                     str(user_data.get('given_name', '')),
-    #                                     str(user_data.get('name', ''))))
-    # #         db_session.commit()
+    with database.Session() as db_session:
+        user = db_session.query(database.user).filter(database.user.id == user_data["sub"]).all()
+        if len(user) == 0:
+            db_session.add(database.user(str(user_data["sub"]),
+                                        str(user_data.get('email', '')),
+                                        str(user_data.get('family_name', '')),
+                                        str(user_data.get('given_name', '')),
+                                        str(user_data.get('name', ''))))
+            db_session.commit()
 
-    # if cid := session.get('commit_id'):
-    #     # Restore and then discard the commit_id stored before
-    #     # redirecting to /login
-    #     del session['commit_id']
-    #     return redirect(url_for('index', commit_id=cid))
-    # else:
-    
-    # return jsonify({"redirect":"https://validate-bsi-staging.aecgeeks.com/dashboard"})
-    return redirect("/dashboard")
+    if cid := session.get('commit_id'):
+        # Restore and then discard the commit_id stored before
+        # redirecting to /login
+        del session['commit_id']
+        return redirect("/") #todo: also add the commit ID
+    else:
+        return redirect("/")
+
+
 @application.route("/api/logout")
 def logout():
     if DEVELOPMENT:

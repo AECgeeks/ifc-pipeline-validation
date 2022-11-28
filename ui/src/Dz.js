@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import './Dz.css'
+import { FETCH_PATH } from './environment'
 
 function Dz() {
 
@@ -37,7 +38,7 @@ function Dz() {
     return (
         <div>
             <div className="submit-area" id="ifc_tab">
-                <form action="/api/" className="dropzone" id="ifc_dropzone">
+                <form action={`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
                     <div className="dz-message" data-dz-message><span><i className="material-icons"></i> Click or drop files here to upload for validation</span></div>
                 </form>
                 <button className="submit-button" id="submit">Start validation</button>
