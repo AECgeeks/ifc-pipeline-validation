@@ -8,8 +8,7 @@ ENV PATH /opt/node-v18.12.1-linux-x64/bin:$PATH
 WORKDIR /www/ui
 COPY . /www/ui
 
-RUN npm install
-RUN npm run build
+RUN npm install && npm run build && rm -rf node_modules
 
 FROM nginx:1.17
 
