@@ -4,8 +4,6 @@ import ResponsiveAppBar from './ResponsiveAppBar'
 import {useEffect, useState} from 'react';
 import { FETCH_PATH } from './environment'
 
-console.log("Test env variable ", FETCH_PATH, {FETCH_PATH})
-
 function App() {
   const [isLoggedIn, setLogin] = useState(false);
   

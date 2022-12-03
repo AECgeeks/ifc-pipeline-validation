@@ -21,6 +21,7 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+import CircularStatic from "./CircularStatic";
 
 function createData(format, filename, syntax, schema, bsdd) {
   return {
@@ -261,7 +262,7 @@ export default function DashboardTable({models}) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.filename);
+      const newSelected = rows.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -331,17 +332,17 @@ export default function DashboardTable({models}) {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.filename);
+                  const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.filename)}
+                      onClick={(event) => handleClick(event, row.id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.filename}
+                      key={row.id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -368,7 +369,8 @@ export default function DashboardTable({models}) {
                       <TableCell align="right">{row.status_ia}</TableCell>
                       <TableCell align="right">{row.status_ip}</TableCell>
                       <TableCell align="right">View report</TableCell>
-                      <TableCell align="right">{row.progress}</TableCell>
+                      <TableCell align="right"><CircularStatic value={row.progress} /></TableCell>
+                    
                       <TableCell align="right">Download</TableCell>
                       <TableCell align="right">Delete</TableCell>
                     </TableRow>

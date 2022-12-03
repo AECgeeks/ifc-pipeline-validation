@@ -4,7 +4,6 @@ import DashboardTable from './DashboardTable'
 import {useEffect, useState} from 'react';
 import { FETCH_PATH } from './environment'
 
-console.log("env variable", process.env.NODE_ENV);
 function Dashboard() {
   const [isLoggedIn, setLogin] = useState(false);
   const [models, setModels] = useState([]);
@@ -29,7 +28,7 @@ function Dashboard() {
        console.log("models ", data);
        setModels(data.models);
       })
-  },[]);
+  });
 
 if(isLoggedIn){
   return (

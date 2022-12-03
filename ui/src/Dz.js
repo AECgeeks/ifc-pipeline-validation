@@ -5,7 +5,6 @@ import { FETCH_PATH } from './environment'
 function Dz() {
 
     useEffect(() => {
-       
         window.Dropzone.autoDiscover = false;
         var dz = new window.Dropzone("#ifc_dropzone",
             {
@@ -23,13 +22,11 @@ function Dz() {
 
         // dz.on("success", function (file, response) {
         //     window.location = response.url;
-
         // });
 
         var submitButton = document.querySelector("#submit");
         submitButton.addEventListener("click", function () {
             dz.processQueue();
-
         });
 
 

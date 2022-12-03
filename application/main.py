@@ -125,17 +125,23 @@ def login_required(f):
                     abort(403)
             user_data = session['user_data']
         else:
-            try:
-                with open('decoded.json') as json_file:
-                    user_data = json.load(json_file)
-            except:
-                user_data = {
+            user_data = {
                     'sub': 'development-id',
                     'email': 'test@example.org',
                     'family_name': 'User',
                     'given_name': 'Test',
                     'name': 'Test User',
                 }
+            with database.Session() as db_session:
+                user = db_session.query(database.user).filter(database.user.id == 'development-id').all()
+                if len(user) == 0:
+                    db_session.add(database.user(str(user_data["sub"]),
+                                                str(user_data.get('email', '')),
+                                                str(user_data.get('family_name', '')),
+                                                str(user_data.get('given_name', '')),
+                                                str(user_data.get('name', ''))))
+                    db_session.commit()
+
 
         return f(user_data=user_data, **kwargs)
     return decorated_function
@@ -327,11 +333,11 @@ def process_upload_validation(files, validation_config, user_id, commit_id=None,
             file.save(os.path.join(d, id+".ifc"))
             session.add(database.model(id, fn, user_id, commit_id))
         session.commit()
-
-        user = session.query(database.user).filter(database.user.id == user_id).all()[0]
-
-    msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-    utils.send_message(msg, os.getenv("DEV_EMAIL"))
+   
+        if not DEVELOPMENT:
+            user = session.query(database.user).filter(database.user.id == user_id).all()[0]
+            msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
+            utils.send_message(msg, os.getenv("DEV_EMAIL"))
 
     if DEVELOPMENT or NO_REDIS:
         for id in ids:
