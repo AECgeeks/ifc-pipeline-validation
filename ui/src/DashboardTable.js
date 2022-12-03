@@ -22,15 +22,17 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import CircularStatic from "./CircularStatic";
+import ErrorIcon from '@mui/icons-material/Error';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import BrowserNotSupportedIcon from '@mui/icons-material/BrowserNotSupported';
+import WarningIcon from '@mui/icons-material/Warning';
+import Link from '@mui/material/Link';
 
-function createData(format, filename, syntax, schema, bsdd) {
-  return {
-    format,
-    filename,
-    syntax,
-    schema,
-    bsdd,
-  };
+const statusToIcon = {
+  "n":<BrowserNotSupportedIcon color="disabled"/>,
+  "v":<CheckCircleIcon color="success"/>,
+  "i":<ErrorIcon color="error"/>,
+  "w":<WarningIcon color="warning"/>
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -218,7 +220,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+        
         </Typography>
       )}
 
@@ -334,47 +336,91 @@ export default function DashboardTable({models}) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
+                  if(row.progress == 100){
+                    return (
+                        <TableRow
+                          hover
+                          onClick={(event) => handleClick(event, row.id)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={row.id}
+                          selected={isItemSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                'aria-labelledby': labelId,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                          >
+                          IFC
+                          </TableCell>
+                          <TableCell align="right">{row.filename}</TableCell>
+                          <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
+                          <TableCell align="right">{statusToIcon[row.status_schema]}</TableCell>
+                          <TableCell align="right">{statusToIcon[row.status_bsdd]}</TableCell>
+                          <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
+                          <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
+                          <TableCell align="right">
+                          <Link href="/" underline="hover">
+                          {'View report'}
+                          </Link>
+                          </TableCell>
+                          <TableCell align="right">{row.date}</TableCell>
+                          <TableCell align="right">Download</TableCell>
+                          <TableCell align="right">Delete</TableCell>
+                        </TableRow>
+                      );
+                  } else{
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
                       >
-                       IFC
-                      </TableCell>
-                      <TableCell align="right">{row.filename}</TableCell>
-                      <TableCell align="right">{row.status_syntax}</TableCell>
-                      <TableCell align="right">{row.status_schema}</TableCell>
-                      <TableCell align="right">{row.status_bsdd}</TableCell>
-                      <TableCell align="right">{row.status_ia}</TableCell>
-                      <TableCell align="right">{row.status_ip}</TableCell>
-                      <TableCell align="right">View report</TableCell>
-                      <TableCell align="right"><CircularStatic value={row.progress} /></TableCell>
-                    
-                      <TableCell align="right">Download</TableCell>
-                      <TableCell align="right">Delete</TableCell>
-                    </TableRow>
-                  );
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
+                        IFC
+                        </TableCell>
+                        <TableCell align="right">{row.filename}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_schema]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_bsdd]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
+                        <TableCell align="right"></TableCell>
+                        <TableCell align="right"><CircularStatic value={row.progress} /></TableCell>
+                        <TableCell align="right">Download</TableCell>
+                        <TableCell align="right">Delete</TableCell>
+                      </TableRow>
+                    );
+                  }
                 })}
               {emptyRows > 0 && (
                 <TableRow
