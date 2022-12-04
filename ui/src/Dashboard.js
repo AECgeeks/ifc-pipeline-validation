@@ -26,12 +26,21 @@ function Dashboard() {
       })
   },[]);
 
-  useEffect(() => {
+  function getModels(){
     fetch(`${FETCH_PATH}/api/models`)
-      .then(response => response.json())
-      .then((data) => {
-       setModels(data.models);
-      })
+    .then(response => response.json())
+    .then((data) => {
+    setModels(data.models);
+   })
+  }
+
+  getModels();
+  
+  useEffect(() => {
+      const interval = setInterval(() => {
+        getModels();
+      }, 5000);
+      return () => clearInterval(interval);
   });
 
 if(isLoggedIn){
