@@ -20,7 +20,9 @@ function Dz() {
         dz.on("addedfile", file => { console.log("new file") });
 
         dz.on("success", function (file, response) {
-            window.location = response.url;
+            if (window.location.href.split("/").at(-1) != "dashboard"){
+                window.location = response.url;
+            }
         });
 
         var submitButton = document.querySelector("#submit");
