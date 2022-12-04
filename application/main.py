@@ -397,8 +397,8 @@ def put_main(user_data, pr_title, commit_id=None):
         else:
             arg = {}
         
-        # Maybe it's better to redirect directly from the API
-        url = f"/dashboard?commit_id={commit_id:arg.get('commit_id', '')}" 
+        #todo: redirect correctly with parameters
+        url = "/dashboard"
 
     elif VIEWER:
         ids = process_upload_multiple(files)

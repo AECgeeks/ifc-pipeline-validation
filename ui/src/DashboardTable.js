@@ -35,6 +35,31 @@ const statusToIcon = {
   "w":<WarningIcon color="warning"/>
 }
 
+function computeRelativeDates(modelDate){
+  var offset = modelDate.getTimezoneOffset();
+  modelDate = new Date(
+      Date.UTC(
+          modelDate.getUTCFullYear(),
+          modelDate.getUTCMonth(),
+          modelDate.getUTCDate(),
+          modelDate.getUTCHours(),
+          modelDate.getUTCMinutes() - offset,
+          modelDate.getUTCSeconds()
+      )
+  );
+
+  var now = new Date();
+  var difference = (now - modelDate) / 1000; // convert from ms to s
+  let [divisor, unit] = [[3600*24*8, null], [3600*24*7, "weeks"], [3600*24, "days"], [3600, "hours"], [60, "minutes"], [1, "seconds"]].filter(a => difference / a[0] > 1.)[0];
+  if (unit) {
+      var relativeTime = Math.floor(difference / divisor);
+      if(relativeTime == 1){unit=unit.slice(0, -1);} // Remove the 's' in units if only 1
+      return (<span class="abs_time" title={modelDate.toLocaleString()}>{relativeTime} {unit} ago</span>)
+  } else {
+      return modelDate.toLocaleString();
+  }
+}
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -375,7 +400,7 @@ export default function DashboardTable({models}) {
                           {'View report'}
                           </Link>
                           </TableCell>
-                          <TableCell align="right">{row.date}</TableCell>
+                          <TableCell align="right">{computeRelativeDates(new Date(row.date))}</TableCell>
                           <TableCell align="right">Download</TableCell>
                           <TableCell align="right">Delete</TableCell>
                         </TableRow>
