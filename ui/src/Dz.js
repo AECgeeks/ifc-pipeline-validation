@@ -23,6 +23,9 @@ function Dz() {
             if (window.location.href.split("/").at(-1) != "dashboard"){
                 window.location = response.url;
             }
+            else{
+                dz.removeAllFiles();  
+            }
         });
 
         var submitButton = document.querySelector("#submit");
