@@ -1,6 +1,9 @@
 import Dz from './Dz'
 import ResponsiveAppBar from './ResponsiveAppBar'
 import DashboardTable from './DashboardTable'
+import Disclaimer from './Disclaimer';
+import Footer from './Footer'
+import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
 import { FETCH_PATH } from './environment'
 
@@ -29,15 +32,25 @@ function Dashboard() {
       .then((data) => {
        setModels(data.models);
       })
-  },[]);
+  });
 
 if(isLoggedIn){
   return (
     <div>
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justifyContent="space-between"
+        style={{ minHeight: '100vh', gap:'15px', backgroundImage: 'url(' + require('./background.jpg') + ')'}}
+      >
       <ResponsiveAppBar user={user}/>
-      <h1>Dashboard</h1>
+      <Disclaimer />
       <Dz />
       <DashboardTable models={models}/>
+      <Footer />
+      </Grid>
     </div>
     );
   }

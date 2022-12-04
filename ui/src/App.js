@@ -1,6 +1,9 @@
 import './App.css';
 import Dz from './Dz'
 import ResponsiveAppBar from './ResponsiveAppBar'
+import Disclaimer from './Disclaimer';
+import Footer from './Footer'
+import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
 import { FETCH_PATH } from './environment'
 
@@ -26,10 +29,22 @@ function App() {
 if(isLoggedIn){
   return (
     <div>
-      <ResponsiveAppBar user={user}/>
-      <h1>Index</h1>
-      <Dz />
+        <Grid
+          container
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justifyContent="space-between"
+          style={{ minHeight: '100vh', gap:'15px', backgroundImage: 'url(' + require('./background.jpg') + ')'}}
+        >
+        <ResponsiveAppBar user={user}/>
+        <Disclaimer />
+        <Dz />
+        <Footer />
+      </Grid>
     </div>
+
+
     );
   }
 }
