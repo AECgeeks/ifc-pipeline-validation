@@ -201,12 +201,13 @@ def me():
         else:
             return jsonify({"user_data":session["user_data"]})
     else:
-        return jsonify({
-                    'sub': 'development-id',
-                    'email': 'test@example.org',
-                    'family_name': 'User',
-                    'given_name': 'Test',
-                    'name': 'Test User',
+        return jsonify(
+                    {"user_data":
+                        {'sub': 'development-id',
+                            'email': 'test@example.org',
+                            'family_name': 'User',
+                            'given_name': 'Test',
+                            'name': 'Test User'}
                 })
    
 @application.route("/callback/")

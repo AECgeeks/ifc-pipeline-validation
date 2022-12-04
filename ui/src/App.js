@@ -6,6 +6,7 @@ import { FETCH_PATH } from './environment'
 
 function App() {
   const [isLoggedIn, setLogin] = useState(false);
+  const [user, setUser] = useState(null)
   
   useEffect(() => {
     fetch(`${FETCH_PATH}/api/me`)
@@ -16,7 +17,8 @@ function App() {
         }  
         else{
           console.log(data)
-          setLogin(true)
+          setLogin(true);
+          setUser(data["user_data"]);
         }
       })
   },[]);
@@ -24,7 +26,7 @@ function App() {
 if(isLoggedIn){
   return (
     <div>
-      <ResponsiveAppBar/>
+      <ResponsiveAppBar user={user}/>
       <h1>Index</h1>
       <Dz />
     </div>

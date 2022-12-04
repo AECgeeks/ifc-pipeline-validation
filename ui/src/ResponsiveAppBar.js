@@ -11,19 +11,31 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import Link from '@mui/material/Link';
 
 
-const pages = ['Products', 'Pricing', 'Blog'];
+function AppLogo(){
+  const mystyle = {
+    height:"45px"
+  };
+
+  return (
+    <Link href="/" underline="none">
+      <img src={require("./BuildingSMART_CMYK_validation_service.png")} style={mystyle}/>
+    </Link>
+  )
+}
+
+const pages = [{"label":'Upload', "href":"/"}, {"label":"Dashboard", "href":"/dashboard"}];
 
 const settings = [{"label":'Upload new file', "href":"/"},
                   {"label":'Dashboard', "href":"/dashboard"}, 
                   {"label":'Logout', "href":"/logout"} ]
         
-function ResponsiveAppBar() {
+function ResponsiveAppBar({user}) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
+ 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -39,11 +51,15 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const styleAppBar = {
+    background : 'white',
+    color: 'grey',
+};
+
   return (
-    <AppBar position="static">
+    <AppBar position="static" style={styleAppBar}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+        <Toolbar disableGutters>    
           <Typography
             variant="h6"
             noWrap
@@ -59,9 +75,10 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            <AppLogo/>
+            <Typography sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>BETA</Typography>
           </Typography>
-
+  
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -93,12 +110,14 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Link href={page["href"]} underline="none">
+                    <Typography style={{color: 'grey'}} textAlign="center">{page["label"]}</Typography>
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+
           <Typography
             variant="h5"
             noWrap
@@ -115,16 +134,19 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+              <AppLogo/>
+              <Typography sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>BETA</Typography>
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page["label"]}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'grey', display: 'block' }}
               >
-                {page}
+                <Link color="inherit" href={page["href"]} underline="none">
+                  {page["label"]}
+                </Link>
               </Button>
             ))}
           </Box>
@@ -132,7 +154,9 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar sx={{ bgcolor: "grey" }}>
+                  {Array.from(user["given_name"])[0] + Array.from(user["family_name"])[0]}
+                </Avatar>
               </IconButton>
             </Tooltip>
             <Menu
@@ -153,7 +177,9 @@ function ResponsiveAppBar() {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting["label"]} onClick={handleCloseUserMenu}>
-                  <a href={setting["href"]}><Typography textAlign="center">{setting["label"]}</Typography></a>
+                  <Link color="grey" href={setting["href"]} underline="none">
+                    <Typography textAlign="center">{setting["label"]}</Typography>
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>

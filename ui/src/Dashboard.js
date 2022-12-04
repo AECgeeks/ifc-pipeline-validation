@@ -7,6 +7,7 @@ import { FETCH_PATH } from './environment'
 function Dashboard() {
   const [isLoggedIn, setLogin] = useState(false);
   const [models, setModels] = useState([]);
+  const [user, setUser] = useState(null)
   
   useEffect(() => {
     fetch(`${FETCH_PATH}/api/me`)
@@ -16,7 +17,8 @@ function Dashboard() {
           window.location.href = data.redirect;
         }  
         else{
-          setLogin(true)
+          setLogin(true);
+          setUser(data["user_data"]);
         }
       })
   },[]);
@@ -25,15 +27,14 @@ function Dashboard() {
     fetch(`${FETCH_PATH}/api/models`)
       .then(response => response.json())
       .then((data) => {
-       console.log("models ", data);
        setModels(data.models);
       })
-  });
+  },[]);
 
 if(isLoggedIn){
   return (
     <div>
-      <ResponsiveAppBar/>
+      <ResponsiveAppBar user={user}/>
       <h1>Dashboard</h1>
       <Dz />
       <DashboardTable models={models}/>
