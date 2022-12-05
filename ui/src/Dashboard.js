@@ -34,13 +34,9 @@ function Dashboard() {
    })
   }
 
-  getModels();
   
   useEffect(() => {
-      const interval = setInterval(() => {
-        getModels();
-      }, 5000);
-      return () => clearInterval(interval);
+    getModels();
   });
 
 if(isLoggedIn){

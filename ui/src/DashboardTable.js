@@ -27,6 +27,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import BrowserNotSupportedIcon from '@mui/icons-material/BrowserNotSupported';
 import WarningIcon from '@mui/icons-material/Warning';
 import Link from '@mui/material/Link';
+import { FETCH_PATH } from './environment'
 
 const statusToIcon = {
   "n":<BrowserNotSupportedIcon color="disabled"/>,
@@ -137,25 +138,19 @@ const headCells = [
     id: 'report',
     numeric: true,
     disablePadding: false,
-    label: 'Report',
+    label: '',
   },
   {
     id: 'date',
     numeric: true,
     disablePadding: false,
-    label: 'Date',
+    label: '',
   },
   {
     id: 'download',
     numeric: true,
     disablePadding: false,
-    label: 'Download',
-  },
-  {
-    id: 'delete',
-    numeric: true,
-    disablePadding: false,
-    label: 'Delete',
+    label: '',
   }
 ];
 
@@ -396,13 +391,16 @@ export default function DashboardTable({models}) {
                           <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
                           <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
                           <TableCell align="right">
-                          <Link href="/" underline="hover">
-                          {'View report'}
-                          </Link>
+                            <Link href="/" underline="hover">
+                            {'View report'}
+                            </Link>
                           </TableCell>
                           <TableCell align="right">{computeRelativeDates(new Date(row.date))}</TableCell>
-                          <TableCell align="right">Download</TableCell>
-                          <TableCell align="right">Delete</TableCell>
+                          <TableCell align="right">
+                            <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                            {'Download file'}
+                            </Link>
+                          </TableCell>
                         </TableRow>
                       );
                   } else{
@@ -441,8 +439,11 @@ export default function DashboardTable({models}) {
                         <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
                         <TableCell align="right"></TableCell>
                         <TableCell align="right"><CircularStatic value={row.progress} /></TableCell>
-                        <TableCell align="right">Download</TableCell>
-                        <TableCell align="right">Delete</TableCell>
+                        <TableCell align="right">
+                        <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                            {'Download file'}
+                        </Link>
+                        </TableCell>
                       </TableRow>
                     );
                   }
