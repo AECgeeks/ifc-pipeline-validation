@@ -694,7 +694,7 @@ def results(user_data, id):
                     "username":f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}"})
 
 
-@application.route('/download/<id>', methods=['GET'])
+@application.route('/api/download/<id>', methods=['GET'])
 @login_required
 def download_model(user_data, id):
     with database.Session() as session:
