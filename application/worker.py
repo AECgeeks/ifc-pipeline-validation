@@ -106,7 +106,8 @@ class syntax_validation_task(task):
             session.add(validation_task)
             session.commit()
             validation_task_id = str(validation_task.id)
-            super(task, self).__setattr__("validation_task_id",validation_task_id)
+            self.validation_task_id = validation_task_id
+          
             
             output = proc.stderr
             output = output.decode("utf-8", errors='ignore').strip()
@@ -139,7 +140,8 @@ class ifc_validation_task(task):
             session.add(validation_task)
             session.commit()
             validation_task_id = str(validation_task.id)
-            super(task, self).__setattr__("validation_task_id", validation_task_id)
+            self.validation_task_id = validation_task_id
+            
            
             output = proc.stderr.read()
             output = "\n".join(output.decode("utf-8", errors='ignore').strip().split("\n")[1:])
@@ -202,7 +204,8 @@ class gherkin_validation_task(task):
             session.add(validation_task)
             session.commit()
             validation_task_id = str(validation_task.id)
-            super(task, self).__setattr__("validation_task_id", validation_task_id)
+            self.validation_task_id = validation_task_id
+            
 
         env_copy = os.environ.copy()
         env_copy['GHERKIN_REPO_DIR'] = self.repo_dir
@@ -236,7 +239,7 @@ class bsdd_validation_task(task):
         session.add(validation_task)
         session.commit()
         validation_task_id = str(validation_task.id)
-        super(task, self).__setattr__("validation_task_id", validation_task_id)
+        self.validation_task_id = validation_task_id
         session.close()
 
         check_program = os.path.join(os.getcwd() + "/checks", "check_bsdd_v2.py")
@@ -461,13 +464,15 @@ def do_process(id, validation_config, commit_id, ids_spec):
             start_time = datetime.now()
             task(d, *args)
             end_time = datetime.now()
-            if t.__name__ != "general_info_task":
-                vt_id = super(task_class_name, t).__getattribute__(task,"validation_task_id")
+            try:
+                vt_id = task.validation_task_id
                 with database.Session() as session:
                     validation_task = session.query(database.validation_task).filter(database.validation_task.id == vt_id).all()[0]
                     validation_task.validation_start_time = start_time
                     validation_task.validation_end_time = end_time
                     session.commit()
+            except:
+                traceback.print_exc(file=sys.stdout)
         except:
             traceback.print_exc(file=sys.stdout)
             # Mark ID as failed
