@@ -448,9 +448,6 @@ def do_process(id, validation_config, commit_id, ids_spec):
         begin_end = (elapsed / total_est_time * 99, (elapsed + t.est_time) / total_est_time * 99)
         task = t(begin_end)
 
-        import sys
-        task_class_name = getattr(sys.modules[__name__], "task")
-           
         # In case we're running a 'sandbox' for a specific commit_id, we have cloned the repository
         # to a temporary directory stored in this variable.
         if gherkin_repo_dir:
