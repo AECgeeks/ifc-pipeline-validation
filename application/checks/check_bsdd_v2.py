@@ -3,14 +3,17 @@ import sys
 import requests
 import json
 import argparse
+import functools
 from helper import database
 
 
-
+@functools.lru_cache(maxsize=128)
 def get_classification_object(uri):
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Classification/v3"
     return requests.get(url, {'namespaceUri':uri})
 
+
+@functools.lru_cache(maxsize=128)
 def get_domain(classification_uri):
     url = "https://bs-dd-api-prototype.azurewebsites.net/api/Domain/v2"
     uri = classification_uri.split("/class")[0]
@@ -108,8 +111,10 @@ def check_bsdd(ifc_fn, task_id):
             num_dots = [int(b) - int(a) for a, b in zip(percentages, percentages[1:])]
 
             for idx, rel in enumerate(ifc_file.by_type("IfcRelAssociatesClassification")):
-                sys.stdout.write(num_dots[idx] * ".")
-                sys.stdout.flush()
+                if num_dots[idx]:
+                    session.commit()
+                    sys.stdout.write(num_dots[idx] * ".")
+                    sys.stdout.flush()
 
                 related_objects = rel.RelatedObjects
                 relating_classification = rel.RelatingClassification
@@ -122,7 +127,7 @@ def check_bsdd(ifc_fn, task_id):
                     session.add(instance)
                     session.flush()
                     instance_id = instance.id
-                    session.commit()               
+                    # session.commit()               
 
                     if bsdd_response:
                         bsdd_content = json.loads(bsdd_response.text)
@@ -176,7 +181,7 @@ def check_bsdd(ifc_fn, task_id):
 
                                 #Validation output 
                                 session.add(bsdd_result)
-                                session.commit()
+                                # session.commit()
                         else:
                             # No classificationProperties
                             bsdd_result = database.bsdd_result(task_id)
@@ -190,7 +195,7 @@ def check_bsdd(ifc_fn, task_id):
 
                             model.status_bsdd = 'v'
                             session.add(bsdd_result)
-                            session.commit()
+                            # session.commit()
                     else:
                         # No uri provided or invalid uri
                         bsdd_result = database.bsdd_result(task_id)
@@ -205,7 +210,7 @@ def check_bsdd(ifc_fn, task_id):
                         model.status_bsdd = 'v'
 
                         session.add(bsdd_result)
-                        session.commit()
+                        # session.commit()
 
 
         else:
@@ -218,9 +223,9 @@ def check_bsdd(ifc_fn, task_id):
 
             model.status_bsdd = 'v'
             session.add(bsdd_result)
-            session.commit()
+            # session.commit()
 
-
+        session.commit()
 
 if __name__=="__main__":
         parser = argparse.ArgumentParser(description="Generate classified IFC file")
