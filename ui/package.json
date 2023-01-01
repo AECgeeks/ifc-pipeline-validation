@@ -6,6 +6,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
+    "@mui/lab": "^5.0.0-alpha.113",
     "@mui/material": "^5.10.12",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -20,8 +21,8 @@
     "start": "set NODE_ENV=development && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject", 
-    "api" : "cd ../application && run_no_debug.bat"
+    "eject": "react-scripts eject",
+    "api": "cd ../application && run_no_debug.bat"
   },
   "eslintConfig": {
     "extends": [

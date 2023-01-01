@@ -30,34 +30,34 @@ import Link from '@mui/material/Link';
 import { FETCH_PATH } from './environment'
 
 const statusToIcon = {
-  "n":<BrowserNotSupportedIcon color="disabled"/>,
-  "v":<CheckCircleIcon color="success"/>,
-  "i":<ErrorIcon color="error"/>,
-  "w":<WarningIcon color="warning"/>
+  "n": <BrowserNotSupportedIcon color="disabled" />,
+  "v": <CheckCircleIcon color="success" />,
+  "i": <ErrorIcon color="error" />,
+  "w": <WarningIcon color="warning" />
 }
 
-function computeRelativeDates(modelDate){
+function computeRelativeDates(modelDate) {
   var offset = modelDate.getTimezoneOffset();
   modelDate = new Date(
-      Date.UTC(
-          modelDate.getUTCFullYear(),
-          modelDate.getUTCMonth(),
-          modelDate.getUTCDate(),
-          modelDate.getUTCHours(),
-          modelDate.getUTCMinutes() - offset,
-          modelDate.getUTCSeconds()
-      )
+    Date.UTC(
+      modelDate.getUTCFullYear(),
+      modelDate.getUTCMonth(),
+      modelDate.getUTCDate(),
+      modelDate.getUTCHours(),
+      modelDate.getUTCMinutes() - offset,
+      modelDate.getUTCSeconds()
+    )
   );
 
   var now = new Date();
   var difference = (now - modelDate) / 1000; // convert from ms to s
-  let [divisor, unit] = [[3600*24*8, null], [3600*24*7, "weeks"], [3600*24, "days"], [3600, "hours"], [60, "minutes"], [1, "seconds"]].filter(a => difference / a[0] > 1.)[0];
+  let [divisor, unit] = [[3600 * 24 * 8, null], [3600 * 24 * 7, "weeks"], [3600 * 24, "days"], [3600, "hours"], [60, "minutes"], [1, "seconds"]].filter(a => difference / a[0] > 1.)[0];
   if (unit) {
-      var relativeTime = Math.floor(difference / divisor);
-      if(relativeTime == 1){unit=unit.slice(0, -1);} // Remove the 's' in units if only 1
-      return (<span class="abs_time" title={modelDate.toLocaleString()}>{relativeTime} {unit} ago</span>)
+    var relativeTime = Math.floor(difference / divisor);
+    if (relativeTime == 1) { unit = unit.slice(0, -1); } // Remove the 's' in units if only 1
+    return (<span class="abs_time" title={modelDate.toLocaleString()}>{relativeTime} {unit} ago</span>)
   } else {
-      return modelDate.toLocaleString();
+    return modelDate.toLocaleString();
   }
 }
 
@@ -240,7 +240,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-        
+
         </Typography>
       )}
 
@@ -265,12 +265,12 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function DashboardTable({models}) {
+export default function DashboardTable({ models }) {
 
   const rows = models;
-  
+
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
@@ -356,54 +356,7 @@ export default function DashboardTable({models}) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
-                  if(row.progress == 100){
-                    return (
-                        <TableRow
-                          hover
-                          onClick={(event) => handleClick(event, row.id)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.id}
-                          selected={isItemSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={isItemSelected}
-                              inputProps={{
-                                'aria-labelledby': labelId,
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            id={labelId}
-                            scope="row"
-                            padding="none"
-                          >
-                          IFC
-                          </TableCell>
-                          <TableCell align="right">{row.filename}</TableCell>
-                          <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
-                          <TableCell align="right">{statusToIcon[row.status_schema]}</TableCell>
-                          <TableCell align="right">{statusToIcon[row.status_bsdd]}</TableCell>
-                          <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
-                          <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
-                          <TableCell align="right">
-                            <Link href="/" underline="hover">
-                            {'View report'}
-                            </Link>
-                          </TableCell>
-                          <TableCell align="right">{computeRelativeDates(new Date(row.date))}</TableCell>
-                          <TableCell align="right">
-                            <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
-                            {'Download file'}
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      );
-                  } else{
+                  if (row.progress == 100) {
                     return (
                       <TableRow
                         hover
@@ -429,7 +382,54 @@ export default function DashboardTable({models}) {
                           scope="row"
                           padding="none"
                         >
-                        IFC
+                          IFC
+                        </TableCell>
+                        <TableCell align="right">{row.filename}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_schema]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_bsdd]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
+                        <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
+                        <TableCell align="right">
+                          <Link href={`/report/${row.code}`} underline="hover">
+                            {'View report'}
+                          </Link>
+                        </TableCell>
+                        <TableCell align="right">{computeRelativeDates(new Date(row.date))}</TableCell>
+                        <TableCell align="right">
+                          <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                            {'Download file'}
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  } else {
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
+                          IFC
                         </TableCell>
                         <TableCell align="right">{row.filename}</TableCell>
                         <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
@@ -440,9 +440,9 @@ export default function DashboardTable({models}) {
                         <TableCell align="right"></TableCell>
                         <TableCell align="right"><CircularStatic value={row.progress} /></TableCell>
                         <TableCell align="right">
-                        <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                          <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
                             {'Download file'}
-                        </Link>
+                          </Link>
                         </TableCell>
                       </TableRow>
                     );

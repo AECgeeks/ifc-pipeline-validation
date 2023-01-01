@@ -5,6 +5,7 @@ import App from './App';
 import Dashboard from './Dashboard';
 import Callback from './Callback';
 import Logout from './Logout';
+import Report from './Report';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -14,12 +15,13 @@ root.render(
 
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App/>} />
-      <Route path="/callback" element={<Callback/>} />
-      <Route path="/dashboard" element={<Dashboard/>}/>
-      <Route path="/logout" element={<Logout/>}/>
+      <Route path="/" element={<App />} />
+      <Route path="/callback" element={<Callback />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/report/:modelCode" element={<Report />} />
+      <Route path="/logout" element={<Logout />} />
     </Routes>
-</BrowserRouter>
+  </BrowserRouter>
 
 
 

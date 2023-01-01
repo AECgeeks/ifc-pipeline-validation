@@ -616,14 +616,14 @@ class Error:
 
 
 
-@application.route('/report2/<id>')
+@application.route('/api/report2/<code>')
 @login_required
-def view_report2(user_data, id):
+def view_report2(user_data, code):
     with database.Session() as session:
         session = database.Session()
 
         model = session.query(database.model).filter(
-            database.model.code == id).all()[0]
+            database.model.code == code).all()[0]
 
         tasks = {t.task_type: t for t in model.tasks}
 
@@ -642,21 +642,16 @@ def view_report2(user_data, id):
             hierarchical_bsdd_results = bsdd_utils.get_hierarchical_bsdd(model.code)
             results["bsdd_results"]["bsdd"] = hierarchical_bsdd_results
             bsdd_validation_task = tasks["bsdd_validation_task"]
-            results["bsdd_results"]["task"] = bsdd_validation_task
+            results["bsdd_results"]["task"] = bsdd_validation_task.serialize()
             results["bsdd_results"]["instances"] = len(model.instances) > 0
-            
-    # if 'errors' in locals():
-    #     return render_template("report_v1.html",
-    #                         model=m,
-    #                         results=results,
-    #                         errors=errors,
-    #                         username=f"{user_data['given_name']} {user_data['family_name']}")
-    # else:
-    return render_template("report_v2.html",
-                    model=model,
-                    tasks=tasks,
-                    results=results,
-                    username=f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}")
+
+        tasks = {task_type: t.serialize() for task_type, t in tasks.items()}
+
+    return jsonify({
+         "model":model.serialize(),
+         "tasks":tasks,
+         "results":results
+    })
 
 
 @application.route('/results/<id>')
