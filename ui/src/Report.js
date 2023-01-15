@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom'
 import Footer from './Footer'
 import Grid from '@mui/material/Grid';
 import GeneralTable from './GeneralTable';
-import BsddAccordion from './BsddAccordion';
-import MinimalAccordion from './MinimalAccordion'
+import MinimalTreeView from './MinimalTreeView.js'
+import BsddTreeView from './BsddTreeView'
 
 import { useEffect, useState } from 'react';
 import { FETCH_PATH } from './environment'
@@ -64,11 +64,10 @@ function Report() {
           <GeneralTable data={reportData} type={"general"} />
           <GeneralTable data={reportData} type={"overview"} />
 
-          <MinimalAccordion status={reportData["model"]["status_syntax"]} summary={"Syntax"} content={reportData["results"]["syntax_result"]["msg"]} />
-          <MinimalAccordion status={reportData["model"]["status_schema"]} summary={"Schema"} content={reportData["results"]["schema_result"]["msg"]} />
-          <BsddAccordion status={reportData["model"]["status_bsdd"]} bsddResults={reportData["results"]["bsdd_results"]} />
-          <MinimalAccordion status={reportData["model"]["status_ia"]} summary={"Informal Propositions"} />
-          <MinimalAccordion status={reportData["model"]["status_ip"]} summary={"Implementer Agreements"} />
+          <MinimalTreeView status={reportData["model"]["status_syntax"]} summary={"Syntax"} content={reportData["results"]["syntax_result"]["msg"]} />
+          <MinimalTreeView status={reportData["model"]["status_schema"]} summary={"Schema"} content={reportData["results"]["schema_result"]["msg"]} />
+
+          <BsddTreeView status={reportData["model"]["status_bsdd"]} summary={"bSDD"} bsddResults={reportData["results"]["bsdd_results"]} />
 
           <Footer />
         </Grid>
