@@ -645,7 +645,7 @@ def view_report2(user_data, code):
             results["bsdd_results"]["task"] = bsdd_validation_task.serialize()
             results["bsdd_results"]["instances"] = len(model.instances) > 0
 
-        tasks = {task_type: t.serialize() for task_type, t in tasks.items()}
+        tasks = {task_type: t.serialize(full=True) if (task_type == "informal_propositions_task" or task_type == "implementer_agreements_task") else  t.serialize() for task_type, t in tasks.items()}
 
     return jsonify({
          "model":model.serialize(),
