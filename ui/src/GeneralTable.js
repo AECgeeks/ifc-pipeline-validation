@@ -39,8 +39,8 @@ function preprocessData(data, type) {
       ["Syntax", statusToIcon[data["model"]["status_syntax"]]],
       ["Schema", statusToIcon[data["model"]["status_schema"]]],
       ["bSDD", statusToIcon[data["model"]["status_bsdd"]]],
+      ["Implementer Agreements", statusToIcon[data["model"]["status_ia"]]],
       ["Informal Propositions", statusToIcon[data["model"]["status_ip"]]],
-      ["Implementer Agreements", statusToIcon[data["model"]["status_ia"]]]
     ]
   }
 
