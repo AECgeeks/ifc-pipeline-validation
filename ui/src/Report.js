@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import GeneralTable from './GeneralTable';
 import MinimalTreeView from './MinimalTreeView.js'
 import BsddTreeView from './BsddTreeView'
+import GherkinResults from './GherkinResult';
 
 import { useEffect, useState } from 'react';
 import { FETCH_PATH } from './environment'
@@ -47,7 +48,7 @@ function Report() {
   }, []);
 
   if (isLoggedIn && isLoaded) {
-
+    console.log("Report data ", reportData)
     return (
       <div>
         <Grid
@@ -69,6 +70,8 @@ function Report() {
 
           <BsddTreeView status={reportData["model"]["status_bsdd"]} summary={"bSDD"} bsddResults={reportData["results"]["bsdd_results"]} />
 
+          <GherkinResults status={reportData["model"]["status_ia"]} gherkin_task={reportData.tasks["implementer_agreements_task"]} task_type="implementer_agreements_task" />
+          <GherkinResults status={reportData["model"]["status_ip"]} gherkin_task={reportData.tasks["informal_propositions_task"]} task_type="informal_propositions_task" />
           <Footer />
         </Grid>
       </div>
