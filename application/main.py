@@ -453,8 +453,26 @@ def models(user_data, pr_title, commit_id=None):
         saved_models.sort(key=lambda m: m.date, reverse=True)
         saved_models = [model.serialize() for model in saved_models]
     return jsonify({"models":saved_models})
-  
 
+@application.route('/sandbox/<commit_id>/models_paginated/<start>/<end>', methods=['GET'])
+@application.route('/api/models_paginated/<start>/<end>', methods=['GET'])
+@login_required
+@with_sandbox
+def models_paginated(user_data, start, end, pr_title, commit_id=None):
+    user_id = user_data['sub']
+    # Retrieve user data
+    with database.Session() as session:
+        if str(user_data["email"]) in [os.getenv("ADMIN_EMAIL"), os.getenv("DEV_EMAIL")]:
+            saved_models = session.query(database.model).filter(database.model.deleted!=1).all()
+        else:
+            saved_models = session.query(database.model).filter(database.model.user_id == user_id, database.model.deleted!=1).all()
+        saved_models.sort(key=lambda m: m.date, reverse=True)
+        saved_models = [model.serialize() for model in saved_models]
+        count = len(saved_models)
+        saved_models = saved_models[int(start):int(end)]
+
+    return jsonify({"models":saved_models, "count":count})
+  
 @application.route('/valprog/<id>', methods=['GET'])
 @login_required
 def get_validation_progress(user_data, id):
