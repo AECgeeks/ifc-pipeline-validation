@@ -464,10 +464,10 @@ def models_paginated(user_data, start, end, pr_title, commit_id=None):
     with database.Session() as session:
         if str(user_data["email"]) in [os.getenv("ADMIN_EMAIL"), os.getenv("DEV_EMAIL")]:
             saved_models = [m.serialize() for m in session.query(database.model).order_by(database.model.date.desc()).slice(int(start),int(end)).all() if m.deleted!=1]
+            count = session.query(database.model).filter(database.model.deleted!=1).count()
         else:
             saved_models = [m.serialize() for m in session.query(database.model).order_by(database.model.date.desc()).slice(int(start),int(end)).all() if m.user_id == user_id and m.deleted!=1]
-
-        count = session.query(database.model).count()
+            count = session.query(database.model).filter(database.model.deleted!=1 and database.model.user_id == user_id).count()
 
     return jsonify({"models":saved_models, "count":count})
   
