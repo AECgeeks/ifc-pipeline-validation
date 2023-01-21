@@ -28,6 +28,7 @@ import BrowserNotSupportedIcon from '@mui/icons-material/BrowserNotSupported';
 import WarningIcon from '@mui/icons-material/Warning';
 import Link from '@mui/material/Link';
 import { FETCH_PATH } from './environment'
+import { useEffect, useState } from 'react';
 
 const statusToIcon = {
   "n": <BrowserNotSupportedIcon color="disabled" />,
@@ -265,16 +266,34 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function DashboardTable({ models }) {
-
-  const rows = models;
-
+export default function DashboardTable({models}) {
+  const [rows, setRows] = React.useState([])
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [count, setCount] = React.useState(0)
+  const [validating, setValidated] = React.useState(false)
+
+  useEffect(()=>{
+      fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
+      .then((response) => response.json())
+      .then((json) => {
+        setRows(json["models"])
+        setCount(json["count"])
+
+        json["models"].map((m)=>{
+          if(validating == true){
+            setValidated(false)
+          }else{
+            setValidated(true )
+          }
+        })
+      });
+  },[page, rowsPerPage, validating]);
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -315,11 +334,6 @@ export default function DashboardTable({ models }) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const handleChangeDense = (event) => {
     setDense(event.target.checked);
   };
@@ -352,7 +366,6 @@ export default function DashboardTable({ models }) {
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.sort(getComparator(order, orderBy)).slice() */}
               {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -404,6 +417,7 @@ export default function DashboardTable({ models }) {
                       </TableRow>
                     );
                   } else {
+                    
                     return (
                       <TableRow
                         hover
@@ -448,26 +462,17 @@ export default function DashboardTable({ models }) {
                     );
                   }
                 })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onRowsPerPageChange={ (event) => {setRowsPerPage(parseInt(event.target.value, 10))}}
         />
       </Paper>
       <FormControlLabel

@@ -31,13 +31,12 @@ function Dashboard() {
       .then(response => response.json())
       .then((data) => {
         setModels(data.models);
-      })
+      },[])
   }
-
 
   useEffect(() => {
     getModels();
-  });
+  }, []);
 
   if (isLoggedIn) {
     return (
@@ -53,7 +52,7 @@ function Dashboard() {
           <ResponsiveAppBar user={user} />
           <Disclaimer />
           <Dz />
-          <DashboardTable models={models} />
+          <DashboardTable />
           <Footer />
         </Grid>
       </div>
