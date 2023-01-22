@@ -24,6 +24,7 @@ function Dz() {
                 window.location = response.url;
             }
             else{
+                window.location.reload();
                 dz.removeAllFiles();  
             }
         });
