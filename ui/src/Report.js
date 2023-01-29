@@ -62,6 +62,8 @@ function Report() {
           <ResponsiveAppBar user={user} />
           <Disclaimer />
 
+          <h2>Validation Report</h2>
+
           <GeneralTable data={reportData} type={"general"} />
           <GeneralTable data={reportData} type={"overview"} />
 
