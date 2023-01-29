@@ -463,12 +463,11 @@ def models_paginated(user_data, start, end, pr_title, commit_id=None):
     # Retrieve user data
     with database.Session() as session:
         if str(user_data["email"]) in [os.getenv("ADMIN_EMAIL"), os.getenv("DEV_EMAIL")]:
-            saved_models = [m.serialize() for m in session.query(database.model).order_by(database.model.date.desc()).slice(int(start),int(end)).all() if m.deleted!=1]
+            saved_models = [m.serialize() for m in session.query(database.model).filter(database.model.deleted!=1).order_by(database.model.date.desc()).slice(int(start),int(end)).all()]
             count = session.query(database.model).filter(database.model.deleted!=1).count()
         else:
-            saved_models = [m.serialize() for m in session.query(database.model).order_by(database.model.date.desc()).slice(int(start),int(end)).all() if m.user_id == user_id and m.deleted!=1]
-            count = session.query(database.model).filter(database.model.deleted!=1 and database.model.user_id == user_id).count()
-
+            saved_models = [m.serialize() for m in session.query(database.model).filter(database.model.user_id==user_id).filter(database.model.deleted!=1).order_by(database.model.date.desc()).slice(int(start),int(end)).all()]
+            count = session.query(database.model).filter(database.model.user_id==user_id).filter(database.model.deleted!=1).count()
     return jsonify({"models":saved_models, "count":count})
   
 @application.route('/valprog/<id>', methods=['GET'])
@@ -716,13 +715,15 @@ def download_model(user_data, id):
 
     return send_file(path, download_name=model.filename, as_attachment=True, conditional=True)
 
-@application.route('/delete/<id>', methods=['POST'])
+@application.route('/api/delete/<id>', methods=['POST'])
 @login_required
 def delete(user_data, id):
+    ids = [int(i) for i in id.split('.')]
     with database.Session() as session:
         session = database.Session()
-        model = session.query(database.model).filter(database.model.id == id).all()[0]
-        model.deleted = 1
+        models = session.query(database.model).filter(database.model.id.in_(ids)).all()
+        for model in models:
+            model.deleted = 1
         session.commit()
     return jsonify({"status":"success", "id":id})
 
