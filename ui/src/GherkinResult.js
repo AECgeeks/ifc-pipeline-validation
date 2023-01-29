@@ -9,13 +9,12 @@ function GherkinResults({ status, gherkin_task, task_type }) {
 
     if (gherkin_task.results.length > 0) {
         return (
-            <div>
                 <TreeView
                     aria-label="file system navigator"
                     defaultCollapseIcon={<ExpandMoreIcon />}
                     defaultExpandIcon={<ChevronRightIcon />}
                     defaultExpanded={["0"]}
-                    sx={{ "width": "850px", "backgroundColor": statusToColor[status] }}
+                    sx={{"width":"100%", "maxWidth": "850px", "backgroundColor": statusToColor[status] }}
                 >
                     <TreeItem nodeId="0" label={task_type}>
                         {
@@ -35,24 +34,21 @@ function GherkinResults({ status, gherkin_task, task_type }) {
                         }
                     </TreeItem>
                 </TreeView>
-            </div>
         )
     }
     else {
         return (
-            <div>
                 <TreeView
                     aria-label="file system navigator"
                     defaultCollapseIcon={<ExpandMoreIcon />}
                     defaultExpandIcon={<ChevronRightIcon />}
                     defaultExpanded={["0"]}
-                    sx={{ "width": "850px", "backgroundColor": statusToColor[status] }}
+                    sx={{"width":"100%", "maxWidth": "850px", "backgroundColor": statusToColor[status] }}
                 >
                     <TreeItem nodeId="0" label={task_type}>
                         <pre>{"Not checked"}</pre>
                     </TreeItem>
                 </TreeView>
-            </div>
         )
 
     }
