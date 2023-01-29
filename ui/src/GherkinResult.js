@@ -7,7 +7,7 @@ import { statusToColor } from './mappings'
 
 function GherkinResults({ status, gherkin_task, task_type }) {
 
-    if (gherkin_task.results.length > 0) {
+    if (gherkin_task && gherkin_task.results.length > 0) {
         return (
                 <TreeView
                     aria-label="file system navigator"
