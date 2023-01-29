@@ -6,6 +6,7 @@ application/decoded.json
 *.cover
 docker-volumes
 !application/config.json
+application/execution_times.py
 application/static/bimsurfer
 application/nix
 application/win

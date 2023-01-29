@@ -211,8 +211,7 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+function EnhancedTableToolbar({ numSelected, onDelete }) {
 
   return (
     <Toolbar
@@ -248,7 +247,7 @@ function EnhancedTableToolbar(props) {
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton>
-            <DeleteIcon />
+            <DeleteIcon onClick={onDelete} />
           </IconButton>
         </Tooltip>
       ) : (
@@ -266,7 +265,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function DashboardTable({models}) {
+export default function DashboardTable({ models }) {
   const [rows, setRows] = React.useState([])
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('');
@@ -275,25 +274,24 @@ export default function DashboardTable({models}) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState(0)
-  const [validating, setValidated] = React.useState(false)
+  const [validating, setValidating] = React.useState(false)
+  const [deleted, setDeleted] = useState('')
 
-  useEffect(()=>{
-      fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
+  useEffect(() => {
+    fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
       .then((response) => response.json())
       .then((json) => {
         setRows(json["models"])
         setCount(json["count"])
-
-        json["models"].map((m)=>{
-          if(validating == true){
-            setValidated(false)
-          }else{
-            setValidated(true )
+        json["models"].map((m) => {
+          if (validating == true) {
+            setValidating(false)
+          } else {
+            setValidating(true)
           }
         })
       });
-  },[page, rowsPerPage, validating]);
-
+  }, [page, rowsPerPage, validating]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -344,10 +342,24 @@ export default function DashboardTable({models}) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+  useEffect(() => {
+    fetch(`${FETCH_PATH}/api/delete/${deleted}`, {
+      method: 'POST'
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        setSelected([])
+      });
+  }, [deleted]);
+
+  function onDelete() {
+    setDeleted(selected.join('.'))
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} onDelete={onDelete} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -417,7 +429,6 @@ export default function DashboardTable({models}) {
                       </TableRow>
                     );
                   } else {
-                    
                     return (
                       <TableRow
                         hover
@@ -472,7 +483,7 @@ export default function DashboardTable({models}) {
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          onRowsPerPageChange={ (event) => {setRowsPerPage(parseInt(event.target.value, 10))}}
+          onRowsPerPageChange={(event) => { setRowsPerPage(parseInt(event.target.value, 10)) }}
         />
       </Paper>
       <FormControlLabel
