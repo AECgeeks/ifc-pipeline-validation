@@ -41,7 +41,7 @@ function Dz() {
         <div>
             <div className="submit-area" id="ifc_tab">
                 <form action={`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
-                    <div className="dz-message" data-dz-message><span><i className="material-icons"></i> Click or drop files here to upload for validation</span></div>
+                    <div className="dz-message" data-dz-message><span><i className="material-icons">file_upload</i> Click or drop files here to upload for validation</span></div>
                 </form>
                 <button className="submit-button" id="submit">Start validation</button>
             </div>

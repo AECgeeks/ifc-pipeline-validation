@@ -53,6 +53,11 @@ export default function GeneralTable({ data, type }) {
   return (
     <TableContainer sx={{ maxWidth: 850 }} component={Paper}>
       <Table aria-label="simple table">
+        <TableHead>
+          <TableCell colSpan={2} sx={{ borderColor: 'black', fontWeight: 'bold' }}>
+            {type.charAt(0).toUpperCase()}{type.slice(1)}
+          </TableCell>
+        </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow
