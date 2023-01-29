@@ -12,7 +12,7 @@ export default function MinimalTreeView({ summary, content, status }) {
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
       defaultExpanded={["0"]}
-      sx={{ "width": "850px", "backgroundColor": statusToColor[status] }}
+      sx={{"width":"100%", "max-width": "850px", "backgroundColor": statusToColor[status], "overflow-x": "auto"}}
     >
       <TreeItem nodeId="0" label={summary}>
         <pre>{content}</pre>

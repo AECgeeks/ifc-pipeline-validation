@@ -3,7 +3,7 @@ import './Dz.css'
 import { FETCH_PATH } from './environment'
 
 function Dz() {
-
+    
     useEffect(() => {
         window.Dropzone.autoDiscover = false;
         var dz = new window.Dropzone("#ifc_dropzone",

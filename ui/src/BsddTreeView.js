@@ -22,7 +22,7 @@ export default function BsddTreeView({ bsddResults, status }) {
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
       defaultExpanded={["0"]}
-      sx={{ "width": "850px", "backgroundColor": statusToColor[status] }}
+      sx={{"width":"100%", "max-width": "850px", "backgroundColor": statusToColor[status] }}
     >
       <TreeItem nodeId="0" label={"bSDD"}>
         <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
