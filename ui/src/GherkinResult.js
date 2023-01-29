@@ -6,7 +6,7 @@ import TreeItem from '@mui/lab/TreeItem';
 import { statusToColor } from './mappings'
 
 function GherkinResults({ status, gherkin_task, task_type }) {
-
+    let label = task_type==="implementer_agreements_task"?"Implementer Agreements":"Informal Propositions";
     if (gherkin_task && gherkin_task.results.length > 0) {
         return (
                 <TreeView
@@ -16,7 +16,7 @@ function GherkinResults({ status, gherkin_task, task_type }) {
                     defaultExpanded={["0"]}
                     sx={{"width":"100%", "maxWidth": "850px", "backgroundColor": statusToColor[status] }}
                 >
-                    <TreeItem nodeId="0" label={task_type}>
+                    <TreeItem nodeId="0" label={label}>
                         {
                             gherkin_task.results.map((result) => {
 
@@ -45,7 +45,7 @@ function GherkinResults({ status, gherkin_task, task_type }) {
                     defaultExpanded={["0"]}
                     sx={{"width":"100%", "maxWidth": "850px", "backgroundColor": statusToColor[status] }}
                 >
-                    <TreeItem nodeId="0" label={task_type}>
+                    <TreeItem nodeId="0" label={label}>
                         <pre>{"Not checked"}</pre>
                     </TreeItem>
                 </TreeView>
