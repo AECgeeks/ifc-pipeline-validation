@@ -8,13 +8,13 @@ import Paper from '@mui/material/Paper';
 
 export default function MinimalTreeView({ summary, content, status }) {
   return (
-    <Paper>
+    <Paper sx={{overflow: 'hidden'}}>
       <TreeView
         aria-label="file system navigator"
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
         defaultExpanded={["0"]}
-        sx={{ "width": "850px", "backgroundColor": statusToColor[status], ".MuiTreeItem-content": {padding: "16px 0"}, ".MuiTreeItem-content.Mui-expanded": {borderBottom: 'solid 1px black'}}}
+        sx={{ "width": "850px", "backgroundColor": statusToColor[status], ".MuiTreeItem-content": { padding: "16px" }, ".MuiTreeItem-content.Mui-expanded": { borderBottom: 'solid 1px black' } }}
       >
         <TreeItem nodeId="0" label={summary}>
           <pre>{content}</pre>

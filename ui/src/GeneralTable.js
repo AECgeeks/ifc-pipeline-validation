@@ -64,7 +64,7 @@ export default function GeneralTable({ data, type }) {
               key={row[0]}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell>
+              <TableCell sx={{width:'33%'}}>
                 <b>{row[0]}</b>
               </TableCell>
               <TableCell align="left">{row[1]}</TableCell>
