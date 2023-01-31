@@ -26,17 +26,37 @@ function AppLogo() {
   )
 }
 
-const pages = [{ "label": 'Upload', "href": "/" },
+const pages_ = [{ "label": 'Upload', "href": "/" },
 { "label": "Dashboard",
   "href": "/dashboard"}];
 
-const settings = [{ "label": 'Upload new file', "href": "/" },
+const settings_ = [{ "label": 'Upload new file', "href": "/" },
 { "label": 'Dashboard', "href": "/dashboard" },
 { "label": 'Logout', "href": "/logout" }]
 
 function ResponsiveAppBar({ user }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const splittedUrl = window.location.href.split("/")
+  const [sandboxCommit, setSandbox] = React.useState(
+    splittedUrl.includes("sandbox")?
+    splittedUrl.at(-1):false);
+
+    let pages;
+    let settings;
+
+    if (sandboxCommit){
+      pages = [{ "label": 'Upload', "href": `/sandbox/${sandboxCommit}`},
+      { "label": "Dashboard",
+        "href": `/sandbox/dashboard/${sandboxCommit}`}];
+      settings = [{ "label": 'Upload new file', "href": `/sandbox/${sandboxCommit}` },
+      { "label": 'Dashboard', "href": `/sandbox/dashboard/${sandboxCommit}`},
+      { "label": 'Logout', "href": "/logout" }]
+    }else{
+      pages = pages_;
+      settings = settings_;
+    }
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
