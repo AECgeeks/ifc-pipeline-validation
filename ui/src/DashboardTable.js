@@ -276,7 +276,13 @@ export default function DashboardTable({ models }) {
   const [count, setCount] = React.useState(0)
   const [validating, setValidating] = React.useState(false)
   const [deleted, setDeleted] = useState('')
+  
+  const splittedUrl = window.location.href.split("/")
 
+  const [sandboxCommit, setSandbox] = useState(
+      splittedUrl.includes("sandbox")?
+      splittedUrl.at(-1):false);
+      
   useEffect(() => {
     fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
       .then((response) => response.json())
@@ -416,7 +422,8 @@ export default function DashboardTable({ models }) {
                         <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
                         <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
                         <TableCell align="right">
-                          <Link href={`/report/${row.code}`} underline="hover">
+                       
+                          <Link href={sandboxCommit?`/sandbox/report/${sandboxCommit}/${row.code}`:`/report/${row.code}`} underline="hover">
                             {'View report'}
                           </Link>
                         </TableCell>

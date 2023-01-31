@@ -368,7 +368,7 @@ def reprocess(user_data,id):
 
     return ids
 
-@application.route('/sandbox/<commit_id>/', methods=['POST'])
+@application.route('/api/sandbox/<commit_id>', methods=['POST'])
 @application.route('/api/', methods=['POST'])
 @with_sandbox
 @login_required
@@ -378,15 +378,12 @@ def put_main(user_data, pr_title, commit_id=None):
 
     ids = []
     files = []
-
     user_id = user_data["sub"]
 
     for key, f in request.files.items():
-
         if key.startswith('file'):
             file = f
             files.append(file)
-
 
     with open('config.json', 'r') as config_file:
         validation_config=json.loads(config_file.read())
@@ -398,8 +395,10 @@ def put_main(user_data, pr_title, commit_id=None):
         else:
             arg = {}
         
-        #todo: redirect correctly with parameters
-        url = "/dashboard"
+        if commit_id:
+            url = f"/sandbox/dashboard/{commit_id}"
+        else:
+            url = "/dashboard"
 
     elif VIEWER:
         ids = process_upload_multiple(files)

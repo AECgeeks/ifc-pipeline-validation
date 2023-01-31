@@ -16,9 +16,15 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />} />
-      <Route path="/callback" element={<Callback />} />
+      <Route path="sandbox/:commitId/" element={<App />} />
+
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="sandbox/dashboard/:commitId" element={<Dashboard />} />
+
       <Route path="/report/:modelCode" element={<Report />} />
+      <Route path="/sandbox/report/:commitId/:modelCode" element={<Report />} />
+
+      <Route path="/callback" element={<Callback />} />
       <Route path="/logout" element={<Logout />} />
     </Routes>
   </BrowserRouter>

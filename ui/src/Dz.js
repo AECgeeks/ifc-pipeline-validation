@@ -1,9 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import './Dz.css'
 import { FETCH_PATH } from './environment'
 
 function Dz() {
-    
+
+    const splittedUrl = window.location.href.split("/")
+
+    const [sandboxCommit, setSandbox] = useState(
+        splittedUrl.includes("sandbox")?
+        splittedUrl.at(-1):false);
+     
     useEffect(() => {
         window.Dropzone.autoDiscover = false;
         var dz = new window.Dropzone("#ifc_dropzone",
@@ -40,7 +46,7 @@ function Dz() {
     return (
         <div>
             <div className="submit-area" id="ifc_tab">
-                <form action={`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
+                <form action={sandboxCommit?`${FETCH_PATH}/api/sandbox/${sandboxCommit}`:`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
                     <div className="dz-message" data-dz-message><span><i className="material-icons">file_upload</i> Click or drop files here to upload for validation</span></div>
                 </form>
                 <button className="submit-button" id="submit">Start validation</button>

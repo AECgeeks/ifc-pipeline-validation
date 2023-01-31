@@ -14,28 +14,30 @@ import MenuItem from '@mui/material/MenuItem';
 import Link from '@mui/material/Link';
 
 
-function AppLogo(){
+function AppLogo() {
   const mystyle = {
-    height:"45px"
+    height: "45px"
   };
 
   return (
     <Link href="/" underline="none">
-      <img src={require("./BuildingSMART_CMYK_validation_service.png")} style={mystyle}/>
+      <img src={require("./BuildingSMART_CMYK_validation_service.png")} style={mystyle} />
     </Link>
   )
 }
 
-const pages = [{"label":'Upload', "href":"/"}, {"label":"Dashboard", "href":"/dashboard"}];
+const pages = [{ "label": 'Upload', "href": "/" },
+{ "label": "Dashboard",
+  "href": "/dashboard"}];
 
-const settings = [{"label":'Upload new file', "href":"/"},
-                  {"label":'Dashboard', "href":"/dashboard"}, 
-                  {"label":'Logout', "href":"/logout"} ]
-        
-function ResponsiveAppBar({user}) {
+const settings = [{ "label": 'Upload new file', "href": "/" },
+{ "label": 'Dashboard', "href": "/dashboard" },
+{ "label": 'Logout', "href": "/logout" }]
+
+function ResponsiveAppBar({ user }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
- 
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -52,14 +54,14 @@ function ResponsiveAppBar({user}) {
   };
 
   const styleAppBar = {
-    background : 'white',
+    background: 'white',
     color: 'grey',
-};
+  };
 
   return (
     <AppBar position="static" style={styleAppBar}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>    
+        <Toolbar disableGutters>
           <Typography
             variant="h6"
             noWrap
@@ -75,10 +77,10 @@ function ResponsiveAppBar({user}) {
               textDecoration: 'none',
             }}
           >
-            <AppLogo/>
+            <AppLogo />
             <Typography sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>BETA</Typography>
           </Typography>
-  
+
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -111,7 +113,7 @@ function ResponsiveAppBar({user}) {
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Link href={page["href"]} underline="none">
-                    <Typography style={{color: 'grey'}} textAlign="center">{page["label"]}</Typography>
+                    <Typography style={{ color: 'grey' }} textAlign="center">{page["label"]}</Typography>
                   </Link>
                 </MenuItem>
               ))}
@@ -134,8 +136,8 @@ function ResponsiveAppBar({user}) {
               textDecoration: 'none',
             }}
           >
-              <AppLogo/>
-              <Typography sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>BETA</Typography>
+            <AppLogo />
+            <Typography sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>BETA</Typography>
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
