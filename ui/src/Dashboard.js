@@ -57,7 +57,7 @@ function Dashboard() {
           direction="column"
           alignItems="center"
           justifyContent="space-between"
-          style={{ minHeight: '100vh', gap: '15px',
+          style={{ minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(238, 238, 238)',
         border: sandboxCommit?'solid 12px red':'none' }}
         >
           <ResponsiveAppBar user={user} />
