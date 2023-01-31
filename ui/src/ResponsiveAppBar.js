@@ -41,7 +41,8 @@ function ResponsiveAppBar({ user }) {
   const splittedUrl = window.location.href.split("/")
   const [sandboxCommit, setSandbox] = React.useState(
     splittedUrl.includes("sandbox")?
-    splittedUrl.at(-1):false);
+    (splittedUrl.includes("report")?splittedUrl.at(-2):splittedUrl.at(-1)) :
+    false);
 
     let pages;
     let settings;
