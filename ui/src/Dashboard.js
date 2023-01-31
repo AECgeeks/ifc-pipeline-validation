@@ -58,7 +58,7 @@ function Dashboard() {
           alignItems="center"
           justifyContent="space-between"
           style={{ minHeight: '100vh', gap: '15px',
-        border: sandboxCommit?'solid 12px red':'blue' }}
+        border: sandboxCommit?'solid 12px red':'none' }}
         >
           <ResponsiveAppBar user={user} />
           {sandboxCommit && <h2
