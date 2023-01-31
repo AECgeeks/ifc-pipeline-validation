@@ -17,12 +17,12 @@ export default function BsddTreeView({ bsddResults, status }) {
   const bsdd = bsddResults;
 
   return (
-    <TreeView
+    <Paper sx={{overflow: 'hidden'}}><TreeView
       aria-label="file system navigator"
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
       defaultExpanded={["0"]}
-      sx={{"width":"100%", "max-width": "850px", "backgroundColor": statusToColor[status] }}
+      sx={{ "width": "850px", "backgroundColor": statusToColor[status], "> li > .MuiTreeItem-content": { padding: "16px" }, ".MuiTreeItem-content.Mui-expanded": { borderBottom: 'solid 1px black' } }}
     >
       <TreeItem nodeId="0" label={"bSDD"}>
         <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
@@ -142,6 +142,6 @@ export default function BsddTreeView({ bsddResults, status }) {
           }
         </TreeView>
       </TreeItem>
-    </TreeView>
+    </TreeView></Paper>
   );
 }
