@@ -189,8 +189,10 @@ def login():
     session['oauth_state'] = state
     return jsonify({"redirect":authorization_url})
 
+@application.route('/api/sandbox/me/<commit_id>', methods=['GET'])
 @application.route('/api/me', methods=['GET'])
-def me():
+@with_sandbox
+def me(pr_title=None, commit_id=None):
     if not DEVELOPMENT:
         if not "oauth_token" in session.keys():   
             bs = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=[
@@ -199,7 +201,7 @@ def me():
             session['oauth_state'] = state
             return jsonify({"redirect":authorization_url})
         else:
-            return jsonify({"user_data":session["user_data"]})
+            return jsonify({"user_data":session["user_data"], "sandbox_info":{"pr_title":pr_title, "commit_id":commit_id}})
     else:
         return jsonify(
                     {"user_data":
@@ -207,7 +209,8 @@ def me():
                             'email': 'test@example.org',
                             'family_name': 'User',
                             'given_name': 'Test',
-                            'name': 'Test User'}
+                            'name': 'Test User'},
+                    "sandbox_info":{"pr_title":pr_title, "commit_id":commit_id}
                 })
    
 @application.route("/callback/")
