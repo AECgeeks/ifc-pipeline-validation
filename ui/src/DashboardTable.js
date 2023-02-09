@@ -493,10 +493,6 @@ export default function DashboardTable({ models }) {
           onRowsPerPageChange={(event) => { setRowsPerPage(parseInt(event.target.value, 10)) }}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </Box>
   );
 }
