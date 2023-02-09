@@ -4,6 +4,8 @@ import DashboardTable from './DashboardTable'
 import Disclaimer from './Disclaimer';
 import Footer from './Footer'
 import Grid from '@mui/material/Grid';
+import VerticalLinearStepper from './VerticalLinearStepper'
+import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { FETCH_PATH } from './environment'
 
@@ -14,14 +16,14 @@ function Dashboard() {
 
   const splittedUrl = window.location.href.split("/");
   const [sandboxCommit, setSandbox] = useState(
-      splittedUrl.includes("sandbox")?
-      splittedUrl.at(-1):false);
+    splittedUrl.includes("sandbox") ?
+      splittedUrl.at(-1) : false);
 
   const [prTitle, setPrTitle] = useState("")
   const [commitId, setCommitId] = useState("")
 
   useEffect(() => {
-    fetch(sandboxCommit?`${FETCH_PATH}/api/sandbox/me/${sandboxCommit}`:`${FETCH_PATH}/api/me`)
+    fetch(sandboxCommit ? `${FETCH_PATH}/api/sandbox/me/${sandboxCommit}` : `${FETCH_PATH}/api/me`)
       .then(response => response.json())
       .then((data) => {
         if (data["redirect"] !== undefined) {
@@ -41,7 +43,7 @@ function Dashboard() {
       .then(response => response.json())
       .then((data) => {
         setModels(data.models);
-      },[])
+      }, [])
   }
 
   useEffect(() => {
@@ -57,22 +59,34 @@ function Dashboard() {
           direction="column"
           alignItems="center"
           justifyContent="space-between"
-          style={{ minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(238, 238, 238)',
-        border: sandboxCommit?'solid 12px red':'none' }}
+          style={{
+            minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(238, 238, 238)',
+            border: sandboxCommit ? 'solid 12px red' : 'none'
+          }}
         >
           <ResponsiveAppBar user={user} />
           {sandboxCommit && <h2
-          style={{
-            background: "red",
-            color: "white",
-            marginTop: "-16px",
-            lineHeight: "30px",
-            padding: "12px",
-            borderRadius: "0 0 16px 16px"
-          }}
-           >Sandbox for <b>{prTitle}</b></h2>}
+            style={{
+              background: "red",
+              color: "white",
+              marginTop: "-16px",
+              lineHeight: "30px",
+              padding: "12px",
+              borderRadius: "0 0 16px 16px"
+            }}
+          >Sandbox for <b>{prTitle}</b></h2>}
           <Disclaimer />
-          <Dz />
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            //  backgroundColor:'green',
+            alignSelf: 'normal',
+            width: '850px'
+          }}>
+            <Dz />
+            <VerticalLinearStepper />
+          </Box>
           <DashboardTable />
           <Footer />
         </Grid>

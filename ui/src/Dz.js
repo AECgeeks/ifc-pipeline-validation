@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './Dz.css'
 import { FETCH_PATH } from './environment'
+import Button from '@mui/material/Button';
 
 function Dz() {
 
@@ -49,7 +50,7 @@ function Dz() {
                 <form action={sandboxCommit?`${FETCH_PATH}/api/sandbox/${sandboxCommit}`:`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
                     <div className="dz-message" data-dz-message><span><i className="material-icons">file_upload</i> Click or drop files here to upload for validation</span></div>
                 </form>
-                <button className="submit-button" id="submit">Start validation</button>
+                <Button className="submit-button" variant="contained" id="submit">Upload & Validate</Button>
             </div>
         </div>
     );
