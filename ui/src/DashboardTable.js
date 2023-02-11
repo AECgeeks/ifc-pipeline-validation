@@ -94,12 +94,6 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'format',
-    numeric: false,
-    disablePadding: true,
-    label: 'File format',
-  },
-  {
     id: 'filename',
     numeric: true,
     disablePadding: false,
@@ -400,14 +394,6 @@ export default function DashboardTable({ models }) {
                               'aria-labelledby': labelId,
                             }}
                           />
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          padding="none"
-                        >
-                          IFC
                         </TableCell>
                         <TableCell align="right">{row.filename}</TableCell>
                         <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
