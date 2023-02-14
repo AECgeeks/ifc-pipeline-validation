@@ -58,6 +58,11 @@ application = Flask(__name__)
 DEVELOPMENT = os.environ.get(
     'environment', 'production').lower() == 'development'
 
+if not DEVELOPMENT:
+    assert os.getenv("DEV_EMAIL")
+    assert os.getenv("ADMIN_EMAIL")
+    assert os.getenv("CONTACT_EMAIL")
+
 VALIDATION = 1
 VIEWER = 0
 
@@ -115,7 +120,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(**kwargs):
         if not DEVELOPMENT:
-            if not "oauth_token" in session.keys():
+            if not "oauth_token" in session.keys() or 'user_data' not in session:
                 # before redirect, capture the commit id
                 session['commit_id'] = kwargs.get('commit_id')
                 abort(403)
@@ -341,7 +346,7 @@ def process_upload_validation(files, validation_config, user_id, commit_id=None,
         if not DEVELOPMENT:
             user = session.query(database.user).filter(database.user.id == user_id).all()[0]
             msg = f"{len(filenames)} file(s) were uploaded by user {user.name} ({user.email}): {(', ').join(filenames)}"
-            utils.send_message(msg, os.getenv("DEV_EMAIL"))
+            utils.send_message(msg, [os.getenv("CONTACT_EMAIL")])
 
     if DEVELOPMENT or NO_REDIS:
         for id in ids:
@@ -513,7 +518,7 @@ def update_info(user_data, code):
             user = session.query(database.user).filter(database.user.id == model.user_id).all()[0]
 
             if user_data_data["type"] == "license":
-                utils.send_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", os.getenv("DEV_EMAIL"))
+                utils.send_message(f"User {user.name} ({user.email}) changed license of its file {model.filename} from {original_license} to {model.license}", [os.getenv("CONTACT_EMAIL")])
             session.commit()
         return jsonify( {"progress": data.decode("utf-8")})
     except:
