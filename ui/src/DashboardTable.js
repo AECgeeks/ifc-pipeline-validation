@@ -261,31 +261,29 @@ export default function DashboardTable({ models }) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [count, setCount] = React.useState(0)
-  const [validating, setValidating] = React.useState(false)
-  const [deleted, setDeleted] = useState('')
+  const [count, setCount] = React.useState(0);
+  const [deleted, setDeleted] = useState('');
+  const [progress, setProgress] = useState(0);
   
-  const splittedUrl = window.location.href.split("/")
+  const splittedUrl = window.location.href.split("/");
 
   const [sandboxCommit, setSandbox] = useState(
       splittedUrl.includes("sandbox")?
       splittedUrl.at(-1):false);
-      
+
   useEffect(() => {
     fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
       .then((response) => response.json())
       .then((json) => {
-        setRows(json["models"])
-        setCount(json["count"])
+        setRows(json["models"]);
+        setCount(json["count"]);
         json["models"].map((m) => {
-          if (validating == true) {
-            setValidating(false)
-          } else {
-            setValidating(true)
+          if (m.progress < 100){
+            setProgress(progress + m.progress + 1);
           }
         })
       });
-  }, [page, rowsPerPage, validating]);
+  }, [page, rowsPerPage, progress]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
