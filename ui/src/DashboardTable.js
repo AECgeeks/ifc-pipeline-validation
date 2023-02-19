@@ -177,7 +177,7 @@ function EnhancedTableHead(props) {
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-              {headCell.label}
+            {headCell.label}
           </TableCell>
         ))}
       </TableRow>
@@ -253,12 +253,12 @@ export default function DashboardTable({ models }) {
   const [count, setCount] = React.useState(0);
   const [deleted, setDeleted] = useState('');
   const [progress, setProgress] = useState(0);
-  
+
   const splittedUrl = window.location.href.split("/");
 
   const [sandboxCommit, setSandbox] = useState(
-      splittedUrl.includes("sandbox")?
-      splittedUrl.at(-1):false);
+    splittedUrl.includes("sandbox") ?
+      splittedUrl.at(-1) : false);
 
   useEffect(() => {
     fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
@@ -267,7 +267,7 @@ export default function DashboardTable({ models }) {
         setRows(json["models"]);
         setCount(json["count"]);
         json["models"].map((m) => {
-          if (m.progress < 100){
+          if (m.progress < 100) {
             setProgress(progress + m.progress + 1);
           }
         })
@@ -389,8 +389,8 @@ export default function DashboardTable({ models }) {
                         <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
                         <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
                         <TableCell align="right">
-                       
-                          <Link href={sandboxCommit?`/sandbox/report/${sandboxCommit}/${row.code}`:`/report/${row.code}`} underline="hover">
+
+                          <Link href={sandboxCommit ? `/sandbox/report/${sandboxCommit}/${row.code}` : `/report/${row.code}`} underline="hover">
                             {'View report'}
                           </Link>
                         </TableCell>
@@ -429,7 +429,13 @@ export default function DashboardTable({ models }) {
                         <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
                         <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
                         <TableCell align="right"></TableCell>
-                        <TableCell align="right"><CircularStatic value={row.progress} /></TableCell>
+                        <TableCell align="right"><CircularStatic
+                          value={
+                            (row.progress == -1) ? "in queue" :
+                              ((row.progress == -2) ? "an error occured" : row.progress)
+                          }
+                          />
+                        </TableCell>
                         <TableCell align="right">
                           <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
                             {'Download file'}
