@@ -386,7 +386,7 @@ export default function DashboardTable({ models }) {
                         <TableCell align="right">
                           {
                             (row.progress == -1) ? <Typography>{"in queue"}</Typography> :
-                              ((row.progress == -2) ? <Typography>{"in queue"}</Typography> : <CircularStatic value={row.progress} />)
+                              ((row.progress == -2) ? <Typography>{"an error occured"}</Typography> : <CircularStatic value={row.progress} />)
                           }
                         </TableCell>
                         <TableCell align="right">
