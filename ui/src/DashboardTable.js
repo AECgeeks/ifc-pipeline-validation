@@ -175,7 +175,6 @@ function EnhancedTableHead(props) {
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
           >
             {headCell.label}
           </TableCell>
@@ -352,14 +351,12 @@ export default function DashboardTable({ models }) {
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
             <TableBody>
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.sort(getComparator(order, orderBy)).slice() */}
-              {stableSort(rows, getComparator(order, orderBy))
-                .map((row, index) => {
+              {rows.map((row, index) => {
                   const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
                   if (row.progress == 100) {
