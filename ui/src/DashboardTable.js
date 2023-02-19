@@ -268,7 +268,7 @@ export default function DashboardTable({ models }) {
         setCount(json["count"]);
         json["models"].map((m) => {
           if (m.progress < 100) {
-            setProgress(progress + m.progress + 1);
+            setProgress(progress + m.progress + 3);
           }
         })
       });
