@@ -429,12 +429,11 @@ export default function DashboardTable({ models }) {
                         <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
                         <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
                         <TableCell align="right"></TableCell>
-                        <TableCell align="right"><CircularStatic
-                          value={
-                            (row.progress == -1) ? "in queue" :
-                              ((row.progress == -2) ? "an error occured" : row.progress)
+                        <TableCell align="right">
+                          {
+                            (row.progress == -1) ? <Typography>{"in queue"}</Typography> :
+                              ((row.progress == -2) ? <Typography>{"in queue"}</Typography> : <CircularStatic value={row.progress} />)
                           }
-                          />
                         </TableCell>
                         <TableCell align="right">
                           <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
