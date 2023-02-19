@@ -362,8 +362,14 @@ def process_upload_validation(files, validation_config, user_id, commit_id=None,
 
 @application.route('/reprocess/<id>', methods=['POST'])
 @login_required
-def reprocess(user_data,id):
+def reprocess(user_data, id):
     ids = []
+
+    with database.Session() as session:
+        model = session.query(database.model).filter(database.model.code == code).all()[0]
+
+        if model.user_id != user_data["sub"]:
+            abort(403)
 
     if DEVELOPMENT:
         for id in ids:
@@ -508,6 +514,10 @@ def update_info(user_data, code):
     try:  
         with database.Session() as session:
             model = session.query(database.model).filter(database.model.code == code).all()[0]
+
+            if model.user_id != user_data["sub"]:
+                abort(403)
+
             original_license = model.license
             data = request.get_data()
             user_data_data = json.loads(data)
@@ -604,6 +614,9 @@ def log_results(user_data, i, ids):
         model = session.query(database.model).filter(
             database.model.code == all_ids[int(i)]).all()[0]
 
+        if model.user_id != user_data["sub"]:
+            abort(403)
+
         response = {"results": {}, "time": None}
 
         response["results"]["syntaxlog"] = model.status_syntax
@@ -647,6 +660,9 @@ def view_report2(user_data, code):
         model = session.query(database.model).filter(
             database.model.code == code).all()[0]
 
+        if model.user_id != user_data["sub"]:
+            abort(403)
+
         tasks = {t.task_type: t for t in model.tasks}
 
         results = { "syntax_result":0, "schema_result":0, "bsdd_results":{"tasks":0, "bsdd":0, "instances":0}}
@@ -685,6 +701,9 @@ def results(user_data, id):
         model = session.query(database.model).filter(
             database.model.code == id).all()[0]
 
+        if model.user_id != user_data["sub"]:
+            abort(403)
+
         tasks = {t.task_type: t for t in model.tasks}
 
         results = { "syntax_result":0, "schema_result":0, "bsdd_results":{"tasks":0, "bsdd":0, "instances":0}}
@@ -717,6 +736,8 @@ def download_model(user_data, id):
     with database.Session() as session:
         session = database.Session()
         model = session.query(database.model).filter(database.model.id == id).all()[0]
+        if model.user_id != user_data["sub"]:
+            abort(403)
         code = model.code
     path = utils.storage_file_for_id(code, "ifc")
 
@@ -729,6 +750,8 @@ def delete(user_data, id):
     with database.Session() as session:
         session = database.Session()
         models = session.query(database.model).filter(database.model.id.in_(ids)).all()
+        if set(m.user_id for m in models) != {user_data["sub"]}:
+            abort(403)
         for model in models:
             model.deleted = 1
         session.commit()
@@ -773,9 +796,6 @@ def get_model(fn):
     else:
         return send_file(path)
 
-@application.route('/api/test', methods=['GET'])
-def test_hello_world():
-    return 'Hello world'
 """
 # Create a file called routes.py with the following
 # example content to add application-specific routes
