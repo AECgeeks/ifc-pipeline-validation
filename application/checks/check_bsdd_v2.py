@@ -92,15 +92,32 @@ def validate_instance(constraints, instance):
 
     return {"result":result, "validation_results":validation_results}
 
+def get_domain_file(relating_classification):
+    try:
+        domain_file = relating_classification.ReferencedSource.Name
+    except:
+        domain_file = ""
+    return domain_file
 
-def check_bsdd(ifc_fn, task_id):
+def get_related_entity_names(ifc_instance, bsdd_content):
+    if 'relatedIfcEntityNames':
+        val_ifc_type = any(ifc_instance.is_a(t) for t in bsdd_content["relatedIfcEntityNames"])
+        bsdd_type_constraint = ";".join(bsdd_content["relatedIfcEntityNames"])
+    else:
+        val_ifc_type = 1
+        bsdd_type_constraint = ""
+    return {"val_ifc_type": val_ifc_type,"bsdd_type_constraint": bsdd_type_constraint}
+
+def check_bsdd(ifc_fn, task_id, db):
    
     file_code = ifc_fn.split(".ifc")[0]
     ifc_file = ifcopenshell.open(ifc_fn)
    
     with database.Session() as session:
-        model = session.query(database.model).filter(database.model.code == file_code)[0]
-        file_id = model.id
+        if db:
+            model = session.query(database.model).filter(database.model.code == file_code)[0]
+            file_id = model.id
+
  
         n = len(ifc_file.by_type("IfcRelAssociatesClassification"))
         if n:
@@ -116,13 +133,17 @@ def check_bsdd(ifc_fn, task_id):
 
                 bsdd_response = validate_ifc_classification_reference(relating_classification)
                 
-                
+                bsdd_results = []
                 for ifc_instance in related_objects:
-                    instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), file_id)
-                    session.add(instance)
-                    session.flush()
-                    instance_id = instance.id
-                    session.commit()               
+                    if db:
+                        instance = database.ifc_instance(ifc_instance.GlobalId, ifc_instance.is_a(), file_id)
+                        session.add(instance)
+                        session.flush()
+                        instance_id = instance.id
+                        session.commit()
+                    else:
+                        instance_id = ifc_instance.GlobalId
+
 
                     if bsdd_response:
                         bsdd_content = json.loads(bsdd_response.text)
@@ -131,104 +152,112 @@ def check_bsdd(ifc_fn, task_id):
                         if has_specifications(bsdd_content):
                             specifications = bsdd_content["classificationProperties"]
                             for constraint in specifications: 
-                                bsdd_result = database.bsdd_result(task_id)
-                                try:
-                                    bsdd_result.domain_file = relating_classification.ReferencedSource.Name
-                                except:
-                                    bsdd_result.domain_file = ""
-                                bsdd_result.classification_file = relating_classification.Name
-
-                                # Should create instance entry
-                                bsdd_result.instance_id = instance_id
-
-                                bsdd_result.bsdd_classification_uri = bsdd_content["namespaceUri"]
-                                bsdd_result.classification_name = bsdd_content["name"]
-                                bsdd_result.classification_code = bsdd_content["code"]
-                                bsdd_result.classification_domain = domain_name
-
-                                if "relatedIfcEntityNames" in bsdd_content.keys():
-                                    bsdd_result.val_ifc_type = any(ifc_instance.is_a(t) for t in bsdd_content["relatedIfcEntityNames"]) 
-                                    bsdd_result.bsdd_type_constraint = ";".join(bsdd_content["relatedIfcEntityNames"])
-                                else:
-                                    bsdd_result.val_ifc_type = 1
-                                    bsdd_result.bsdd_type_constraint = ""
-
-                                bsdd_result.bsdd_property_constraint = json.dumps(constraint)
-                                bsdd_result.bsdd_property_uri = constraint["propertyNamespaceUri"]
+                                bsdd_result = database.bsdd_result(task_id) if db else {}
 
                                 val_output = validate_instance(constraint, ifc_instance)
-
                                 results = val_output["result"]
-                                bsdd_result.ifc_property_set = results["pset_name"]
-                                bsdd_result.ifc_property_name = results["property_name"]
-                                
-                                bsdd_result.ifc_property_type = results["datatype"]
-                                bsdd_result.ifc_property_value = results["value"]
-                          
                                 val_results = val_output["validation_results"]
-                                bsdd_result.val_property_set = val_results["pset_name"]
-                                bsdd_result.val_property_name = val_results["property_name"]
-                                bsdd_result.val_property_type = val_results["datatype"]
-                                bsdd_result.val_property_value = val_results["value"]
 
-                                if sum([bsdd_result.val_ifc_type,val_results["pset_name"],val_results["property_name"], val_results["datatype"]], val_results["value"]) != 5:
-                                    model.status_bsdd = 'i'
+                                attrs = {
+                                    "classification_file": relating_classification.Name,
+                                    "domain_file": get_domain_file(relating_classification),
+                                    "instance_id": instance_id, # Should create instance entry
+                                    "bsdd_classification_uri":  bsdd_content["namespaceUri"],
+                                    "classification_name": bsdd_content["name"],
+                                    "classification_code": bsdd_content["code"],
+                                    "classification_domain": domain_name,
+                                    "val_ifc_type": get_related_entity_names(ifc_instance, bsdd_content)["val_ifc_type"],
+                                    "bsdd_type_constraint": get_related_entity_names(ifc_instance, bsdd_content)["bsdd_type_constraint"],
+                                    "bsdd_property_constraint": json.dumps(constraint),
+                                    "bsdd_property_uri": constraint["propertyNamespaceUri"],
+                                    "ifc_property_set": results["pset_name"],
+                                    "ifc_property_name": results["property_name"],
+                                    "ifc_property_type": results["datatype"],
+                                    "ifc_property_value": results["value"],
+                                    "val_property_set": val_results["pset_name"],
+                                    "val_property_name": val_results["property_name"],
+                                    "val_property_type": val_results["datatype"],
+                                    "val_property_value": val_results["value"]
+                                }
 
-                                #Validation output 
-                                session.add(bsdd_result)
-                                session.commit()
+                                if db:    
+                                    for attr, value in attrs.items():
+                                        setattr(bsdd_result, attr, value)
+                                    if sum([bsdd_result.val_ifc_type,val_results["pset_name"],val_results["property_name"], val_results["datatype"]], val_results["value"]) != 5:
+                                        model.status_bsdd = 'i'
+                                        #Validation output 
+                                        session.add(bsdd_result)
+                                        session.commit()
+                                else:
+                                    bsdd_results.append(attrs)
+
                         else:
                             # No classificationProperties
-                            bsdd_result = database.bsdd_result(task_id)
-                            try:
-                                bsdd_result.domain_file = relating_classification.ReferencedSource.Name
-                            except:
-                                bsdd_result.domain_file = ""
-                            bsdd_result.classification_file = relating_classification.Name
-                            bsdd_result.instance_id = instance_id
-                            bsdd_result.bsdd_property_constraint = "no constraint"
+                            bsdd_result = database.bsdd_result(task_id) if db else {}
+                            attrs = {
+                                "domain_file": get_domain_file(relating_classification),
+                                "classification_file": relating_classification.Name,
+                                "instance_id": instance_id,
+                                "bsdd_property_constraint": "no constraint"
+                            }
 
+                            if db:
+                                for attr, value in attrs.items():
+                                    setattr(bsdd_result, attr, value)
+                                model.status_bsdd = 'v'
+                                session.add(bsdd_result)
+                                session.commit()
+                            else:
+                                bsdd_results.append(attrs)
+                    else:
+                        # No uri provided or invalid uri
+                        bsdd_result = database.bsdd_result(task_id) if db else {}
+                        attrs = {
+                            "domain_file": get_domain_file(relating_classification),
+                            "classification_file": relating_classification.Name,
+                            "instance_id": instance_id,
+                            "bsdd_classification_uri": "classification not found"
+                        }
+                        if db:
+                            for attr, value in attrs.items():
+                                setattr(bsdd_result, attr, value)
                             model.status_bsdd = 'v'
                             session.add(bsdd_result)
                             session.commit()
-                    else:
-                        # No uri provided or invalid uri
-                        bsdd_result = database.bsdd_result(task_id)
-                        try:
-                            bsdd_result.domain_file = relating_classification.ReferencedSource.Name
-                        except:
-                            bsdd_result.domain_file = ""
-                        bsdd_result.classification_file = relating_classification.Name
-                        bsdd_result.instance_id = instance_id
-                        bsdd_result.bsdd_classification_uri = "classification not found"
-
-                        model.status_bsdd = 'v'
-
-                        session.add(bsdd_result)
-                        session.commit()
+                        else:
+                            bsdd_results.append(attrs)
 
 
         else:
-            bsdd_result = database.bsdd_result(task_id)
-            bsdd_result.domain_file = "no IfcClassification"
-            bsdd_result.classification_file = "no IfcClassificationReference"
-            bsdd_result.classification_name = "file not classified"
-            bsdd_result.classification_code = "file not classified"
-            bsdd_result.classification_domain = "file not classified"
-
-            model.status_bsdd = 'v'
-            session.add(bsdd_result)
-            session.commit()
-
+            bsdd_result = database.bsdd_result(task_id) if db else {}
+            attrs = {
+                "domain_file": "no IfcClassification",
+                "classification_file":"no IfcClassificationReference",
+                "classification_name": "file not classified",
+                "classification_code": "file not classified",
+                "classification_domain": "file not classified"
+            }
+            if db:
+                for attr, value in attrs.items():
+                    setattr(bsdd_result, attr, value)
+                model.status_bsdd = 'v'
+                session.add(bsdd_result)
+                session.commit()
+            else:
+                bsdd_results.append(attrs)
+                
+    json.dump(bsdd_results, open('check_bsdd.json', 'w')) if not db else None
 
 
 if __name__=="__main__":
         parser = argparse.ArgumentParser(description="Generate classified IFC file")
         parser.add_argument("--input","-i", default="Duplex_A_20110505.ifc", type=str)
-        parser.add_argument("--task","-t", default=0, type=int)
+        parser.add_argument("--task","-t", default=0, type=int, required=False)
+        parser.add_argument("--database", "-db", default=1, type=int)
+        
 
         args = parser.parse_args()
-        check_bsdd(args.input, args.task)
+        check_bsdd(args.input, args.task, args.database)
 
 
 
