@@ -186,8 +186,8 @@ def check_bsdd(ifc_fn, task_id, db):
                                     if sum([bsdd_result.val_ifc_type,val_results["pset_name"],val_results["property_name"], val_results["datatype"]], val_results["value"]) != 5:
                                         model.status_bsdd = 'i'
                                         #Validation output 
-                                        session.add(bsdd_result)
-                                        session.commit()
+                                    session.add(bsdd_result)
+                                    session.commit()
                                 else:
                                     bsdd_results.append(attrs)
 
