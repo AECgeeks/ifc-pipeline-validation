@@ -32,7 +32,7 @@ import { useEffect, useState } from 'react';
 
 const statusToIcon = {
   "n": <BrowserNotSupportedIcon color="disabled" />,
-  "v": <CheckCircleIcon color="success" />,
+  "v": <CheckCircleIcon sx={{ color: "#2ab672" }} />,
   "i": <ErrorIcon color="error" />,
   "w": <WarningIcon color="warning" />
 }
@@ -56,7 +56,7 @@ function computeRelativeDates(modelDate) {
   if (unit) {
     var relativeTime = Math.floor(difference / divisor);
     if (relativeTime == 1) { unit = unit.slice(0, -1); } // Remove the 's' in units if only 1
-    return (<span class="abs_time" title={modelDate.toLocaleString()}>{relativeTime} {unit} ago</span>)
+    return (<span className="abs_time" title={modelDate.toLocaleString()}>{relativeTime} {unit} ago</span>)
   } else {
     return modelDate.toLocaleString();
   }
@@ -125,7 +125,7 @@ function EnhancedTableHead(props) {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableRow style={{ backgroundColor: '#e4eaee' }}>
         <TableCell padding="checkbox">
           <Checkbox
             color="primary"
@@ -133,15 +133,16 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              'aria-label': '',
             }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
+
           >
             {headCell.label}
           </TableCell>
@@ -164,6 +165,7 @@ function EnhancedTableToolbar({ numSelected, onDelete }) {
       sx={{
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
+        backgroundColor: "none",
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
@@ -192,8 +194,8 @@ function EnhancedTableToolbar({ numSelected, onDelete }) {
 
       {numSelected > 0 && (
         <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon onClick={onDelete} />
+          <IconButton onClick={onDelete}>
+            <DeleteIcon />
           </IconButton>
         </Tooltip>
       )}
@@ -235,7 +237,7 @@ export default function DashboardTable({ models }) {
           }
         })
       });
-  }, [page, rowsPerPage, progress]);
+  }, [page, rowsPerPage, progress, deleted]);
 
 
   const handleSelectAllClick = (event) => {
@@ -282,13 +284,17 @@ export default function DashboardTable({ models }) {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   useEffect(() => {
-    fetch(`${FETCH_PATH}/api/delete/${deleted}`, {
-      method: 'POST'
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        setSelected([])
-      });
+    if (deleted) {
+      fetch(`${FETCH_PATH}/api/delete/${deleted}`, {
+        method: 'POST'
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          setSelected([])
+          setDeleted([])
+        });
+    }
+
   }, [deleted]);
 
   function onDelete() {
@@ -296,121 +302,120 @@ export default function DashboardTable({ models }) {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDelete={onDelete} />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              onSelectAllClick={handleSelectAllClick}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.sort(getComparator(order, orderBy)).slice() */}
-              {rows.map((row, index) => {
-                  const isItemSelected = isSelected(row.id);
-                  const labelId = `enhanced-table-checkbox-${index}`;
-                  if (row.progress == 100) {
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.id)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.id}
-                        selected={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell align="right">{row.filename}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_schema]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_bsdd]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
-                        <TableCell align="right">
+    <Box sx={{ width: '100%', marginLeft: '5px', alignSelf: 'start', width: '95%' }}>
 
-                          <Link href={sandboxCommit ? `/sandbox/report/${sandboxCommit}/${row.code}` : `/report/${row.code}`} underline="hover">
-                            {'View report'}
-                          </Link>
-                        </TableCell>
-                        <TableCell align="right">{computeRelativeDates(new Date(row.date))}</TableCell>
-                        <TableCell align="right">
-                          <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
-                            {'Download file'}
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  } else {
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.id)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.id}
-                        selected={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell align="right">{row.filename}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_syntax]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_schema]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_bsdd]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_ia]}</TableCell>
-                        <TableCell align="right">{statusToIcon[row.status_ip]}</TableCell>
-                        <TableCell align="right"></TableCell>
-                        <TableCell align="right">
-                          {
-                            (row.progress == -1) ? <Typography>{"in queue"}</Typography> :
-                              ((row.progress == -2) ? <Typography>{"an error occured"}</Typography> : <CircularStatic value={row.progress} />)
-                          }
-                        </TableCell>
-                        <TableCell align="right">
-                          <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
-                            {'Download file'}
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={(event) => { setRowsPerPage(parseInt(event.target.value, 10)) }}
-        />
-      </Paper>
+      <EnhancedTableToolbar numSelected={selected.length} onDelete={onDelete} />
+      <TableContainer>
+        <Table
+          sx={{ backgroundColor: 'white' }}
+          aria-labelledby="tableTitle"
+          size={dense ? 'small' : 'medium'}
+        >
+          <EnhancedTableHead
+            numSelected={selected.length}
+            onSelectAllClick={handleSelectAllClick}
+            rowCount={rows.length}
+          />
+          <TableBody>
+            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+                 rows.sort(getComparator(order, orderBy)).slice() */}
+            {rows.map((row, index) => {
+              const isItemSelected = isSelected(row.id);
+              const labelId = `enhanced-table-checkbox-${index}`;
+              if (row.progress == 100) {
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleClick(event, row.id)}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.id}
+                    selected={isItemSelected}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="left">{row.filename}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_syntax]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_schema]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
+                    <TableCell align="left">
+                      <Link href={sandboxCommit ? `/sandbox/report/${sandboxCommit}/${row.code}` : `/report/${row.code}`} underline="hover">
+                        {'View report'}
+                      </Link>
+                    </TableCell>
+                    <TableCell align="left">{computeRelativeDates(new Date(row.date))}</TableCell>
+                    <TableCell align="left">
+                      <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                        {'Download file'}
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              } else {
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleClick(event, row.id)}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.id}
+                    selected={isItemSelected}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="left">{row.filename}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_syntax]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_schema]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
+                    <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
+                    <TableCell align="left"></TableCell>
+                    <TableCell align="left">
+                      {
+                        (row.progress == -1) ? <Typography>{"in queue"}</Typography> :
+                          ((row.progress == -2) ? <Typography>{"an error occured"}</Typography> : <CircularStatic value={row.progress} />)
+                      }
+                    </TableCell>
+                    <TableCell align="right">
+                      <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                        {'Download file'}
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={count}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={(event) => { setRowsPerPage(parseInt(event.target.value, 10)) }}
+      />
+
     </Box>
   );
 }

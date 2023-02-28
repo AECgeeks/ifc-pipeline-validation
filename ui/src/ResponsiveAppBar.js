@@ -16,7 +16,7 @@ import Link from '@mui/material/Link';
 
 function AppLogo() {
   const mystyle = {
-    height: "45px"
+    height: "60px"
   };
 
   return (
@@ -77,6 +77,8 @@ function ResponsiveAppBar({ user }) {
   const styleAppBar = {
     background: 'white',
     color: 'grey',
+    borderBottom: "thin solid rgb(238, 238, 238)",
+    boxShadow: "none"
   };
 
   return (

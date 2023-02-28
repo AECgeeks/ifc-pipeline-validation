@@ -5,25 +5,28 @@ import Disclaimer from './Disclaimer';
 import Footer from './Footer'
 import Grid from '@mui/material/Grid';
 import VerticalLinearStepper from './VerticalLinearStepper'
+import Button from '@mui/material/Button';
+import HomeIcon from '@mui/icons-material/Home';
+import CheckIcon from '@mui/icons-material/Check';
 import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
+import Typography from '@mui/material/Typography';
+
+import { useEffect, useState, useContext } from 'react';
+
 import { FETCH_PATH } from './environment'
+import { PageContext } from './Page';
+
 
 function Dashboard() {
   const [isLoggedIn, setLogin] = useState(false);
-  const [models, setModels] = useState([]);
   const [user, setUser] = useState(null);
 
-  const splittedUrl = window.location.href.split("/");
-  const [sandboxCommit, setSandbox] = useState(
-    splittedUrl.includes("sandbox") ?
-      splittedUrl.at(-1) : false);
-
   const [prTitle, setPrTitle] = useState("")
-  const [commitId, setCommitId] = useState("")
+
+  const context = useContext(PageContext);
 
   useEffect(() => {
-    fetch(sandboxCommit ? `${FETCH_PATH}/api/sandbox/me/${sandboxCommit}` : `${FETCH_PATH}/api/me`)
+    fetch(context.sandboxId ? `${FETCH_PATH}/api/sandbox/me/${context.sandboxId}` : `${FETCH_PATH}/api/me`)
       .then(response => response.json())
       .then((data) => {
         if (data["redirect"] !== undefined) {
@@ -33,62 +36,104 @@ function Dashboard() {
           setLogin(true);
           setUser(data["user_data"]);
           data["sandbox_info"]["pr_title"] && setPrTitle(data["sandbox_info"]["pr_title"]);
-          data["sandbox_info"]["commit_id"] && setCommitId(data["sandbox_info"]["commit_id"]);
         }
       })
   }, []);
 
-  function getModels() {
-    fetch(`${FETCH_PATH}/api/models`)
-      .then(response => response.json())
-      .then((data) => {
-        setModels(data.models);
-      }, [])
-  }
 
-  useEffect(() => {
-    getModels();
-  }, []);
-
+  document.body.style.overflow = "hidden";
   if (isLoggedIn) {
     return (
       <div>
-        <Grid
+        <Grid direction="column"
           container
-          spacing={0}
-          direction="column"
-          alignItems="center"
-          justifyContent="space-between"
           style={{
-            minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(238, 238, 238)',
-            border: sandboxCommit ? 'solid 12px red' : 'none'
-          }}
-        >
+            minHeight: '100vh', alignItems: 'stretch',
+          }} >
           <ResponsiveAppBar user={user} />
-          {sandboxCommit && <h2
+          <Grid
+            container
+            flex={1}
+            direction="row"
             style={{
-              background: "red",
-              color: "white",
-              marginTop: "-16px",
-              lineHeight: "30px",
-              padding: "12px",
-              borderRadius: "0 0 16px 16px"
             }}
-          >Sandbox for <b>{prTitle}</b></h2>}
-          <Disclaimer />
-          <Box sx={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            //  backgroundColor:'green',
-            alignSelf: 'normal',
-            width: '850px'
-          }}>
-            <Dz />
-            <VerticalLinearStepper />
-          </Box>
-          <DashboardTable />
-          <Footer />
+          >
+            <div style={{
+              width: '15%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'start',
+              marginLeft: '2%',
+              marginTop: '1%'
+            }}>
+              <Button href="#text-buttons"> <HomeIcon style={{ minWidth: '40px', 'borderLeft': context.pageTitle == "home" ? '5px solid #1976d2' : 'none' }} /> <Typography style={{ textTransform: 'none' }}>Home</Typography></Button>
+              <Button href="#text-buttons"><CheckIcon style={{ minWidth: '40px', 'borderLeft': context.pageTitle == "dashboard" ? '5px solid #1976d2' : 'none' }} />  <Typography style={{ textTransform: 'none' }}>Validation</Typography></Button>
+            </div>
+
+            <Grid
+              container
+              flex={1}
+              direction="column"
+              style={{
+                justifyContent: "space-between",
+                overflow: 'scroll',
+                boxSizing: 'border-box',
+                maxHeight: '90vh',
+                overflowX: 'hidden'
+              }}
+            >
+              <div style={{
+                gap: '15px',
+                flex: 1
+              }}>
+                <Grid
+                  container
+                  spacing={0}
+                  direction="column"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  style={{
+                    minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(242 246 248)',
+                    border: context.sandboxId ? 'solid 12px red' : 'none'
+                  }}
+                >
+                  {context.sandboxId && <h2
+                    style={{
+                      background: "red",
+                      color: "white",
+                      marginTop: "-16px",
+                      lineHeight: "30px",
+                      padding: "12px",
+                      borderRadius: "0 0 16px 16px"
+                    }}
+                  >Sandbox for <b>{prTitle}</b></h2>}
+                  <Disclaimer />
+
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    alignSelf: 'normal',
+                    width: '100%'
+                  }}>
+                    <Box
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginLeft: '5px',
+                        gap: '55px'
+                      }}>
+                      <Dz />
+                      <VerticalLinearStepper />
+                    </Box>
+                  </Box>
+                  <DashboardTable />
+                  <Footer />
+                </Grid>
+              </div>
+            </Grid>
+          </Grid>
         </Grid>
       </div>
     );
