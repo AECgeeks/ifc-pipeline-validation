@@ -13,6 +13,11 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Link from '@mui/material/Link';
 
+import {PageContext} from './Page';
+import { useContext } from 'react';
+
+
+
 
 function AppLogo() {
   const mystyle = {
@@ -38,21 +43,18 @@ function ResponsiveAppBar({ user }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const splittedUrl = window.location.href.split("/")
-  const [sandboxCommit, setSandbox] = React.useState(
-    splittedUrl.includes("sandbox")?
-    (splittedUrl.includes("report")?splittedUrl.at(-2):splittedUrl.at(-1)) :
-    false);
+    const context = useContext(PageContext);
+
 
     let pages;
     let settings;
 
-    if (sandboxCommit){
-      pages = [{ "label": 'Upload', "href": `/sandbox/${sandboxCommit}`},
+    if (context.sandboxId){
+      pages = [{ "label": 'Upload', "href": `/sandbox/${context.sandboxId}`},
       { "label": "Dashboard",
-        "href": `/sandbox/dashboard/${sandboxCommit}`}];
-      settings = [{ "label": 'Upload new file', "href": `/sandbox/${sandboxCommit}` },
-      { "label": 'Dashboard', "href": `/sandbox/dashboard/${sandboxCommit}`},
+        "href": `/sandbox/dashboard/${context.sandboxId}`}];
+      settings = [{ "label": 'Upload new file', "href": `/sandbox/${context.sandboxId}` },
+      { "label": 'Dashboard', "href": `/sandbox/dashboard/${context.sandboxId}`},
       { "label": 'Logout', "href": "/logout" }]
     }else{
       pages = pages_;

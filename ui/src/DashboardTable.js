@@ -394,7 +394,7 @@ export default function DashboardTable({ models }) {
                           ((row.progress == -2) ? <Typography>{"an error occured"}</Typography> : <CircularStatic value={row.progress} />)
                       }
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align="left">
                       <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
                         {'Download file'}
                       </Link>

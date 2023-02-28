@@ -7,20 +7,20 @@ import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 import { FETCH_PATH } from './environment'
 
+import {PageContext} from './Page';
+import { useContext } from 'react';
+
 function App() {
+
+  const context = useContext(PageContext);
+
   const [isLoggedIn, setLogin] = useState(false);
   const [user, setUser] = useState(null)
 
-  const splittedUrl = window.location.href.split("/");
-  const [sandboxCommit, setSandbox] = useState(
-      splittedUrl.includes("sandbox")?
-      splittedUrl.at(-1):false);
-
   const [prTitle, setPrTitle] = useState("")
-  const [commitId, setCommitId] = useState("")
-
+ 
   useEffect(() => {
-    fetch(sandboxCommit?`${FETCH_PATH}/api/sandbox/me/${sandboxCommit}`:`${FETCH_PATH}/api/me`)
+    fetch(context.sandboxId ? `${FETCH_PATH}/api/sandbox/me/${context.sandboxId}` : `${FETCH_PATH}/api/me`)
       .then(response => response.json())
       .then((data) => {
         if (data["redirect"] !== undefined) {
@@ -30,10 +30,10 @@ function App() {
           setLogin(true);
           setUser(data["user_data"]);
           data["sandbox_info"]["pr_title"] && setPrTitle(data["sandbox_info"]["pr_title"]);
-          data["sandbox_info"]["commit_id"] && setCommitId(data["sandbox_info"]["commit_id"]);
         }
       })
   }, []);
+
 
   if (isLoggedIn) {
     return (
@@ -44,10 +44,10 @@ function App() {
           direction="column"
           alignItems="center"
           justifyContent="space-between"
-          style={{ minHeight: '100vh', gap: '15px', backgroundImage: 'url(' + require('./background.jpg') + ')', border: sandboxCommit?'solid 12px red':'none'}}
+          style={{ minHeight: '100vh', gap: '15px', backgroundImage: 'url(' + require('./background.jpg') + ')', border: context.sandboxId?'solid 12px red':'none'}}
         >
           <ResponsiveAppBar user={user} />
-          {sandboxCommit && <h2
+          {context.sandboxId && <h2
           style={{
             background: "red",
             color: "white",

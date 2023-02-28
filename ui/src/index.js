@@ -19,13 +19,13 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Page pageTitle="home"><App/></Page>} />
-      <Route path="sandbox/:commitId/" element={<App />} />
+      <Route path="sandbox/:commitId/" element={<Page pageTitle="home"><App/></Page>} />
 
       <Route path="/dashboard" element={<Page pageTitle="dashboard"><Dashboard/></Page>} />
       <Route path="sandbox/dashboard/:commitId" element={<Page pageTitle="dashboard"><Dashboard/></Page>} />
 
       <Route path="/report/:modelCode"element={<Page pageTitle="report"><Report/></Page>} />
-      <Route path="/sandbox/report/:commitId/:modelCode" element = {<Report/>} />
+      <Route path="/sandbox/report/:commitId/:modelCode" element = {<Page pageTitle="report"><Report/></Page>} />
 
       <Route path="/callback" element={<Callback />} />
       <Route path="/logout" element={<Logout />} />

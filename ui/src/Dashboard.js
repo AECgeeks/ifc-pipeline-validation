@@ -66,8 +66,12 @@ function Dashboard() {
               marginLeft: '2%',
               marginTop: '1%'
             }}>
-              <Button href="#text-buttons"> <HomeIcon style={{ minWidth: '40px', 'borderLeft': context.pageTitle == "home" ? '5px solid #1976d2' : 'none' }} /> <Typography style={{ textTransform: 'none' }}>Home</Typography></Button>
-              <Button href="#text-buttons"><CheckIcon style={{ minWidth: '40px', 'borderLeft': context.pageTitle == "dashboard" ? '5px solid #1976d2' : 'none' }} />  <Typography style={{ textTransform: 'none' }}>Validation</Typography></Button>
+              <Button href={context.sandboxId?`/sandbox/${context.sandboxId}`:"/"}>
+                <HomeIcon style={{ minWidth: '40px', 'borderLeft': context.pageTitle == "home" ? '5px solid #1976d2' : 'none' }} /> <Typography style={{ textTransform: 'none' }}>Home</Typography>
+              </Button>
+              <Button href={context.sandboxId?`/sandbox/dashboard/${context.sandboxId}`:"/dashboard"}>
+                <CheckIcon style={{ minWidth: '40px', 'borderLeft': context.pageTitle == "dashboard" ? '5px solid #1976d2' : 'none' }} />  <Typography style={{ textTransform: 'none' }}>Validation</Typography>
+              </Button>
             </div>
 
             <Grid

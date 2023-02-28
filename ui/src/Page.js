@@ -10,9 +10,14 @@ function getSandboxId(pageTitle){
     }
 }
 
-function getEnvironment(){
+function getEnvironment(pageTitle){
     const splittedUrl = window.location.href.split("/");
-    return splittedUrl[2].split('.')[0];
+    if(pageTitle == "home"){
+        return splittedUrl[1].split('.')[0];
+    }
+    else{
+        return splittedUrl[2].split('.')[0];
+    }
 }
 
 export const PageContext = createContext(1);
@@ -21,7 +26,7 @@ export default function Page(props){
 
     const [sandboxId, setSetSandboxId] = useState(getSandboxId(props.pageTitle));
     const [pageTitle, setPageTitle] = useState(props.pageTitle);
-    const [environment, setEnvironment] = useState(getEnvironment());
+    const [environment, setEnvironment] = useState(getEnvironment(props.pageTitle));
 
     return (
         <PageContext.Provider
