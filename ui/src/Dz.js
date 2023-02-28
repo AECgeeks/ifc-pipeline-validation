@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import './Dz.css'
 import { FETCH_PATH } from './environment'
 import Button from '@mui/material/Button';
+import { PageContext } from './Page';
 
 function Dz() {
 
-    const splittedUrl = window.location.href.split("/")
-
-    const [sandboxCommit, setSandbox] = useState(
-        splittedUrl.includes("sandbox")?
-        splittedUrl.at(-1):false);
+    const context = useContext(PageContext);
      
     useEffect(() => {
         window.Dropzone.autoDiscover = false;
@@ -47,7 +44,7 @@ function Dz() {
     return (
         <div>
             <div className="submit-area" id="ifc_tab">
-                <form action={sandboxCommit?`${FETCH_PATH}/api/sandbox/${sandboxCommit}`:`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
+                <form action={context.sandboxId?`${FETCH_PATH}/api/sandbox/${context.sandboxId}`:`${FETCH_PATH}/api/`} className="dropzone" id="ifc_dropzone">
                     <div className="dz-message" data-dz-message><span><i className="material-icons">file_upload</i> Click or drop files here to upload for validation</span></div>
                 </form>
                 <Button className="submit-button" variant="contained" id="submit">Upload & Validate</Button>

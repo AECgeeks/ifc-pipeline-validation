@@ -28,7 +28,8 @@ import BrowserNotSupportedIcon from '@mui/icons-material/BrowserNotSupported';
 import WarningIcon from '@mui/icons-material/Warning';
 import Link from '@mui/material/Link';
 import { FETCH_PATH } from './environment'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { PageContext } from './Page';
 
 const statusToIcon = {
   "n": <BrowserNotSupportedIcon color="disabled" />,
@@ -219,11 +220,7 @@ export default function DashboardTable({ models }) {
   const [deleted, setDeleted] = useState('');
   const [progress, setProgress] = useState(0);
 
-  const splittedUrl = window.location.href.split("/");
-
-  const [sandboxCommit, setSandbox] = useState(
-    splittedUrl.includes("sandbox") ?
-      splittedUrl.at(-1) : false);
+  const context = useContext(PageContext);
 
   useEffect(() => {
     fetch(`${FETCH_PATH}/api/models_paginated/${page * rowsPerPage}/${page * rowsPerPage + rowsPerPage}`)
@@ -349,7 +346,7 @@ export default function DashboardTable({ models }) {
                     <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
                     <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
                     <TableCell align="left">
-                      <Link href={sandboxCommit ? `/sandbox/report/${sandboxCommit}/${row.code}` : `/report/${row.code}`} underline="hover">
+                      <Link href={context.sandboxId ? `/sandbox/report/${context.sandboxId}/${row.code}` : `/report/${row.code}`} underline="hover">
                         {'View report'}
                       </Link>
                     </TableCell>

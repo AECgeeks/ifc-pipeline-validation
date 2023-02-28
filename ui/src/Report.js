@@ -9,26 +9,27 @@ import MinimalTreeView from './MinimalTreeView.js'
 import BsddTreeView from './BsddTreeView'
 import GherkinResults from './GherkinResult';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { FETCH_PATH } from './environment'
+import { PageContext } from './Page';
+
 
 function Report() {
+
+  const context = useContext(PageContext);
+
   const [isLoggedIn, setLogin] = useState(false);
   const [reportData, setReportData] = useState({});
   const [user, setUser] = useState(null)
   const [isLoaded, setLoadingStatus] = useState(false)
 
   const { modelCode } = useParams()
-  const splittedUrl = window.location.href.split("/");
-  const [sandboxCommit, setSandbox] = useState(
-      splittedUrl.includes("sandbox")?
-      splittedUrl.at(-2):false);
 
   const [prTitle, setPrTitle] = useState("")
   const [commitId, setCommitId] = useState("")
 
   useEffect(() => {
-    fetch(sandboxCommit?`${FETCH_PATH}/api/sandbox/me/${sandboxCommit}`:`${FETCH_PATH}/api/me`)
+    fetch(context.sandboxId?`${FETCH_PATH}/api/sandbox/me/${context.sandboxId}`:`${FETCH_PATH}/api/me`)
       .then(response => response.json())
       .then((data) => {
         if (data["redirect"] !== undefined) {
@@ -67,10 +68,10 @@ function Report() {
           direction="column"
           alignItems="center"
           justifyContent="space-between"
-          style={{ minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(238, 238, 238)', border: sandboxCommit?'solid 12px red':'none'}}
+          style={{ minHeight: '100vh', gap: '15px', backgroundColor: 'rgb(238, 238, 238)', border: context.sandboxId?'solid 12px red':'none'}}
         >
           <ResponsiveAppBar user={user} />
-          {sandboxCommit && <h2
+          {context.sandboxId && <h2
           style={{
             background: "red",
             color: "white",
