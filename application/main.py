@@ -34,6 +34,7 @@ import threading
 from functools import wraps
 
 from collections import namedtuple
+from urllib.parse import urlparse
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, session, send_file, render_template, abort, jsonify, redirect, url_for, make_response
@@ -679,6 +680,44 @@ def get_model(fn):
     else:
         return send_file(path)
 
+@application.route('/preprocess_bsdd/<id>', methods=['GET'])
+@login_required
+def preprocess_bsdd(user_data, id):
+    def bsdd_report_quantity(item):
+        return sum(bool(bsdd_result.serialize().get(item)) for bsdd_result in bsdd_task.results)
+    
+    def get_domain(domain_file, uri):
+        domain_sources = []
+        default = 'classification not found'
+        for result in bsdd_results:
+            bsdd_uri = result[uri]
+            if bsdd_uri == default:
+                domain_sources.append(bsdd_uri)
+            else:
+                parse = urlparse(bsdd_uri)
+                parsed_domain_file = ''.join(char for char in result[domain_file] if char.isalnum()).lower()
+                domain_part = [part for part in parse.path.split('/') if parsed_domain_file in part][0]
+                url = parse.scheme + '/' + parse.netloc + '/' + 'uri' + '/' + domain_part + '/'
+                domain_sources.append(url)
+        sources = list(filter(lambda x: x != default, domain_sources))
+        return sources[0] if sources else default
+
+    with database.Session() as session:
+        model = session.query(database.model).filter(
+            database.model.code == id).first()
+        bsdd_task = [task for task in model.tasks if task.task_type == "bsdd_validation_task"][0]
+        bsdd_results = [result.serialize() for result in bsdd_task.results]
+
+        if model.status_bsdd != 'n':
+            preprocess_bsdd2 = {
+                'bSDD classification found': {
+                    'classification_count' : bsdd_report_quantity('classification_code'),
+                    'properties_count': bsdd_report_quantity('ifc_property_set'),
+                    'domain_source' : get_domain('domain_file', 'bsdd_classification_uri')
+                },
+                'bSDD data': {}
+            }
+    return jsonify (preprocess_bsdd2)
 
 """
 # Create a file called routes.py with the following
