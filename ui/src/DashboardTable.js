@@ -304,91 +304,65 @@ export default function DashboardTable({ models }) {
             rowCount={rows.length}
           />
           <TableBody>
-            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.sort(getComparator(order, orderBy)).slice() */}
             {rows.map((row, index) => {
               const isItemSelected = isSelected(row.id);
               const labelId = `enhanced-table-checkbox-${index}`;
-              if (row.progress == 100) {
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="left">{row.filename}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_syntax]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_schema]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
+              return (
+                <TableRow
+                  hover
+                  onClick={(event) => handleClick(event, row.id)}
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={row.id}
+                  selected={isItemSelected}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      color="primary"
+                      checked={isItemSelected}
+                      inputProps={{
+                        'aria-labelledby': labelId,
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="left">{row.filename}</TableCell>
+                  <TableCell align="left">{statusToIcon[row.status_syntax]}</TableCell>
+                  <TableCell align="left">{statusToIcon[row.status_schema]}</TableCell>
+                  <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
+                  <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
+                  <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
+
+                  {
+                    (row.progress == 100) ?
                     <TableCell align="left">
                       <Link href={context.sandboxId ? `/sandbox/report/${context.sandboxId}/${row.code}` : `/report/${row.code}`} underline="hover">
                         {'View report'}
                       </Link>
-                    </TableCell>
-                    <TableCell align="left">{computeRelativeDates(new Date(row.date))}</TableCell>
-                    <TableCell align="left">
-                      <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
-                        {'Download file'}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                );
-              } else {
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="left">{row.filename}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_syntax]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_schema]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
-                    <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
+                    </TableCell> :
                     <TableCell align="left"></TableCell>
-                    <TableCell align="left">
-                      {
-                        (row.progress == -1) ? <Typography>{"in queue"}</Typography> :
-                          ((row.progress == -2) ? <Typography>{"an error occured"}</Typography> : <CircularStatic value={row.progress} />)
-                      }
-                    </TableCell>
-                    <TableCell align="left">
-                      <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
-                        {'Download file'}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                );
-              }
+
+                  }
+
+                  {
+                    (row.progress == 100) ?
+                      <TableCell align="left">{computeRelativeDates(new Date(row.date))}</TableCell> :
+                      <TableCell align="left">
+                        {
+                          (row.progress == -1) ? <Typography>{"in queue"}</Typography> :
+                            ((row.progress == -2) ? <Typography>{"an error occured"}</Typography> : <CircularStatic value={row.progress} />)
+                        }
+                      </TableCell>
+                  }
+
+                  <TableCell align="left">
+                    <Link href={`${FETCH_PATH}/api/download/${row.id}`} underline="hover">
+                      {'Download file'}
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              );
+
             })}
           </TableBody>
         </Table>
