@@ -40,6 +40,7 @@ function Dashboard() {
       })
   }, []);
 
+  throw new Error();
 
   document.body.style.overflow = "hidden";
   if (isLoggedIn) {
