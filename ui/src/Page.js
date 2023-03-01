@@ -12,12 +12,8 @@ function getSandboxId(pageTitle){
 
 function getEnvironment(pageTitle){
     const splittedUrl = window.location.href.split("/");
-    if(pageTitle == "home"){
-        return splittedUrl[1].split('.')[0];
-    }
-    else{
-        return splittedUrl[2].split('.')[0];
-    }
+    return splittedUrl[2].split('.')[0];
+ 
 }
 
 export const PageContext = createContext(1);
