@@ -1,4 +1,5 @@
 import { useState, createContext } from 'react';
+import ErrorBoundary from './ErrorBoundary'
 
 function getSandboxId(pageTitle){
     const splittedUrl = window.location.href.split("/");
@@ -25,10 +26,13 @@ export default function Page(props){
     const [environment, setEnvironment] = useState(getEnvironment(props.pageTitle));
 
     return (
-        <PageContext.Provider
-            value={{sandboxId:sandboxId, pageTitle:pageTitle,environment:environment }}     
-        >
-                {props.children}
-        </PageContext.Provider>
+
+        <ErrorBoundary>
+            <PageContext.Provider
+                value={{sandboxId:sandboxId, pageTitle:pageTitle,environment:environment }}     
+            >
+                    {props.children}
+            </PageContext.Provider>
+        </ErrorBoundary>
     ) 
 }
