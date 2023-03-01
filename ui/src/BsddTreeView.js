@@ -12,12 +12,31 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { statusToColor } from './mappings'
 
+
+function BsddReportRow({ key, valid, instance, requirement, required, observed }) {
+  return (
+    <TableRow
+      key={key}
+      sx={{ '&:last-child td, &:last-child th': { border: 0 }, "backgroundColor": (valid == 1) ? statusToColor['v'] : statusToColor['i'] }}
+    >
+      <TableCell align="center" component="th" scope="row">
+        {`${instance}`}
+      </TableCell>
+      <TableCell align="center"> {`${requirement}`}</TableCell>
+      <TableCell align="center"> {`${required}`}</TableCell>
+      <TableCell align="center">  {`${observed}`}</TableCell>
+    </TableRow>
+
+  )
+
+}
+
 export default function BsddTreeView({ bsddResults, status }) {
 
-  const bsdd = bsddResults;
+  const bsdd = bsddResults.bsdd;
 
   return (
-    <Paper sx={{overflow: 'hidden'}}><TreeView
+    <Paper sx={{ overflow: 'hidden' }}><TreeView
       aria-label="file system navigator"
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
@@ -28,15 +47,16 @@ export default function BsddTreeView({ bsddResults, status }) {
         <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
           defaultExpandIcon={<ChevronRightIcon />}>
           {
-            Object.keys(bsdd["bsdd"]).map((domain, d_index) => {
-              return <TreeItem nodeId={d_index} label={`Domain: ${domain}`}>
+            Object.entries(bsdd).map(([domain, classifications]) => {
+
+              return <TreeItem nodeId={11} label={`Domain: ${domain}`}>
                 <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}>
                   {
-                    Object.keys(bsdd["bsdd"][domain]).map((classification, c_index) => {
-                      return <TreeItem nodeId={c_index} label={`Classification: ${classification}`}>
+                    Object.entries(classifications).map(([classification, results]) => {
+                      return <TreeItem nodeId={12} label={`Classification: ${classification}`}>
                         {
-                          Object.keys(bsdd["bsdd"][domain][classification]).map((result) => {
+                          results.map((result) => {
                             return <div >
                               <br></br>
                               <TableContainer sx={{
@@ -62,69 +82,49 @@ export default function BsddTreeView({ bsddResults, status }) {
                                   <TableBody>
 
                                     {/* IFC TYPE */}
-                                    <TableRow
+                                    <BsddReportRow valid={result.val_ifc_type}
                                       key={"0"}
-                                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, "backgroundColor": (bsdd["bsdd"][domain][classification][result]["val_ifc_type"] == 1) ? statusToColor['v'] : statusToColor['i'] }}
-                                    >
-                                      <TableCell align="center" component="th" scope="row">
-                                        {`${bsdd["bsdd"][domain][classification][result]['global_id']}`}
-                                      </TableCell>
-                                      <TableCell align="center"> {"IFC entity type"}</TableCell>
-                                      <TableCell align="center"> {`${bsdd["bsdd"][domain][classification][result]["bsdd_type_constraint"]}`}</TableCell>
-                                      <TableCell align="center">  {`${bsdd["bsdd"][domain][classification][result]['ifc_type']}`}</TableCell>
-                                    </TableRow>
+                                      instance={result.global_id}
+                                      requirement={"IFC entity type"}
+                                      required={result.bsdd_type_constraint}
+                                      observed={result.ifc_type}
+                                    />
 
-                                    {/* PROPERTY SET */}
-                                    <TableRow
+                                    {/* PROPERTY SET  */}
+                                    <BsddReportRow valid={result.val_property_set}
                                       key={"1"}
-                                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, "backgroundColor": (bsdd["bsdd"][domain][classification][result]["val_property_set"] == 1) ? statusToColor['v'] : statusToColor['i'] }}
-                                    >
-                                      <TableCell align="center" component="th" scope="row">
-                                        {`${bsdd["bsdd"][domain][classification][result]['global_id']}`}
-                                      </TableCell>
-                                      <TableCell align="center"> {"Property Set"}</TableCell>
-                                      <TableCell align="center"> {`${bsdd["bsdd"][domain][classification][result]["bsdd_property_constraint"]["propertySet"]}`}</TableCell>
-                                      <TableCell align="center">  {`${bsdd["bsdd"][domain][classification][result]['ifc_property_set']}`}</TableCell>
-                                    </TableRow>
+                                      instance={result.global_id}
+                                      requirement={"Property Set"}
+                                      required={result.bsdd_property_constraint.propertySet}
+                                      observed={result.ifc_property_set}
+                                    />
 
                                     {/* PROPERTY */}
-                                    <TableRow
+                                    <BsddReportRow valid={result.val_property_name}
                                       key={"2"}
-                                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, "backgroundColor": (bsdd["bsdd"][domain][classification][result]["val_property_name"] == 1) ? statusToColor['v'] : statusToColor['i'] }}
-                                    >
-                                      <TableCell align="center" component="th" scope="row">
-                                        {`${bsdd["bsdd"][domain][classification][result]['global_id']}`}
-                                      </TableCell>
-                                      <TableCell align="center"> {"Property Value"}</TableCell>
-                                      <TableCell align="center"> {`${bsdd["bsdd"][domain][classification][result]["bsdd_property_constraint"]["name"]}`}</TableCell>
-                                      <TableCell align="center">  {`${bsdd["bsdd"][domain][classification][result]['ifc_property_value']}`}</TableCell>
-                                    </TableRow>
+                                      instance={result.global_id}
+                                      requirement={"Property Name"}
+                                      required={result.bsdd_property_constraint.name}
+                                      observed={result.ifc_property_value}
+                                    />
 
                                     {/* DATA TYPE */}
-                                    <TableRow
+                                    <BsddReportRow valid={result.val_property_type}
                                       key={"3"}
-                                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, "backgroundColor": (bsdd["bsdd"][domain][classification][result]["val_property_type"] == 1) ? statusToColor['v'] : statusToColor['i'] }}
-                                    >
-                                      <TableCell align="center" component="th" scope="row">
-                                        {`${bsdd["bsdd"][domain][classification][result]['global_id']}`}
-                                      </TableCell>
-                                      <TableCell align="center"> {"Property Value Type"}</TableCell>
-                                      <TableCell align="center"> {`${bsdd["bsdd"][domain][classification][result]["bsdd_property_constraint"]["dataType"]}`}</TableCell>
-                                      <TableCell align="center">  {`${bsdd["bsdd"][domain][classification][result]['ifc_property_type']}`}</TableCell>
-                                    </TableRow>
+                                      instance={result.global_id}
+                                      requirement={"Property Value Type"}
+                                      required={result.bsdd_property_constraint.dataType}
+                                      observed={result.ifc_property_type}
+                                    />
 
                                     {/* PROPERTY VALUE */}
-                                    <TableRow
+                                    <BsddReportRow valid={result.val_property_value}
                                       key={"4"}
-                                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, "backgroundColor": (bsdd["bsdd"][domain][classification][result]["val_property_value"] == 1) ? statusToColor['v'] : statusToColor['i'] }}
-                                    >
-                                      <TableCell align="center" component="th" scope="row">
-                                        {`${bsdd["bsdd"][domain][classification][result]['global_id']}`}
-                                      </TableCell>
-                                      <TableCell align="center"> {"Property Value Type"}</TableCell>
-                                      <TableCell align="center"> {`${bsdd["bsdd"][domain][classification][result]["bsdd_property_constraint"]["predefinedValue"]}`}</TableCell>
-                                      <TableCell align="center">  {`${bsdd["bsdd"][domain][classification][result]['ifc_property_value']}`}</TableCell>
-                                    </TableRow>
+                                      instance={result.global_id}
+                                      requirement={"Property Value"}
+                                      required={result.bsdd_property_constraint.predefinedValue}
+                                      observed={result.ifc_property_value}
+                                    />
                                   </TableBody>
                                 </Table>
                               </TableContainer>
