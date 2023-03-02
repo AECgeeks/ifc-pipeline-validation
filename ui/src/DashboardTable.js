@@ -37,6 +37,16 @@ function status_combine(...args) {
   return statuses[Math.max(...args.map(s => statuses.indexOf(s)))];
 }
 
+function wrap_status(status, href) {
+  if (status === 'n') {
+    return statusToIcon[status];
+  } else {
+    return <IconButton component={Link} href={href}>
+      {statusToIcon[status]}
+    </IconButton>;
+  }
+}
+
 function computeRelativeDates(modelDate) {
   var offset = modelDate.getTimezoneOffset();
   modelDate = new Date(
@@ -65,37 +75,26 @@ function computeRelativeDates(modelDate) {
 const headCells = [
   {
     id: 'filename',
-    label: 'File name',
+    label: 'File Name',
   },
   {
     id: 'syntax_and_schema',
-    label: 'Syntax and schema',
-    width: 30,
+    label: 'IFC Syntax and Schema',
+    width: 100,
+    align: 'center'
   },
-  // {
-  //   id: 'schema',
-  //   label: 'Schema',
-  // },
+  {
+    id: 'rules',
+    label: 'Rules',
+    width: 100,
+    align: 'center'
+  },
   {
     id: 'bsdd',
     label: 'bSDD',
-    width: 30,
+    width: 100,
+    align: 'center'
   },
-  {
-    id: 'ia',
-    label: 'IA',
-    width: 30,
-  },
-  {
-    id: 'ip',
-    label: 'IP',
-    width: 30,
-  },
-  // {
-  //   id: 'report',
-  //   numeric: true,
-  //   label: '',
-  // },
   {
     id: 'date',
     label: '',
@@ -127,9 +126,10 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align='left'
+            align={headCell.align || 'left'}
             padding='normal'
             width={headCell.width}
+            sx={{fontWeight: 'bold'}}
           >
             {headCell.label}
           </TableCell>
@@ -286,7 +286,17 @@ export default function DashboardTable({ models }) {
       <EnhancedTableToolbar numSelected={selected.length} onDelete={onDelete} />
       <TableContainer>
         <Table
-          sx={{ backgroundColor: 'white' }}
+          sx={{ 
+            backgroundColor: 'white',
+            '.MuiIconButton-root' : {
+              // border: 'solid 1px rgba(0,0,0,30%)',
+              boxShadow: '2px 2px 3px rgba(0,0,0,10%)'
+            },
+            '.MuiIconButton-root:hover' : {
+              // border: 'solid 1px rgba(0,0,0,30%)',
+              boxShadow: '2px 2px 3px rgba(0,0,0,30%)'
+            },
+          }}
           aria-labelledby="tableTitle"
           size={dense ? 'small' : 'medium'}
         >
@@ -319,15 +329,16 @@ export default function DashboardTable({ models }) {
                     />
                   </TableCell>
                   <TableCell align="left">{row.filename}</TableCell>
-                  <TableCell align="left">
-                    <Link href={context.sandboxId ? `/sandbox/report_syntax_schema/${context.sandboxId}/${row.code}` : `/report_syntax_schema/${row.code}`} underline="hover">
-                      {statusToIcon[status_combine(row.status_syntax, row.status_schema)]}
-                    </Link>
+                  <TableCell align="center">
+                    {wrap_status(status_combine(row.status_syntax, row.status_schema), context.sandboxId ? `/sandbox/report_syntax_schema/${context.sandboxId}/${row.code}` : `/report_syntax_schema/${row.code}`)}
                   </TableCell>
-                  <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
-                  <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
-                  <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
-
+                  <TableCell align="center">
+                    {wrap_status(status_combine(row.status_ia, row.status_ip), context.sandboxId ? `/sandbox/report_rules/${context.sandboxId}/${row.code}` : `/report_rules/${row.code}`)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {wrap_status(row.status_bsdd, context.sandboxId ? `/sandbox/report_bsdd/${context.sandboxId}/${row.code}` : `/report_bsdd/${row.code}`)}
+                  </TableCell>
+                  
                   {
                     // (row.progress == 100) ?
                     // <TableCell align="left">
