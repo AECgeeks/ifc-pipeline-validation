@@ -32,6 +32,11 @@ const statusToIcon = {
   "w": <WarningIcon color="warning" />
 }
 
+function status_combine(...args) {
+  const statuses = ["v", "n", "w", "i"];
+  return statuses[Math.max(...args.map(s => statuses.indexOf(s)))];
+}
+
 function computeRelativeDates(modelDate) {
   var offset = modelDate.getTimezoneOffset();
   modelDate = new Date(
@@ -60,56 +65,43 @@ function computeRelativeDates(modelDate) {
 const headCells = [
   {
     id: 'filename',
-    numeric: true,
-    disablePadding: false,
     label: 'File name',
   },
   {
-    id: 'syntax',
-    numeric: true,
-    disablePadding: false,
-    label: 'Syntax',
+    id: 'syntax_and_schema',
+    label: 'Syntax and schema',
+    width: 30,
   },
-  {
-    id: 'schema',
-    numeric: true,
-    disablePadding: false,
-    label: 'Schema',
-  },
+  // {
+  //   id: 'schema',
+  //   label: 'Schema',
+  // },
   {
     id: 'bsdd',
-    numeric: true,
-    disablePadding: false,
     label: 'bSDD',
+    width: 30,
   },
   {
     id: 'ia',
-    numeric: true,
-    disablePadding: false,
     label: 'IA',
+    width: 30,
   },
   {
     id: 'ip',
-    numeric: true,
-    disablePadding: false,
     label: 'IP',
+    width: 30,
   },
-  {
-    id: 'report',
-    numeric: true,
-    disablePadding: false,
-    label: '',
-  },
+  // {
+  //   id: 'report',
+  //   numeric: true,
+  //   label: '',
+  // },
   {
     id: 'date',
-    numeric: true,
-    disablePadding: false,
     label: '',
   },
   {
     id: 'download',
-    numeric: true,
-    disablePadding: false,
     label: '',
   }
 ];
@@ -135,9 +127,9 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-
+            align='left'
+            padding='normal'
+            width={headCell.width}
           >
             {headCell.label}
           </TableCell>
@@ -327,20 +319,23 @@ export default function DashboardTable({ models }) {
                     />
                   </TableCell>
                   <TableCell align="left">{row.filename}</TableCell>
-                  <TableCell align="left">{statusToIcon[row.status_syntax]}</TableCell>
-                  <TableCell align="left">{statusToIcon[row.status_schema]}</TableCell>
+                  <TableCell align="left">
+                    <Link href={context.sandboxId ? `/sandbox/report_syntax_schema/${context.sandboxId}/${row.code}` : `/report_syntax_schema/${row.code}`} underline="hover">
+                      {statusToIcon[status_combine(row.status_syntax, row.status_schema)]}
+                    </Link>
+                  </TableCell>
                   <TableCell align="left">{statusToIcon[row.status_bsdd]}</TableCell>
                   <TableCell align="left">{statusToIcon[row.status_ia]}</TableCell>
                   <TableCell align="left">{statusToIcon[row.status_ip]}</TableCell>
 
                   {
-                    (row.progress == 100) ?
-                    <TableCell align="left">
-                      <Link href={context.sandboxId ? `/sandbox/report/${context.sandboxId}/${row.code}` : `/report/${row.code}`} underline="hover">
-                        {'View report'}
-                      </Link>
-                    </TableCell> :
-                    <TableCell align="left"></TableCell>
+                    // (row.progress == 100) ?
+                    // <TableCell align="left">
+                    //   <Link href={context.sandboxId ? `/sandbox/report/${context.sandboxId}/${row.code}` : `/report/${row.code}`} underline="hover">
+                    //     {'View report'}
+                    //   </Link>
+                    // </TableCell> :
+                    // <TableCell align="left"></TableCell>
 
                   }
 
