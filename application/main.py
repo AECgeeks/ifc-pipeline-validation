@@ -648,6 +648,33 @@ class Error:
                (self.validation_constraints == other.validation_constraints) and \
                (self.validation_results == other.validation_results)
 
+@application.route('/api/report_schema/<code>')
+@login_required
+def report_schema(user_data, start, end, code):
+    with database.Session as session:
+        session = database.Session()
+
+        model = session.query(database.model).filter(
+            database.model.code == code).all()[0]
+        
+        schema_task_results = [task.results for task in model.tasks if task.task_type == 'schema_validation_task'][0]
+        constraint_types = [str(c[0]) for c in session.query(database.schema_result.constraint_type).distinct().all()]
+        results = {'constraint_types': [str(c[0]) for c in session.query(database.schema_result.constraint_type).distinct().all()],
+                        'values': {
+                        }}
+        
+        def get_values_count(constraint_type):
+            values = [r.serialize() for r in schema_task_results if r.constraint_type == constraint_type][slice(int(start), int(end))]
+            count = len(values)
+            return {'v': values, 'c': count}
+            
+        for constraint_type in constraint_types:
+            results['values'][constraint_type] =  {
+                'saved_values' : get_values_count(constraint_type)['v'],
+                'saved_count' : get_values_count(constraint_type)['c']
+                }
+    
+    return jsonify(results)
 
 
 
