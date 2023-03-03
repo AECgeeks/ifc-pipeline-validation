@@ -78,3 +78,12 @@ def send_message(msg_content, user_email, html=None):
               "html":html,
               "subject": "Validation Service update",
               "text": msg_content})
+
+def do_try(fn, default=None):
+    try:
+        return fn()
+    except:
+        import traceback
+        traceback.print_exc()
+        return default
+

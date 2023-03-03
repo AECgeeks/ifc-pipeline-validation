@@ -794,6 +794,31 @@ def get_model(fn):
         return response
     else:
         return send_file(path)
+    
+@application.route('/preprocess_bsdd/<id>', methods=['GET'])
+@login_required
+def preprocess_bsdd(user_data, id):
+    with database.Session() as session:
+        model = session.query(database.model).filter(
+            database.model.code == id).first()
+        bsdd_task = [task for task in model.tasks if task.task_type == "bsdd_validation_task"][0]
+        bsdd_results = [result.serialize() for result in bsdd_task.results]
+
+        if model.status_bsdd != 'n':
+            preprocessed_bsdd_data = {
+                'bSDD classification found': {
+                    'name': [r['classification_name'] for r in bsdd_results][0],
+                    'Release data': 'n.a.',
+                    'Organisation': 'BuildingSMART',
+                    'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_task, 'classification_code'),
+                    'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_task, 'ifc_property_set'),
+                    'domain_source' : bsdd_utils.get_domain(bsdd_results)
+                },
+                'bSDD data': bsdd_utils.bsdd_data_processing(bsdd_task, bsdd_results, session)
+            }
+
+    return jsonify(preprocessed_bsdd_data)
+
 
 """
 # Create a file called routes.py with the following
