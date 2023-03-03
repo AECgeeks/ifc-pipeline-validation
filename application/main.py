@@ -795,7 +795,7 @@ def get_model(fn):
     else:
         return send_file(path)
     
-@application.route('/preprocess_bsdd/<id>', methods=['GET'])
+@application.route('/api/bsdd/statistics/<id>', methods=['GET'])
 @login_required
 def preprocess_bsdd(user_data, id):
     with database.Session() as session:
