@@ -801,6 +801,8 @@ def preprocess_bsdd(user_data, id):
     with database.Session() as session:
         model = session.query(database.model).filter(
             database.model.code == id).first()
+        if model.user_id != user_data["sub"]:
+            abort(403)
         bsdd_task = [task for task in model.tasks if task.task_type == "bsdd_validation_task"][0]
         bsdd_results = [result.serialize() for result in bsdd_task.results]
 
