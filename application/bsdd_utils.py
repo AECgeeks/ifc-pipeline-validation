@@ -73,7 +73,6 @@ def get_inst(session, instance_id):
     return session.query(database.ifc_instance).filter(database.ifc_instance.id == instance_id).all()[0]
 
 def get_domain(bsdd_results):
-    domain_file = 'domain_file'
     uri = 'bsdd_classification_uri'
     domain_sources = []
     default = 'classification not found'
@@ -82,13 +81,9 @@ def get_domain(bsdd_results):
         if bsdd_uri == default:
             domain_sources.append(bsdd_uri)
         else:
-            parse = urlparse(bsdd_uri)
-            parsed_domain_file = ''.join(char for char in result[domain_file] if char.isalnum()).lower()
-            domain_part = [part for part in parse.path.split('/') if parsed_domain_file in part][0]
-            url = parse.scheme + '/' + parse.netloc + '/' + 'uri' + '/' + domain_part + '/'
-            domain_sources.append(url)
+            domain_sources.append(bsdd_uri.split("/class")[0])
     sources = list(filter(lambda x: x != default, domain_sources))
-    return sources[0] if sources else default
+    return {item: sources.count(item) for item in sources} if sources else default
 
 def bsdd_report_quantity(bsdd_task, item):
     return sum(bool(bsdd_result.serialize().get(item)) for bsdd_result in bsdd_task.results)
