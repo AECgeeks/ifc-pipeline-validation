@@ -809,7 +809,7 @@ def preprocess_bsdd(user_data, id):
         if model.status_bsdd != 'n':
             preprocessed_bsdd_data = {
                 'bSDD classification found': {
-                    'name': [r['classification_name'] for r in bsdd_results][0],
+                    'name' : bsdd_utils.get_classification_name(bsdd_results),
                     'Release data': 'n.a.',
                     'Organisation': 'BuildingSMART',
                     'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_task, 'classification_code'),

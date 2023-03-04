@@ -74,6 +74,11 @@ def instance_supertypes(observed_type, schema):
         allowed_types.append(result)
     return allowed_types
 
+def get_classification_name(bsdd_results):
+    default = 'name not found'
+    names = list(filter(lambda x: x != default, [r['classification_name'] for r in bsdd_results]))
+    return {item: names.count(item) for item in names} if names else default
+
 def bsdd_table(bsdd_result, session, schema):
     inst = get_inst(session, bsdd_result['instance_id'])
     observed_type = inst.ifc_type
