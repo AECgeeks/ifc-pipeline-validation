@@ -816,11 +816,10 @@ def preprocess_bsdd(user_data, id):
                     'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_task, 'ifc_property_set'),
                     'domain_source' : bsdd_utils.get_domain(bsdd_results)
                 },
-                'bSDD data': bsdd_utils.bsdd_data_processing(bsdd_task, bsdd_results, session)
+                'bSDD data': bsdd_utils.get_processed_bsdd_table(bsdd_task, bsdd_results, session, model.schema)
             }
 
     return jsonify(preprocessed_bsdd_data)
-
 
 """
 # Create a file called routes.py with the following

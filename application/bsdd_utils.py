@@ -50,8 +50,8 @@ def get_hierarchical_bsdd(id):
     
     return hierarchical_bsdd_results     
 
-def bsdd_data_processing(bsdd_task, bsdd_results, session):
-    bsdd_instances = [bsdd_table(result.serialize(), session) for result in bsdd_task.results]
+def get_processed_bsdd_table(bsdd_task, bsdd_results, session, schema):
+    bsdd_instances = [bsdd_table(result.serialize(), session, schema) for result in bsdd_task.results]
     bsdd_data = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'source': get_domain(bsdd_results)})
 
     for item in bsdd_instances:
@@ -62,12 +62,26 @@ def bsdd_data_processing(bsdd_task, bsdd_results, session):
     bsdd_data = [{**{'classification': k}, **v} for k, v in bsdd_data.items()]
     return bsdd_data
 
-def bsdd_table(bsdd_result, session):
+def instance_supertypes(observed_type, schema):
+    allowed_types = [observed_type]
+
+    while True:
+        try:
+            result = (lambda x: ifcopenshell.ifcopenshell_wrapper.schema_by_name(schema).declaration_by_name(x).supertype().name())(result_list[-1])
+        except AttributeError: #NoneType
+            break
+
+        allowed_types.append(result)
+    return allowed_types
+
+def bsdd_table(bsdd_result, session, schema):
     inst = get_inst(session, bsdd_result['instance_id'])
     observed_type = inst.ifc_type
     required_type = bsdd_result['bsdd_type_constraint']
-    validity = "valid" if utils.do_try(lambda: ifcopenshell.template.create(schema_identifier="IFC4X3").create_entity(observed_type).is_a(required_type), 'invalid') else 'invalid'
-    return {'classification': observed_type, 'validity': validity}
+    domain_source = bsdd_result['bsdd_classification_uri']
+    validity = "valid" if required_type in instance_supertypes(observed_type, schema) else 'invalid'
+
+    return {'classification': observed_type, 'validity': validity, 'domain_source': domain_source}
 
 def get_inst(session, instance_id):
     return session.query(database.ifc_instance).filter(database.ifc_instance.id == instance_id).all()[0]
