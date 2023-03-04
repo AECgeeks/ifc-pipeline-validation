@@ -50,14 +50,14 @@ def get_hierarchical_bsdd(id):
     
     return hierarchical_bsdd_results     
 
-def get_processed_bsdd_table(bsdd_task, bsdd_results, session, schema):
+def get_processed_bsdd_table(bsdd_results, session, schema):
     """
     The function returns data for the 'bsdd data' table in a file metrics report. 
     More specifically,it returns a list of dictionaries containing the classifications (ifc instances, in this case) 
     and their valid/invalid counts.
     """
-    bsdd_instances = [bsdd_table(result.serialize(), session, schema) for result in bsdd_task.results]
-    bsdd_data = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'source': get_domain(bsdd_results)})
+    bsdd_instances = [bsdd_table(result, session, schema) for result in bsdd_results]
+    bsdd_data = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'domain_source': 'classification not found'})
 
     for item in bsdd_instances:
         classification = item['classification']
@@ -79,11 +79,6 @@ def instance_supertypes(observed_type, schema):
         allowed_types.append(result)
     return allowed_types
 
-def get_classification_name(bsdd_results):
-    default = 'name not found'
-    names = list(filter(lambda x: x != default, [r['classification_name'] for r in bsdd_results]))
-    return {item: names.count(item) for item in names} if names else default
-
 def bsdd_table(bsdd_result, session, schema):
     inst = get_inst(session, bsdd_result['instance_id'])
     observed_type = inst.ifc_type
@@ -95,6 +90,11 @@ def bsdd_table(bsdd_result, session, schema):
 
 def get_inst(session, instance_id):
     return session.query(database.ifc_instance).filter(database.ifc_instance.id == instance_id).all()[0]
+
+def get_classification_name(bsdd_results):
+    default = 'name not found'
+    names = list(filter(lambda x: x != default, [r['classification_name'] for r in bsdd_results]))
+    return {item: names.count(item) for item in names} if names else default
 
 def get_domain(bsdd_results):
     uri = 'bsdd_classification_uri'
@@ -109,5 +109,5 @@ def get_domain(bsdd_results):
     sources = list(filter(lambda x: x != default, domain_sources))
     return {item: sources.count(item) for item in sources} if sources else default
 
-def bsdd_report_quantity(bsdd_task, item):
-    return sum(bool(bsdd_result.serialize().get(item)) for bsdd_result in bsdd_task.results)
+def bsdd_report_quantity(bsdd_results, item):
+    return sum(bool(bsdd_result.get(item)) for bsdd_result in bsdd_results)

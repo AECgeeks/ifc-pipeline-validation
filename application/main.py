@@ -810,11 +810,11 @@ def preprocess_bsdd(user_data, id):
             preprocessed_bsdd_data = {
                 'bSDD classification found': {
                     'name' : bsdd_utils.get_classification_name(bsdd_results),
-                    'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_task, 'classification_code'),
-                    'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_task, 'ifc_property_set'),
+                    'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_results, 'classification_code'),
+                    'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_results, 'ifc_property_set'),
                     'domain_source' : bsdd_utils.get_domain(bsdd_results)
                 },
-                'bSDD data': bsdd_utils.get_processed_bsdd_table(bsdd_task, bsdd_results, session, model.schema)
+                'bSDD data': bsdd_utils.get_processed_bsdd_table(bsdd_results, session, model.schema)
             }
 
     return jsonify(preprocessed_bsdd_data)
