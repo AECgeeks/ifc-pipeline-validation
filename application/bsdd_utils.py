@@ -67,7 +67,7 @@ def instance_supertypes(observed_type, schema):
 
     while True:
         try:
-            result = (lambda x: ifcopenshell.ifcopenshell_wrapper.schema_by_name(schema).declaration_by_name(x).supertype().name())(result_list[-1])
+            result = (lambda x: ifcopenshell.ifcopenshell_wrapper.schema_by_name(schema).declaration_by_name(x).supertype().name())(allowed_types[-1])
         except AttributeError: #NoneType
             break
 
