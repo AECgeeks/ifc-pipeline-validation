@@ -51,6 +51,9 @@ def get_hierarchical_bsdd(id):
     return hierarchical_bsdd_results     
 
 def get_processed_bsdd_table(bsdd_task, bsdd_results, session, schema):
+    """
+    Return data to use in 'bsdd data' table in file metrics report
+    """
     bsdd_instances = [bsdd_table(result.serialize(), session, schema) for result in bsdd_task.results]
     bsdd_data = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'source': get_domain(bsdd_results)})
 
