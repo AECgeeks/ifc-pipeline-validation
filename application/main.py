@@ -810,8 +810,6 @@ def preprocess_bsdd(user_data, id):
             preprocessed_bsdd_data = {
                 'bSDD classification found': {
                     'name' : bsdd_utils.get_classification_name(bsdd_results),
-                    'Release data': 'n.a.',
-                    'Organisation': 'BuildingSMART',
                     'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_task, 'classification_code'),
                     'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_task, 'ifc_property_set'),
                     'domain_source' : bsdd_utils.get_domain(bsdd_results)
