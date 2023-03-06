@@ -29,6 +29,7 @@ from __future__ import print_function
 import os
 import json
 import ast
+import sys 
 
 import threading
 from functools import wraps
@@ -44,6 +45,8 @@ from flasgger import Swagger, validate
 import requests
 from requests_oauthlib import OAuth2Session
 from authlib.jose import jwt
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'checks')))
 
 import utils
 import bsdd_utils
@@ -812,7 +815,7 @@ def preprocess_bsdd(user_data, id):
                     'name' : bsdd_utils.get_classification_name(bsdd_results),
                     'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_results, 'classification_code'),
                     'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_results, 'ifc_property_set'),
-                    'domain_source' : bsdd_utils.get_domain(bsdd_results)
+                    'domain_source' : bsdd_utils.domain_sources(bsdd_results)
                 },
                 'bSDD data': bsdd_utils.get_processed_bsdd_table(bsdd_results, session, model.schema)
             }

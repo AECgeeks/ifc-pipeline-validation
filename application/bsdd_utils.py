@@ -1,12 +1,15 @@
 import database
 import json
 import functools
+import collections
 
 from collections import defaultdict
 from urllib.parse import urlparse
 
 import ifcopenshell
 import ifcopenshell.template
+
+import checks.check_bsdd_v2
 
 def get_hierarchical_bsdd(id):
     with database.Session() as session:
@@ -94,18 +97,17 @@ def get_classification_name(bsdd_results):
     names = list(filter(lambda x: x != default, [r['classification_name'] for r in bsdd_results]))
     return {item: names.count(item) for item in names} if names else default
 
-def get_domain(bsdd_results):
+
+def domain_sources(bsdd_results):
     uri = 'bsdd_classification_uri'
-    domain_sources = []
-    default = 'classification not found'
-    for result in bsdd_results:
-        bsdd_uri = result[uri]
-        if bsdd_uri == default:
-            domain_sources.append(bsdd_uri)
-        else:
-            domain_sources.append(bsdd_uri.split("/class")[0])
-    sources = list(filter(lambda x: x != default, domain_sources))
-    return {item: sources.count(item) for item in sources} if sources else default
+    domain_sources = [
+        checks.check_bsdd_v2.get_domain(result[uri]).json()[0]['namespaceUri'] if result[uri] != 'classification not found'
+        else result[uri]
+        for result in bsdd_results
+    ]
+    sources = [source for source in domain_sources if source != 'classification not found']
+    return collections.Counter(sources) if sources else 'classification not found'
+
 
 def bsdd_report_quantity(bsdd_results, item):
     return sum(bool(bsdd_result.get(item)) for bsdd_result in bsdd_results)
