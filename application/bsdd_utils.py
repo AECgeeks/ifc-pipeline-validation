@@ -68,24 +68,15 @@ def get_processed_bsdd_table(bsdd_results, session, schema):
     bsdd_data = [{**{'classification': k}, **v} for k, v in bsdd_data.items()]
     return bsdd_data
 
-def instance_supertypes(observed_type, schema):
-    allowed_types = [observed_type]
-
-    while True:
-        try:
-            result = (lambda x: ifcopenshell.ifcopenshell_wrapper.schema_by_name(schema).declaration_by_name(x).supertype().name())(allowed_types[-1])
-        except AttributeError: #NoneType
-            break
-
-        allowed_types.append(result)
-    return allowed_types
-
 def bsdd_table(bsdd_result, session, schema):
     inst = get_inst(session, bsdd_result['instance_id'])
     observed_type = inst.ifc_type
-    required_type = bsdd_result['bsdd_type_constraint']
     domain_source = bsdd_result['bsdd_classification_uri']
-    validity = "valid" if required_type in instance_supertypes(observed_type, schema) else 'invalid'
+
+    if all(bsdd_result[key] == 1 for key in ['val_ifc_type', 'val_property_set', 'val_property_name', 'val_property_type', 'val_property_value']):
+        validity = 'valid'
+    else:
+        validity = 'invalid'
 
     return {'classification': observed_type, 'validity': validity, 'domain_source': domain_source}
 
