@@ -8,8 +8,6 @@ from urllib.parse import urlparse
 import ifcopenshell
 import ifcopenshell.template
 
-import utils
-
 def get_hierarchical_bsdd(id):
     with database.Session() as session:
         @functools.lru_cache(maxsize=128)
