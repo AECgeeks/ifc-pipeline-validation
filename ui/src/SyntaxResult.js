@@ -14,7 +14,7 @@ export default function SyntaxResult({ content, status }) {
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
-  };  
+  };
 
   useEffect(() => {
     setRows(content.slice(page * 10, page * 10 + 10))
@@ -51,6 +51,10 @@ export default function SyntaxResult({ content, status }) {
         <TreeItem nodeId="0" label="Syntax">
         { rows.length
             ? rows.map(item => {
+              const msg_parts = item.msg.split('\n')
+              const whitespaces = msg_parts[4].match(/\s*/)[0].length;
+              const modifiedStr = `${msg_parts[3].substring(0, whitespaces)}<span style='text-decoration:underline; font-weight:bold; background-color:#ddd;'>${msg_parts[3][whitespaces]}</span>${msg_parts[3].substring(whitespaces + 1)}`;
+
                 return <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}>
                     <TreeItem nodeId="syntax-0" label={<div class='caption'>{(item.error_type || 'syntax_error').replace('_', ' ')}</div>}>
@@ -64,7 +68,8 @@ export default function SyntaxResult({ content, status }) {
                             <td>{item.column}</td>
                             <td>
                               <span class='pre'>{item.msg.split('\n').slice(0, -2).join('\n')}</span>
-                              <span class='pre mono'>{item.msg.split('\n').slice(-2).join('\n')}</span>
+                              <br /> {}
+                              <span class='pre mono' dangerouslySetInnerHTML={{ __html: modifiedStr }}></span>
                             </td>
                           </tr>
                         </tbody>
