@@ -52,8 +52,9 @@ export default function SyntaxResult({ content, status }) {
         { rows.length
             ? rows.map(item => {
               const msg_parts = item.msg.split('\n')
-              const whitespaces = msg_parts[4].match(/\s*/)[0].length;
-              const modifiedStr = `${msg_parts[3].substring(0, whitespaces)}<span style='text-decoration:underline; font-weight:bold; background-color:#ddd;'>${msg_parts[3][whitespaces]}</span>${msg_parts[3].substring(whitespaces + 1)}`;
+              const whitespaces = msg_parts[msg_parts.length -1].match(/\s*/)[0].length;
+              const error_instance = msg_parts[msg_parts.length - 2]
+              const modifiedStr = `${error_instance.substring(0, whitespaces)}<span style='text-decoration:underline; font-weight:bold; background-color:#ddd;'>${error_instance[whitespaces]}</span>${error_instance.substring(whitespaces + 1)}`;
 
                 return <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}>
