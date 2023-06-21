@@ -41,7 +41,10 @@ export default function SyntaxResult({ content, status }) {
           ".MuiTreeItem-content.Mui-expanded .subcaption" : { visibility: "visible" },
           "table": { borderCollapse: 'collapse', fontSize: '80%' },
           "td, th": { padding: '0.2em 0.5em', verticalAlign: 'top' },
-          ".pre": { whiteSpace: 'pre', display: 'block' },
+          ".pre": {
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          },
           ".mono": { fontFamily: 'monospace, monospace', marginTop: '0.3em' }
         }}
       >
