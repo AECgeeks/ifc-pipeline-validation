@@ -20,6 +20,28 @@ export default function SyntaxResult({ content, status }) {
     setRows(content.slice(page * 10, page * 10 + 10))
   }, [page, content]);
 
+  function renderMessage(error_instance, numWhitespace, numHighlight) {
+    const beforeHighlight = error_instance.substring(0, numWhitespace);
+    const highlightedChar = error_instance.substring(numWhitespace, numWhitespace + numHighlight);
+    const afterHighlight = error_instance.substring(numWhitespace + numHighlight);
+    return (
+      <React.Fragment>
+        {beforeHighlight}
+        <span
+          style={{
+            textDecoration: 'underline',
+            fontWeight: 'bold',
+            backgroundColor: '#ddd',
+            border: 'solid 1px red'
+          }}
+        >
+          {highlightedChar}
+        </span>
+        {afterHighlight}
+      </React.Fragment>
+    );
+  };
+
   return (
     <Paper sx={{overflow: 'hidden'}}>
       <TreeView
@@ -51,10 +73,23 @@ export default function SyntaxResult({ content, status }) {
         <TreeItem nodeId="0" label="Syntax">
         { rows.length
             ? rows.map(item => {
-              const msg_parts = item.msg.split('\n')
-              const whitespaces = msg_parts[msg_parts.length -1].match(/\s*/)[0].length;
-              const error_instance = msg_parts[msg_parts.length - 2]
-              const modifiedStr = `${error_instance.substring(0, whitespaces)}<span style='text-decoration:underline; font-weight:bold; background-color:#ddd;'>${error_instance[whitespaces]}</span>${error_instance.substring(whitespaces + 1)}`;
+              const msg_parts = item.msg.split('\n');
+              const [_, numWhitespace, numHighlight] = msg_parts[msg_parts.length -1].match(/(\s*)(\^+)/).map(s => s.length);
+              const error_instance = msg_parts[msg_parts.length - 2];
+
+              const errorMessage = renderMessage(
+                error_instance,
+                numWhitespace,
+                numHighlight
+              );
+
+
+              // const beforeHighlight = error_instance.substring(0, numWhitespace);
+              // const highlightedChar = error_instance.substring(numWhitespace, numWhitespace + numHighlight);
+              // const afterHighlight = error_instance.substring(numWhitespace + numHighlight);
+              
+            
+              // debugger;
 
                 return <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}>
@@ -70,7 +105,7 @@ export default function SyntaxResult({ content, status }) {
                             <td>
                               <span class='pre'>{item.msg.split('\n').slice(0, -2).join('\n')}</span>
                               <br /> {}
-                              <span class='pre mono' dangerouslySetInnerHTML={{ __html: modifiedStr }}></span>
+                              <span class='pre mono'>{errorMessage}</span>
                             </td>
                           </tr>
                         </tbody>
