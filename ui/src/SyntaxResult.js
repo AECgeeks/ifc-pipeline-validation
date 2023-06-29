@@ -84,13 +84,6 @@ export default function SyntaxResult({ content, status }) {
               );
 
 
-              // const beforeHighlight = error_instance.substring(0, numWhitespace);
-              // const highlightedChar = error_instance.substring(numWhitespace, numWhitespace + numHighlight);
-              // const afterHighlight = error_instance.substring(numWhitespace + numHighlight);
-              
-            
-              // debugger;
-
                 return <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}>
                     <TreeItem nodeId="syntax-0" label={<div class='caption'>{(item.error_type || 'syntax_error').replace('_', ' ')}</div>}>
