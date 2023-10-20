@@ -14,11 +14,33 @@ export default function SyntaxResult({ content, status }) {
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
-  };  
+  };
 
   useEffect(() => {
     setRows(content.slice(page * 10, page * 10 + 10))
   }, [page, content]);
+
+  function renderMessage(error_instance, numWhitespace, numHighlight) {
+    const beforeHighlight = error_instance.substring(0, numWhitespace);
+    const highlightedChar = error_instance.substring(numWhitespace, numWhitespace + numHighlight);
+    const afterHighlight = error_instance.substring(numWhitespace + numHighlight);
+    return (
+      <React.Fragment>
+        {beforeHighlight}
+        <span
+          style={{
+            textDecoration: 'underline',
+            fontWeight: 'bold',
+            backgroundColor: '#ddd',
+            border: 'solid 1px red'
+          }}
+        >
+          {highlightedChar}
+        </span>
+        {afterHighlight}
+      </React.Fragment>
+    );
+  };
 
   return (
     <Paper sx={{overflow: 'hidden'}}>
@@ -41,13 +63,27 @@ export default function SyntaxResult({ content, status }) {
           ".MuiTreeItem-content.Mui-expanded .subcaption" : { visibility: "visible" },
           "table": { borderCollapse: 'collapse', fontSize: '80%' },
           "td, th": { padding: '0.2em 0.5em', verticalAlign: 'top' },
-          ".pre": { whiteSpace: 'pre', display: 'block' },
+          ".pre": {
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          },
           ".mono": { fontFamily: 'monospace, monospace', marginTop: '0.3em' }
         }}
       >
         <TreeItem nodeId="0" label="Syntax">
         { rows.length
             ? rows.map(item => {
+              const msg_parts = item.msg.split('\n');
+              const [_, numWhitespace, numHighlight] = msg_parts[msg_parts.length -1].match(/(\s*)(\^+)/).map(s => s.length);
+              const error_instance = msg_parts[msg_parts.length - 2];
+
+              const errorMessage = renderMessage(
+                error_instance,
+                numWhitespace,
+                numHighlight
+              );
+
+
                 return <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}>
                     <TreeItem nodeId="syntax-0" label={<div class='caption'>{(item.error_type || 'syntax_error').replace('_', ' ')}</div>}>
@@ -61,7 +97,8 @@ export default function SyntaxResult({ content, status }) {
                             <td>{item.column}</td>
                             <td>
                               <span class='pre'>{item.msg.split('\n').slice(0, -2).join('\n')}</span>
-                              <span class='pre mono'>{item.msg.split('\n').slice(-2).join('\n')}</span>
+                              <br /> {}
+                              <span class='pre mono'>{errorMessage}</span>
                             </td>
                           </tr>
                         </tbody>
