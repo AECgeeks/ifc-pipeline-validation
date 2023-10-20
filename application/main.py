@@ -29,6 +29,7 @@ from __future__ import print_function
 import os
 import json
 import ast
+import sys 
 
 import threading
 from functools import wraps
@@ -44,6 +45,8 @@ from flask_cors import CORS
 import requests
 from requests_oauthlib import OAuth2Session
 from authlib.jose import jwt
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'checks')))
 
 import utils
 import bsdd_utils
@@ -886,6 +889,30 @@ def get_model(fn):
         return response
     else:
         return send_file(path)
+    
+@application.route('/api/bsdd_statistics/<id>', methods=['GET'])
+@login_required
+def preprocess_bsdd(user_data, id):
+    with database.Session() as session:
+        model = session.query(database.model).filter(
+            database.model.code == id).first()
+        if model.user_id != user_data["sub"]:
+            abort(403)
+        bsdd_task = [task for task in model.tasks if task.task_type == "bsdd_validation_task"][0]
+        bsdd_results = [result.serialize() for result in bsdd_task.results]
+
+        if model.status_bsdd != 'n':
+            preprocessed_bsdd_data = {
+                'bSDD classification found': {
+                    'name' : bsdd_utils.get_classification_name(bsdd_results),
+                    'classification_count' : bsdd_utils.bsdd_report_quantity(bsdd_results, 'classification_code'),
+                    'properties_count': bsdd_utils.bsdd_report_quantity(bsdd_results, 'ifc_property_set'),
+                    'domain_source' : bsdd_utils.domain_sources(bsdd_results)
+                },
+                'bSDD data': bsdd_utils.get_processed_bsdd_table(bsdd_results, session, model.schema)
+            }
+
+    return jsonify(preprocessed_bsdd_data)
 
 """
 # Create a file called routes.py with the following
