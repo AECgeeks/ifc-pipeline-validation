@@ -47,33 +47,36 @@ def check_file(f):
 
             uri = classification.Location
 
-            response = get_classification_object(uri)
-            json_response = response.json()
+            if uri:
+                response = get_classification_object(uri)
+                json_response = response.json()
 
-            # Check: check if resource exists (in bSDD or externally)
-            status_code = response.status_code
-            if ressource_found(status_code):
-                print("VALID - resource found")
-            else:
-                print(f"{classification} INVALID - resource not found")
-
-            # Check: check if URI, code and name match (name can be in one of the possible languages)
-            # check last bit of uri + classification.Identification
-            if name_matches_code(uri, classification, schema):
-                print("VALID - name and code match")
-            else:
-                print(f"{classification} INVALID - name and code do not match")
-
-            # Check: check applicable entity type
-            applicable_entity_types = json_response['relatedIfcEntityNames']
-            related_objects = rel.RelatedObjects
-
-            for entity in related_objects:
-                if entity.is_a() in applicable_entity_types:
-                    print(f"VALID IFC entity type")
+                # Check: check if resource exists (in bSDD or externally)
+                status_code = response.status_code
+                if ressource_found(status_code):
+                    print("VALID - resource found")
                 else:
-                    print(
-                        f"{entity} referencing {classification} INVALID IFC entity type")
+                    print(f"{classification} INVALID - resource not found")
+
+                # Check: check if URI, code and name match (name can be in one of the possible languages)
+                # check last bit of uri + classification.Identification
+                if name_matches_code(uri, classification, schema):
+                    print("VALID - name and code match")
+                else:
+                    print(f"{classification} INVALID - name and code do not match")
+
+                # Check: check applicable entity type
+                applicable_entity_types = json_response['relatedIfcEntityNames']
+                related_objects = rel.RelatedObjects
+
+                for entity in related_objects:
+                    if entity.is_a() in applicable_entity_types:
+                        print(f"VALID IFC entity type")
+                    else:
+                        print(
+                            f"{entity} referencing {classification} INVALID IFC entity type")
+            else:
+                print("NO URI - skip checks")
 
         # Checks: check for IfcClassification/IfcClassificationReference duplicates
         check_for_duplicates(f, "IfcClassificationReference")
@@ -82,48 +85,60 @@ def check_file(f):
         # Check: check if property exists in bSDD
         for property in f.by_type("IfcProperty"):
             uri = property.Description
-            response = get_classification_object(uri)
-            status_code = response.status_code
 
-            if ressource_found(status_code):
-                print("VALID - resource found")
+            if uri:
+                response = get_classification_object(uri)
+                status_code = response.status_code
+
+                if ressource_found(status_code):
+                    print("VALID - resource found")
+                else:
+                    print(f"property {property} INVALID - resource not found")
             else:
-                print(f"property {property} INVALID - resource not found")
+                print("NO URI - skip checks")
 
         # Check: check if material exists in bSDD
         for material in f.by_type("IfcMaterial"):
             uri = material.Description
-            response = get_classification_object(uri)
-            status_code = response.status_code
 
-            if ressource_found(status_code):
-                print("VALID - resource found")
+            if uri:
+                response = get_classification_object(uri)
+                status_code = response.status_code
+
+                if ressource_found(status_code):
+                    print("VALID - resource found")
+                else:
+                    print(f"material {material} INVALID - resource not found")
             else:
-                print(f"material {material} INVALID - resource not found")
+                print("NO URI - skip checks")
 
         for classification in f.by_type("IfcClassificationReference"):
             if not classification.id() in checked_references:
                 uri = classification.Location
+                if uri:
+                    try:
+                        response = get_classification_object(uri)
+                        status_code = response.status_code
 
-                try:
-                    response = get_classification_object(uri)
-                    status_code = response.status_code
+                        # Check: check if resource exists (in bSDD or externally)
+                        if ressource_found(status_code):
+                            print("VALID - resource found")
+                        else:
+                            print(
+                                f"{classification} INVALID - resource not found")
 
-                    # Check: check if resource exists (in bSDD or externally)
-                    if ressource_found(status_code):
-                        print("VALID - resource found")
+                    except:
+                        print(f"{classification} INVALID uri")
+
+                    # Check: check if URI, code and name match (name can be in one of the possible languages)
+                    # check last bit of uri + classification.Identification
+                    if name_matches_code(uri, classification, schema):
+                        print("VALID - name and code match")
                     else:
-                        print(f"{classification} INVALID - resource not found")
-
-                except:
-                    print(f"{classification} INVALID uri")
-
-                # Check: check if URI, code and name match (name can be in one of the possible languages)
-                # check last bit of uri + classification.Identification
-                if name_matches_code(uri, classification, schema):
-                    print("VALID - name and code match")
+                        print(
+                            f"{classification} INVALID - name and code do not match")
                 else:
-                    print(f"{classification} INVALID - name and code do not match")
+                    print("NO URI - skip checks")
     else:
         print('NOT ACTIVATED - no classifications found in the file')
 
