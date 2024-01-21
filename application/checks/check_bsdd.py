@@ -18,12 +18,6 @@ def ressource_found(status_code):
     return 0
 
 
-f = ifcopenshell.open(sys.argv[1])
-schema = f.schema
-
-checked_references = set()
-
-
 def activation_step(f):
     return len(f.by_type("IfcClassificationReference"))
 
@@ -43,7 +37,9 @@ def check_file(f):
     is_activated = activation_step(f)
 
     if is_activated:
+        checked_references = set()
         schema = f.schema
+
         for rel in f.by_type("IfcRelAssociatesClassification"):
             classification = rel.RelatingClassification
 
@@ -132,4 +128,6 @@ def check_file(f):
         print('NOT ACTIVATED - no classifications found in the file')
 
 
-check_file(f)
+if __name__ == "__main__":
+    f = ifcopenshell.open(sys.argv[1])
+    check_file(f)
