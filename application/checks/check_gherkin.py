@@ -14,6 +14,8 @@ def perform(ifc_fn, task_id, rule_type=gherkin_rules.RuleType.ALL):
         file_id = model.id
 
         results = list(gherkin_rules.run(ifc_fn, instance_as_str=False, rule_type=rule_type))
+        results = [result['display_testresult'] for result in results if isinstance(result, dict) and 'display_testresult' in result]
+        
 
         @functools.lru_cache(maxsize=10240)
         def commit_instance(p):
