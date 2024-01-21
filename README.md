@@ -95,6 +95,38 @@ Start flask with
 docker exec -it $(docker ps -q --filter name=db) psql -U postgres bimsurfer2
 ~~~
 
+## Running front- and backend locally
+
+Update and install submodules
+
+~~~
+submodule init && submodule update
+~~~
+
+Set environment to 'development'
+
+~~~
+export environment=development
+~~~
+
+Setup local environment with the following packages
+~~~
+pip install lark-parser==0.12.0 numpy ifcopenshell flask flask-cors numpy gunicorn rq redis SQLAlchemy psycopg2 psycopg2cffi sqlalchemy-utils Flask-BasicAuth flasgger requests  XlsxWriter requests_oauthlib Authlib requests argparse orjson --upgrade && conda install flake8
+~~~
+
+Depending on the OS, change ui/package.json. For instance to 'bash run_debug.sh' in case of a linux system.
+~~~
+"api": "cd ../application && run_no_debug.bat"
+~~~
+
+Install npm, and concurrently run both the Flask backend and the React frontend.
+
+~~~
+cd ui
+npm install
+npm-run-all -p start api
+~~~
+
 ### Observability notes
 
 #### Uploads per day
